@@ -16,7 +16,8 @@ import {
   MapPin,
   Clock,
   Globe,
-  Camera
+  Camera,
+  ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogoWhite, LogoGold } from "../../assets";
@@ -24,6 +25,7 @@ import { LogoWhite, LogoGold } from "../../assets";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [openSubDropdown, setOpenSubDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
 
@@ -52,32 +54,63 @@ const Navbar = () => {
     }
   };
 
-  const toggleDropdown = (dropdown) => {
-    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+  const handleDropdownToggle = (dropdown, hasSubItems) => (e) => {
+    const isChevronClick = e.target.closest('.chevron-container') !== null;
+
+    if (hasSubItems && isChevronClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+      setOpenSubDropdown(null);
+    }
+  };
+
+  const handleSubDropdownToggle = (subDropdown, hasSubItems) => (e) => {
+    if (hasSubItems) {
+      e.preventDefault();
+      setOpenSubDropdown(openSubDropdown === subDropdown ? null : subDropdown);
+    }
+  };
+
+  const closeAllMenus = () => {
+    setIsMenuOpen(false);
+    setOpenDropdown(null);
+    setOpenSubDropdown(null);
+    document.body.style.overflow = "auto";
   };
 
   const navItems = [
     { label: "Home", path: "/", icon: <Home className="h-4 w-4 mr-2" /> },
     {
       label: "About",
-      path: "/about",
+      path: "/about-us",
       icon: <Users className="h-4 w-4 mr-2" />,
-      subItems: [
-        { name: "Our Story", href: "/about/story" },
-        { name: "Leadership", href: "/about/leadership" },
-        { name: "Awards", href: "/about/awards" }
-      ]
     },
-  
     {
       label: "Sports",
       path: "/sports",
       icon: <Trophy className="h-4 w-4 mr-2" />,
       subItems: [
-        { name: "Tennis", href: "/sports/tennis" },
-        { name: "Squash", href: "/sports/squash" },
-        { name: "Swimming", href: "/sports/swimming" },
-        { name: "Fitness", href: "/sports/fitness" }
+        {
+          name: "Indoor Sports",
+          href: "/sports/indoor",
+          subItems: [
+            { name: "Badminton", href: "/sports/indoor/badminton" },
+            { name: "Table Tennis", href: "/sports/indoor/table-tennis" },
+            { name: "Squash", href: "/sports/indoor/squash" },
+            { name: "Gym", href: "/sports/indoor/gym" }
+          ]
+        },
+        {
+          name: "Outdoor Sports",
+          href: "/sports/outdoor",
+          subItems: [
+            { name: "Tennis", href: "/sports/outdoor/tennis" },
+            { name: "Swimming", href: "/sports/outdoor/swimming" },
+            { name: "Basketball", href: "/sports/outdoor/basketball" },
+            { name: "Cricket Nets", href: "/sports/outdoor/net-cricket" }
+          ]
+        }
       ]
     },
     {
@@ -92,54 +125,29 @@ const Navbar = () => {
       ]
     },
     {
-    label: "Gallery",
-    path: "/gallery",
-    icon: <Camera className="h-4 w-4 mr-2" />, // Import Camera from lucide-react
-    subItems: [
-      { name: "Sports Facilities", href: "/gallery/sports" },
-      { name: "Luxury Amenities", href: "/gallery/amenities" },
-      { name: "Events", href: "/gallery/events" },
-      { name: "Member Moments", href: "/gallery/members" }
-    ]
-  },
+      label: "Gallery",
+      path: "/gallery",
+      icon: <Camera className="h-4 w-4 mr-2" />,
+    },
     {
       label: "Membership",
       path: "/membership",
       icon: <Users className="h-4 w-4 mr-2" />,
-      subItems: [
-        { name: "Individual", href: "/membership/individual" },
-        { name: "Family", href: "/membership/family" },
-        { name: "Corporate", href: "/membership/corporate" }
-      ]
     },
     {
       label: "Affiliations",
       path: "/affiliations",
-      icon: <Globe className="h-4 w-4 mr-2" />, // Using Globe icon from lucide-react
-      subItems: [
-        { name: "Sports Associations", href: "/affiliations/sports" },
-        { name: "Luxury Partners", href: "/affiliations/luxury" },
-        { name: "Health & Wellness", href: "/affiliations/wellness" },
-        { name: "Corporate Alliances", href: "/affiliations/corporate" }
-      ]
+      icon: <Globe className="h-4 w-4 mr-2" />,
     },
     {
       label: "Events",
       path: "/events",
       icon: <Calendar className="h-4 w-4 mr-2" />,
-      subItems: [
-        { name: "Tournaments", href: "/events/tournaments" },
-        { name: "Galas", href: "/events/galas" }
-      ]
     },
     {
       label: "Contact",
       path: "/contact",
       icon: <Phone className="h-4 w-4 mr-2" />,
-      subItems: [
-        { name: "Location", href: "/contact/location" },
-        { name: "Inquiries", href: "/contact/inquiries" }
-      ]
     }
   ];
 
@@ -192,18 +200,30 @@ const Navbar = () => {
               <div
                 key={item.label}
                 className="relative"
-                onMouseEnter={() => setHoveredItem(item.label)}
-                onMouseLeave={() => setHoveredItem(null)}
+                onMouseEnter={() => {
+                  setHoveredItem(item.label);
+                  if (item.subItems) setOpenDropdown(item.label);
+                }}
+                onMouseLeave={() => {
+                  setHoveredItem(null);
+                  if (!openSubDropdown) setOpenDropdown(null);
+                }}
               >
-                <motion.button
-                  onClick={() => item.subItems ? toggleDropdown(item.label) : null}
+                {/* Main nav item */}
+                <motion.a
+                  href={item.path}
                   className={`flex items-center ${scrolled ? 'text-[#0A2463]' : 'text-white'} hover:text-[#FFC857] transition-colors px-2.5 py-2 font-medium uppercase tracking-wider text-xs sm:text-sm relative`}
                   whileHover={{ scale: 1.05 }}
                 >
                   {item.icon}
                   <span className="whitespace-nowrap">{item.label}</span>
                   {item.subItems && (
-                    <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
+                    <span
+                      className="chevron-container ml-1"
+                      onClick={handleDropdownToggle(item.label, true)}
+                    >
+                      <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
+                    </span>
                   )}
 
                   {hoveredItem === item.label && (
@@ -215,39 +235,77 @@ const Navbar = () => {
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     />
                   )}
-                </motion.button>
+                </motion.a>
 
-                {item.subItems && (
-                  <AnimatePresence>
-                    {openDropdown === item.label && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="absolute left-1/2 transform -translate-x-1/2 mt-1 w-48 bg-white rounded-sm shadow-xl z-50 border border-gray-100 origin-top"
-                      >
-                        <motion.div
-                          variants={containerVariants}
-                          initial="hidden"
-                          animate="show"
-                          className="py-1"
-                        >
-                          {item.subItems.map((subItem) => (
-                            <motion.a
-                              key={subItem.name}
-                              href={subItem.href}
-                              className="flex items-center px-4 py-2 text-xs sm:text-sm text-[#2E4052] hover:bg-[#F8F9FA] hover:text-[#0A2463] transition-colors border-b border-gray-100 last:border-0"
-                              variants={itemVariants}
-                              whileHover={{ x: 3 }}
+                {/* First level dropdown */}
+                {item.subItems && openDropdown === item.label && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="absolute left-1/2 transform -translate-x-1/2 mt-1 w-56 bg-white rounded-sm shadow-xl z-50 border border-gray-100 origin-top"
+                    onMouseEnter={() => setOpenDropdown(item.label)}
+                    onMouseLeave={() => {
+                      if (!openSubDropdown) setOpenDropdown(null);
+                    }}
+                  >
+                    <motion.div
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="show"
+                      className="py-1"
+                    >
+                      {item.subItems.map((subItem) => (
+                        <div key={subItem.name} className="relative">
+                          <motion.a
+                            href={subItem.href}
+                            onClick={subItem.subItems ? handleSubDropdownToggle(subItem.name, true) : undefined}
+                            className={`flex items-center justify-between w-full px-4 py-2 text-xs sm:text-sm text-[#2E4052] hover:bg-[#F8F9FA] hover:text-[#0A2463] transition-colors`}
+                            variants={itemVariants}
+                            whileHover={{ x: 3 }}
+                          >
+                            <span>{subItem.name}</span>
+                            {subItem.subItems && (
+                              <ChevronRight className="h-3 w-3 ml-2" />
+                            )}
+                          </motion.a>
+
+                          {/* Second level dropdown */}
+                          {subItem.subItems && openSubDropdown === subItem.name && (
+                            <motion.div
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: 10 }}
+                              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                              className="absolute left-full top-0 ml-1 w-56 bg-white rounded-sm shadow-xl z-50 border border-gray-100 origin-top"
+                              onMouseEnter={() => setOpenSubDropdown(subItem.name)}
+                              onMouseLeave={() => setOpenSubDropdown(null)}
                             >
-                              {subItem.name}
-                            </motion.a>
-                          ))}
-                        </motion.div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                              <motion.div
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
+                                className="py-1"
+                              >
+                                {subItem.subItems.map((sport) => (
+                                  <motion.a
+                                    key={sport.name}
+                                    href={sport.href}
+                                    className="flex items-center px-4 py-2 text-xs sm:text-sm text-[#2E4052] hover:bg-[#F8F9FA] hover:text-[#0A2463] transition-colors"
+                                    variants={itemVariants}
+                                    whileHover={{ x: 3 }}
+                                  >
+                                    {sport.name}
+                                  </motion.a>
+                                ))}
+                              </motion.div>
+                            </motion.div>
+                          )}
+                        </div>
+                      ))}
+                    </motion.div>
+                  </motion.div>
                 )}
               </div>
             ))}
@@ -301,17 +359,27 @@ const Navbar = () => {
                   >
                     {item.subItems ? (
                       <>
-                        <motion.button
-                          onClick={() => toggleDropdown(item.label)}
-                          className="flex items-center justify-between w-full py-3 text-[#0A2463] font-medium uppercase tracking-wider text-left text-sm"
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div className="flex items-center">
+                        <div className="flex items-center">
+                          <a
+                            href={item.path}
+                            className="flex-1 flex items-center py-3 text-sm text-[#0A2463] font-medium uppercase tracking-wider"
+                            onClick={closeAllMenus}
+                          >
                             {item.icon}
                             <span className="ml-3">{item.label}</span>
-                          </div>
-                          <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
-                        </motion.button>
+                          </a>
+                          {item.subItems && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleDropdownToggle(item.label, true)(e);
+                              }}
+                              className="p-2"
+                            >
+                              <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
+                            </button>
+                          )}
+                        </div>
                         <AnimatePresence>
                           {openDropdown === item.label && (
                             <motion.div
@@ -321,33 +389,72 @@ const Navbar = () => {
                               className="pl-10 overflow-hidden"
                               transition={{ type: "spring", stiffness: 300, damping: 25 }}
                             >
-                              <div className="pb-2 space-y-1">
-                                {item.subItems.map((subItem) => (
-                                  <motion.a
-                                    key={subItem.name}
-                                    href={subItem.href}
-                                    className="block py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors"
-                                    onClick={toggleMenu}
-                                    whileTap={{ scale: 0.98 }}
-                                  >
-                                    {subItem.name}
-                                  </motion.a>
-                                ))}
-                              </div>
+                              {item.subItems.map((subItem) => (
+                                <div key={subItem.name}>
+                                  {subItem.subItems ? (
+                                    <>
+                                      <div className="flex items-center">
+                                        <a
+                                          href={subItem.href}
+                                          className="flex-1 block py-2 text-sm text-[#0A2463]"
+                                          onClick={closeAllMenus}
+                                        >
+                                          {subItem.name}
+                                        </a>
+                                        <button
+                                          onClick={handleSubDropdownToggle(subItem.name, true)}
+                                          className="p-2"
+                                        >
+                                          <ChevronRight className={`h-4 w-4 transition-transform ${openSubDropdown === subItem.name ? "rotate-90" : ""}`} />
+                                        </button>
+                                      </div>
+                                      <AnimatePresence>
+                                        {openSubDropdown === subItem.name && (
+                                          <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="pl-4 overflow-hidden"
+                                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                          >
+                                            {subItem.subItems.map((sport) => (
+                                              <a
+                                                key={sport.name}
+                                                href={sport.href}
+                                                className="block py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors"
+                                                onClick={closeAllMenus}
+                                              >
+                                                {sport.name}
+                                              </a>
+                                            ))}
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </>
+                                  ) : (
+                                    <a
+                                      href={subItem.href}
+                                      className="block py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors"
+                                      onClick={closeAllMenus}
+                                    >
+                                      {subItem.name}
+                                    </a>
+                                  )}
+                                </div>
+                              ))}
                             </motion.div>
                           )}
                         </AnimatePresence>
                       </>
                     ) : (
-                      <motion.a
+                      <a
                         href={item.path}
                         className="flex items-center py-3 text-sm text-[#0A2463] font-medium uppercase tracking-wider"
-                        onClick={toggleMenu}
-                        whileTap={{ scale: 0.98 }}
+                        onClick={closeAllMenus}
                       >
                         {item.icon}
                         <span className="ml-3">{item.label}</span>
-                      </motion.a>
+                      </a>
                     )}
                   </motion.div>
                 ))}
@@ -359,14 +466,13 @@ const Navbar = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <motion.a
+                <a
                   href="/membership"
                   className="col-span-2 bg-gradient-to-r from-[#FFC857] to-[#F4A261] text-[#0A2463] px-4 py-2 rounded-sm font-bold uppercase tracking-wider text-center text-sm shadow-md"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  onClick={closeAllMenus}
                 >
                   Join Now
-                </motion.a>
+                </a>
               </motion.div>
             </div>
           </motion.div>

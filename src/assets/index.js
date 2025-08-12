@@ -30,7 +30,18 @@ import logo6 from "../assets/images/logo6.png"
 import logo7 from "../assets/images/logo7.png"
 import logo8 from "../assets/images/logo8.png"
 import ssk_club from "../assets/images/SSK World Club.jpg"
+import sport_turf from "../assets/images/multi-sport-turf-field.jpg"
+import green_sport_campus from "../assets/images/green-sport-campus.jpg"
+import net_cricket from "../assets/images/net-cricket.jpg"
+import skating from "../assets/images/skating.jpg"
+import volleyball from "../assets/images/volleyball.jpg"
+import carrom from "../assets/images/carrom.jpg"
+import chess from "../assets/images/chess.jpg"
+import crossfit from "../assets/images/crossfit.jpg"
+import shooting from "../assets/images/shooting.jpg"
+import founder from "../assets/images/founder.avif"
+import leader1 from "../assets/images/leader1.avif"
+import leader2 from "../assets/images/leader2.avif"
+import leader3 from "../assets/images/leader3.avif"
 
-
-
-export { LogoGold, LogoWhite, basketball, fitness, squash, swimming, table_tennis, hero_video_1, hero_home, testimonial1, testimonial2, yoga, diwali_sports, badminton, monsoon_soccer, retro_night, tt_tournament, marathon, holi_fest, tennis_league, seniors_yoga, member1, member2, logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, ssk_club };
+export { LogoGold, LogoWhite, basketball, fitness, squash, swimming, table_tennis, hero_video_1, hero_home, testimonial1, testimonial2, yoga, diwali_sports, badminton, monsoon_soccer, retro_night, tt_tournament, marathon, holi_fest, tennis_league, seniors_yoga, member1, member2, logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, ssk_club, sport_turf, green_sport_campus, net_cricket, skating, volleyball, carrom, chess, crossfit, shooting, founder, leader1, leader2, leader3 };
