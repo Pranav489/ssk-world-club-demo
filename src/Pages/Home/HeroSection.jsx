@@ -114,7 +114,7 @@ const HeroSection = () => {
           >
             <motion.a
               variants={itemVariants}
-              href="/memberships"
+              href="/membership"
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 8px 20px rgba(255, 200, 87, 0.3)"
@@ -127,7 +127,7 @@ const HeroSection = () => {
             </motion.a>
 
             <motion.a
-              href="/contactus"
+              href="/contact"
               variants={itemVariants}
               whileHover={{
                 backgroundColor: "rgba(255,255,255,0.1)",

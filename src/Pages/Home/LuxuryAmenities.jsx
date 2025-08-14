@@ -7,7 +7,10 @@ import {
   Film, 
   BookOpen,
   Flower,
-  Palette
+  Palette,
+  Table2,
+  Users,
+  ShoppingBag
 } from "lucide-react";
 
 const LuxuryAmenities = () => {
@@ -48,50 +51,49 @@ const LuxuryAmenities = () => {
   };
 
   const amenities = [
-    {
-  title: "Fine Dining Experience",
-  icon: <Utensils className="h-8 w-8" />,
-  description: "Multi-cuisine restaurants offering gourmet Indian and global dishes",
-  highlight: "Curated chef specials & regional thalis",
-  color: "bg-[#FFC857]"
-},
-{
-  title: "Ayurveda & Spa Retreat",
-  icon: <Flower className="h-8 w-8" />,
-  description: "Traditional Indian therapies blended with modern wellness",
-  highlight: "Kerala Panchakarma & detox packages",
-  color: "bg-[#0A2463]"
-},
-{
-  title: "Club Residences",
-  icon: <Hotel className="h-8 w-8" />,
-  description: "Premium stay with heritage aesthetics and modern luxury",
-  highlight: "24/7 concierge & butler services",
-  color: "bg-[#FFC857]"
-},
-{
-  title: "Private Screening Lounge",
-  icon: <Film className="h-8 w-8" />,
-  description: "Personalized movie nights with Indian & international cinema",
-  highlight: "4K projection with surround sound",
-  color: "bg-[#0A2463]"
-},
-{
-  title: "Heritage Reading Room",
-  icon: <BookOpen className="h-8 w-8" />,
-  description: "A quiet oasis with Indian literature, business titles, and biographies",
-  highlight: "Tea lounge & cultural discussion evenings",
-  color: "bg-[#FFC857]"
-},
-{
-  title: "Art & Culture Gallery",
-  icon: <Palette className="h-8 w-8" />, // Replace with correct icon import
-  description: "A curated space showcasing Indian contemporary and traditional art",
-  highlight: "Monthly exhibits & live artist sessions",
-  color: "bg-[#0A2463]"
-}
-
-  ];
+  {
+    title: "Billiards & Snooker Lounge",
+    icon: <Table2 className="h-8 w-8" />,
+    description: "Professional-grade snooker and billiards tables in an elegant lounge",
+    highlight: "International standard tables & cue equipment",
+    color: "bg-[#FFC857]"
+  },
+  {
+    title: "Kids Adventure Play Area",
+    icon: <Users className="h-8 w-8" />,
+    description: "Safe, supervised play zones with engaging activities for children",
+    highlight: "Indoor & outdoor interactive play zones",
+    color: "bg-[#0A2463]"
+  },
+  {
+    title: "Private Mini Theatre",
+    icon: <Film className="h-8 w-8" />,
+    description: "Exclusive cinema with luxury seating and immersive sound",
+    highlight: "4K projection & Dolby Atmos audio",
+    color: "bg-[#FFC857]"
+  },
+  {
+    title: "Luxury Spa & Wellness",
+    icon: <Flower className="h-8 w-8" />,
+    description: "Relaxing therapies blending modern wellness & traditional techniques",
+    highlight: "Full-body massages & aromatherapy treatments",
+    color: "bg-[#0A2463]"
+  },
+  {
+    title: "Sports Pro Shop",
+    icon: <ShoppingBag className="h-8 w-8" />,
+    description: "Premium sporting goods and accessories for all activities",
+    highlight: "Top global brands & professional-grade gear",
+    color: "bg-[#FFC857]"
+  },
+  {
+    title: "Wi-Fi Reading Lounge",
+    icon: <BookOpen className="h-8 w-8" />,
+    description: "Quiet reading spaces with high-speed internet",
+    highlight: "Extensive library & digital access",
+    color: "bg-[#0A2463]"
+  }
+];
 
   return (
     <section 

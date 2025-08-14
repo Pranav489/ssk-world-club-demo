@@ -118,10 +118,11 @@ const Navbar = () => {
       path: "/amenities",
       icon: <Hotel className="h-4 w-4 mr-2" />,
       subItems: [
-        { name: "Dining", href: "/amenities/dining" },
-        { name: "Suites", href: "/amenities/suites" },
+        { name: "Billiards & Snooker", href: "/amenities/billiards-and-snooker" },
+        { name: "Kids Play Area", href: "/amenities/kids-play-area" },
+        { name: "Mini Theatre", href: "/amenities/mini-theatre" },
         { name: "Spa", href: "/amenities/spa" },
-        { name: "Library", href: "/amenities/library" }
+        { name: "Wifi Library", href: "/amenities/wifi-library" }
       ]
     },
     {

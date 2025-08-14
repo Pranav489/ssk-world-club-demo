@@ -2,8 +2,9 @@ import React from "react";
 import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { ChevronRight, Dumbbell, Waves, Volleyball, Flag, Trophy, Infinity } from "lucide-react";
-import { basketball, fitness, squash, swimming, table_tennis, yoga } from "../../assets";
+import { ChevronRight, Dumbbell, Waves, Volleyball, Flag, Trophy, Infinity, Square } from "lucide-react";
+import { basketball, fitness, squash, swimming, table_tennis, tennis_league, yoga } from "../../assets";
+import { useNavigate } from "react-router";
 
 const AnimatedCounter = ({ value }) => {
   const [displayValue, setDisplayValue] = useState(0);
@@ -86,78 +87,70 @@ const SportsFacilities = () => {
 
   const sports = [
     {
-      name: "All India Tennis Pavilion",
+      name: "Championship Tennis Courts",
       icon: <Trophy className="h-8 w-8 text-[#FFC857]" />,
-      image: table_tennis,
-      description: "10 international-standard courts (6 clay, 4 synthetic) with floodlights and VIP viewing deck. Hosts AITA and ITF tournaments annually.",
+      image: tennis_league,
+      description: "Professional tennis facility with both clay and hard courts maintained to international standards, suitable for all levels of play.",
       features: [
-        "Certified AITA coaching",
-        "Ball machine services",
-        "Weekend league matches",
-        "Court-side chai and snacks"
-      ]
+        "6 clay courts and 6 hard courts",
+        "Ball machines available",
+        "Junior development programs",
+        "Annual club championships"
+      ],
+      link: "/sports/outdoor/tennis" // Added navigation link
     },
     {
-      name: "Olympic Aquatics Dome",
+      name: "Olympic Swimming Complex",
       icon: <Waves className="h-8 w-8 text-[#FFC857]" />,
       image: swimming,
-      description: "FINA-compliant 50m pool with temperature control, plus a kids’ training pool and hydrotherapy area for recovery.",
+      description: "50m Olympic-sized pool with temperature control and dedicated lanes, perfect for both training and recreational swimming.",
       features: [
-        "Swim coaching by ex-national athletes",
-        "Underwater video analysis",
-        "Separate ladies' swimming hours",
-        "Aqua Zumba & fitness sessions"
-      ]
+        "Heated pool for year-round use",
+        "Diving area and swim lessons",
+        "Aqua aerobics classes",
+        "Professional coaching staff"
+      ],
+      link: "/sports/outdoor/swimming" // Added navigation link
     },
     {
-      name: "Fit Bharat Training Hub",
+      name: "Elite Fitness Center",
       icon: <Dumbbell className="h-8 w-8 text-[#FFC857]" />,
       image: fitness,
-      description: "6,000 sq ft high-performance gym with Indian & international equipment, sports rehab zone, and recovery pods.",
+      description: "State-of-the-art gym with cutting-edge equipment across 5,000 sq ft, offering personalized training programs.",
       features: [
-        "Kinesiology taping services",
-        "Desi diet & fitness plans",
-        "Altitude training chamber",
-        "On-site physiotherapy"
-      ]
+        "Cardio and strength training zones",
+        "Certified personal trainers",
+        "Group fitness classes",
+        "Monthly transformation challenges"
+      ],
+      link: "/sports/indoor/gym" // Added navigation link
     },
     {
-      name: "National Basketball Arena",
+      name: "Professional Basketball Courts",
       icon: <Volleyball className="h-8 w-8 text-[#FFC857]" />,
       image: basketball,
-      description: "FIBA-approved indoor court with LED scoreboard, wooden flooring, and retractable seating for 300+ fans.",
+      description: "Full-sized outdoor basketball courts with floodlighting for evening play, built to professional standards.",
       features: [
-        "Coaching camps by ex-NBA pros",
-        "State-level league matches",
-        "Youth & school training programs",
-        "VIP lounge with refreshments"
-      ]
+        "2 premium outdoor courts",
+        "Night lighting for extended play",
+        "Youth and adult coaching",
+        "Weekend league matches"
+      ],
+      link: "/sports/outdoor/basketball" // Added navigation link
     },
     {
-      name: "Squash Excellence Court",
-      icon: <Dumbbell className="h-8 w-8 text-[#FFC857]" />, // Substitute with better icon if available
+      name: "Premium Squash Facility",
+      icon: <Square className="h-8 w-8 text-[#FFC857]" />,
       image: squash,
-      description: "Air-conditioned glass courts with certified wooden flooring and HD playback systems for performance tracking.",
+      description: "Glass-walled air-conditioned squash courts with professional-grade flooring and optimal lighting conditions.",
       features: [
-        "4 PSA-compliant courts",
-        "Private and group lessons",
-        "Weekend tournaments",
-        "Performance video reviews"
-      ]
-    },
-    {
-      name: "Yoga & Wellness Shala",
-      icon: <Infinity className="h-8 w-8 text-[#FFC857]" />,
-      image: yoga,
-      description: "Tranquil studio overlooking landscaped gardens, offering ancient Indian wellness practices and modern techniques.",
-      features: [
-        "Hatha & Ashtanga yoga",
-        "Pranayama and meditation",
-        "Ayurvedic wellness sessions",
-        "Aerial yoga and sound healing"
-      ]
+        "4 climate-controlled courts",
+        "Racket rental services",
+        "League and tournament play",
+        "Performance coaching available"
+      ],
+      link: "/sports/indoor/squash" // Added navigation link
     }
-
   ];
 
   return (
@@ -276,7 +269,7 @@ const SportsFacilities = () => {
               </motion.ul>
 
               <motion.a
-                href={`/facilities/${sport.name.toLowerCase().replace(/\s+/g, '-')}`}
+                href={sport.link} // Changed to use the link from sports data
                 className="flex items-center text-[#0A2463] font-medium group w-fit"
                 variants={itemVariants}
                 whileHover={{ x: 5 }}

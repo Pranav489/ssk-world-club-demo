@@ -454,7 +454,10 @@ const SportsPage = () => {
                             />
                         </motion.div>
                     ))}
+                    
                 </div>
+
+                
 
                 {/* Content */}
                 <motion.div
@@ -507,12 +510,7 @@ const SportsPage = () => {
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
-                                onClick={() => {
-                                    window.scrollTo({
-                                        top: window.innerHeight,
-                                        behavior: 'smooth'
-                                    });
-                                }}
+                                onClick={() => navigate('/membership')}
                             >
                                 Explore Our Plans
                                 <ChevronRight className="h-5 w-5" />
@@ -526,6 +524,7 @@ const SportsPage = () => {
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="border-2 border-white px-8 py-4 rounded-sm font-bold flex items-center gap-2"
+                                onClick={() => navigate('/gallery')}
                             >
                                 <Play className="h-5 w-5" />
                                 View Gallery
@@ -607,8 +606,8 @@ const SportsPage = () => {
                                 key={category}
                                 onClick={() => setActiveCategory(category)}
                                 className={`px-8 py-3 font-medium uppercase tracking-wider relative ${activeCategory === category
-                                        ? 'text-[#0A2463]'
-                                        : 'text-gray-500 hover:text-[#0A2463]'
+                                    ? 'text-[#0A2463]'
+                                    : 'text-gray-500 hover:text-[#0A2463]'
                                     }`}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -706,14 +705,14 @@ const SportsPage = () => {
                                                 opacity: 1,
                                                 transition: { delay: index * 0.1 + 0.5 }
                                             }}
-                                            whileHover={{ x: 5 }}
+                                        // whileHover={{ x: 5 }}
                                         >
                                             View details
                                             <motion.span
-                                                className="ml-2 group-hover:translate-x-1 transition-transform"
-                                                animate={{
-                                                    x: [0, 5, 0],
-                                                }}
+                                                className="ml-2  transition-transform"
+                                                // animate={{
+                                                //     x: [0, 5, 0],
+                                                // }}
                                                 transition={{
                                                     repeat: Infinity,
                                                     duration: 1.5,
@@ -845,31 +844,34 @@ const SportsPage = () => {
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
+                                onClick={() => navigate('/membership')}
                             >
                                 Explore Plans
                                 <ChevronRight className="h-5 w-5" />
                             </motion.button>
 
-                            <motion.button
-                                variants={{
-                                    hidden: { y: 20, opacity: 0 },
-                                    visible: {
-                                        y: 0,
-                                        opacity: 1,
-                                        transition: { type: "spring", stiffness: 300, delay: 0.1 }
-                                    }
-                                }}
-                                whileHover={{
-                                    backgroundColor: "rgba(255, 200, 87, 0.2)",
-                                    scale: 1.02,
-                                    borderColor: "#FFD700"
-                                }}
-                                whileTap={{ scale: 0.98 }}
-                                className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
-                            >
-                                <Phone className="h-5 w-5" />
-                                Call Us
-                            </motion.button>
+                            <a href='tel:+91 555 123 4567'>
+                                <motion.button
+                                    variants={{
+                                        hidden: { y: 20, opacity: 0 },
+                                        visible: {
+                                            y: 0,
+                                            opacity: 1,
+                                            transition: { type: "spring", stiffness: 300, delay: 0.1 }
+                                        }
+                                    }}
+                                    whileHover={{
+                                        backgroundColor: "rgba(255, 200, 87, 0.2)",
+                                        scale: 1.02,
+                                        borderColor: "#FFD700"
+                                    }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
+                                >
+                                    <Phone className="h-5 w-5" />
+                                    Call Us
+                                </motion.button>
+                            </a>
                         </motion.div>
                     </motion.div>
                 </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { Activity, Brain, ChevronRight, Clock, Crosshair, Disc, Dumbbell, Eclipse, Leaf, Square, Table, Target, Trophy, Volleyball, Waves, ChevronDown, Play, X } from "lucide-react";
-import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, net_cricket, shooting, skating, squash, swimming, table_tennis, tennis_league } from "../../assets";
+import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, net_cricket, shooting, skating, squash, swimming, table_tennis, tennis_league, tt_tournament } from "../../assets";
 
 const SportsDetailPage = () => {
   const { category, sportSlug } = useParams();
@@ -10,6 +10,8 @@ const SportsDetailPage = () => {
   const [galleryIndex, setGalleryIndex] = useState(0);
 
   const navigate = useNavigate();
+
+  
 
   const sportsData = {
         indoor: [
@@ -170,7 +172,7 @@ const SportsDetailPage = () => {
             {
                 name: 'Table Tennis',
                 icon: <Table className="h-8 w-8 text-[#FFC857]" />,
-                image: table_tennis,
+                image: tt_tournament,
                 description: 'Multiple indoor table tennis setups with pro-grade tables and accessories.',
                 extendedDescription: `Our table tennis facility is perfect for both casual rallies and high-level matches, featuring international-standard tables and lighting.`,
                 features: [
@@ -327,25 +329,49 @@ const SportsDetailPage = () => {
         ]
     };
 
+    
+
   // Find the sport by slug
   const sport = sportsData[category]?.find(s => 
     s.name.toLowerCase().replace(/\s+/g, '-') === sportSlug
   );
 
-  // Get additional images for this sport
   const getAdditionalImages = (sportName) => {
-    switch(sportName.toLowerCase()) {
-      case 'badminton':
-        return [badminton];
-      case 'basketball':
-        return [basketball];
-      // Add cases for all sports
-      default:
-        return [sport.image, sport.image, sport.image]; // fallback
-    }
-  };
+  switch(sportName.toLowerCase()) {
+    case 'badminton':
+      return [badminton, tt_tournament, fitness]; // Replace with actual badminton images
+    case 'basketball':
+      return [basketball, green_sport_campus, tennis_league];
+    case 'carrom':
+      return [carrom, chess, shooting];
+    case 'chess':
+      return [chess, carrom, table_tennis];
+    case 'crossfit':
+      return [crossfit, fitness, swimming];
+    case 'gym':
+      return [fitness, crossfit, squash];
+    case 'squash':
+      return [squash, tennis_league, badminton];
+    case 'shooting':
+      return [shooting, chess, carrom];
+    case 'table tennis':
+      return [table_tennis, tt_tournament, badminton];
+    case 'net cricket':
+      return [net_cricket, basketball, green_sport_campus];
+    case 'skating':
+      return [skating, swimming, tennis_league];
+    case 'swimming':
+      return [swimming, skating, green_sport_campus];
+    case 'tennis':
+      return [tennis_league, squash, badminton];
+    case 'green campus':
+      return [green_sport_campus, net_cricket, basketball];
+    default:
+      return [sport.image, fitness, tennis_league]; // fallback with different images
+  }
+};
 
-  const additionalImages = getAdditionalImages(sport.name);
+  const additionalImages = getAdditionalImages(sport.name).filter(Boolean);
 
 
   if (!sport) {
@@ -516,6 +542,7 @@ const SportsDetailPage = () => {
                   }}
                   whileTap={{ scale: 0.98 }}
                   className="bg-[#FFC857] text-[#0A2463] px-6 py-3 rounded-sm font-bold flex items-center gap-2"
+                  onClick={() => navigate('/contact')}
                 >
                   Book Facility
                   <ChevronRight className="h-5 w-5" />
@@ -529,6 +556,7 @@ const SportsDetailPage = () => {
                   }}
                   whileTap={{ scale: 0.98 }}
                   className="border-2 border-white text-white px-6 py-3 rounded-sm font-bold flex items-center gap-2"
+                  onClick={() => navigate('/gallery')}
                 >
                   View Gallery
                 </motion.button>
@@ -539,16 +567,16 @@ const SportsDetailPage = () => {
 
         {/* Scroll Indicator */}
         <motion.div
-          animate={{
-            y: [0, 10, 0],
-          }}
+          // animate={{
+          //   y: [0, 10, 0],
+          // }}
           transition={{
             duration: 2,
             repeat: Infinity,
           }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         >
-          <ChevronDown className="h-8 w-8 text-white animate-bounce" />
+          <ChevronDown className="h-8 w-8 text-white" />
         </motion.div>
       </section>
 
@@ -600,35 +628,37 @@ const SportsDetailPage = () => {
               </motion.div>
 
               {/* Additional Images Gallery */}
-              <motion.div 
-                className="grid grid-cols-3 gap-3 mt-4"
-                variants={fadeIn}
-              >
-                {additionalImages.slice(0, 3).map((img, index) => (
-                  <motion.div
-                    key={index}
-                    className="aspect-square rounded-md overflow-hidden relative cursor-pointer"
-                    variants={galleryItem}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover={{ scale: 1.05 }}
-                    onClick={() => openImage(index)}
-                  >
-                    <img
-                      src={img}
-                      alt={`${sport.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    {index === 2 && additionalImages.length > 3 && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">
-                          +{additionalImages.length - 3}
-                        </span>
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </motion.div>
+<motion.div 
+  className="grid grid-cols-3 gap-3 mt-4"
+  variants={fadeIn}
+>
+  {additionalImages.slice(0, 3).map((img, index) => (
+    img && ( // Add null check
+      <motion.div
+        key={index}
+        className="aspect-square rounded-md overflow-hidden relative cursor-pointer"
+        variants={galleryItem}
+        initial="hidden"
+        animate="visible"
+        whileHover={{ scale: 1.05 }}
+        onClick={() => openImage(index)}
+      >
+        <img
+          src={img}
+          alt={`${sport.name} ${index + 1}`}
+          className="w-full h-full object-cover"
+        />
+        {index === 2 && additionalImages.length > 3 && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <span className="text-white font-bold text-lg">
+              +{additionalImages.length - 3}
+            </span>
+          </div>
+        )}
+      </motion.div>
+    )
+  ))}
+</motion.div>
             </motion.div>
 
             {/* Content Column */}
@@ -658,7 +688,7 @@ const SportsDetailPage = () => {
               <motion.div
                 className="bg-[#F8F9FA] p-5 rounded-lg border border-[#E9ECEF]"
                 variants={slideUp}
-                whileHover={{ y: -5 }}
+                // whileHover={{ y: -5 }}
               >
                 <h3 className="text-lg font-semibold text-[#0A2463] mb-3 flex items-center gap-2">
                   <div className="w-2 h-2 bg-[#FFC857] rounded-full"></div>
@@ -765,23 +795,23 @@ const SportsDetailPage = () => {
                 className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
               />
 
-              {/* Navigation Arrows */}
-              {additionalImages.length > 1 && (
-                <>
-                  <button
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-[#FFC857] hover:text-[#0A2463] transition-all"
-                    onClick={() => navigateGallery('prev')}
-                  >
-                    <ChevronRight className="h-6 w-6 rotate-180" />
-                  </button>
-                  <button
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-[#FFC857] hover:text-[#0A2463] transition-all"
-                    onClick={() => navigateGallery('next')}
-                  >
-                    <ChevronRight className="h-6 w-6" />
-                  </button>
-                </>
-              )}
+              {/* Navigation Arrows - Only show if more than one image */}
+{additionalImages.length > 1 && (
+  <>
+    <button
+      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-[#FFC857] hover:text-[#0A2463] transition-all"
+      onClick={() => navigateGallery('prev')}
+    >
+      <ChevronRight className="h-6 w-6 rotate-180" />
+    </button>
+    <button
+      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-[#FFC857] hover:text-[#0A2463] transition-all"
+      onClick={() => navigateGallery('next')}
+    >
+      <ChevronRight className="h-6 w-6" />
+    </button>
+  </>
+)}
 
               {/* Image Counter */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">

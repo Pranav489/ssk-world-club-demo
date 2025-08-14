@@ -2,7 +2,7 @@ import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Calendar, Clock, MapPin, ChevronRight, ChevronLeft, Signature } from "lucide-react";
-import { badminton, diwali_sports, holi_fest, marathon, monsoon_soccer, retro_night, seniors_yoga, table_tennis, tt_tournament, yoga } from "../../assets";
+import { badminton, diwali_sports, fitness, hero_video_1, holi_fest, marathon, monsoon_soccer, net_cricket, retro_night, seniors_yoga, ssk_club, swimming, table_tennis, tennis_league, tt_tournament, yoga } from "../../assets";
 
 const SignatureEvents = () => {
   const controls = useAnimation();
@@ -14,115 +14,156 @@ const SignatureEvents = () => {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
 
-  // Sample event data
   const events = {
-    upcoming: [
-      {
-        id: 1,
-        title: "Diwali Sports Carnival",
-        date: "2025-10-25",
-        time: "4:00 PM - 9:00 PM",
-        location: "Club Grounds & Arena",
-        description: "Celebrate Diwali with a festive sports fair — fun games, family relays, fireworks, and food stalls.",
-        image: diwali_sports,
-        category: "festival"
-      },
-      {
-        id: 2,
-        title: "Independence Day Badminton League",
-        date: "2025-08-15",
-        time: "8:00 AM - 2:00 PM",
-        location: "Indoor Sports Complex",
-        description: "Open badminton tournament across junior and adult categories. National anthem and flag hoisting at 7:30 AM.",
-        image: badminton,
-        category: "tournament"
-      },
-      {
-        id: 3,
-        title: "Sunset Yoga & Wellness Workshop",
-        date: "2025-09-08",
-        time: "5:30 PM - 7:00 PM",
-        location: "Lawn Deck",
-        description: "A serene session of yoga, breathwork, and guided meditation followed by detox juices and healthy snacks.",
-        image: yoga,
-        category: "wellness"
-      },
-      {
-        id: 4,
-        title: "Monsoon Football Cup",
-        date: "2025-08-20",
-        time: "3:00 PM - 7:00 PM",
-        location: "Rain-Turf Grounds",
-        description: "Fast-paced 5-a-side football matches. Open for all skill levels. Rain gear encouraged!",
-        image: monsoon_soccer,
-        category: "tournament"
-      },
-      {
-        id: 5,
-        title: "Club Premier League – Tennis Doubles",
-        date: "2025-08-24",
-        time: "4:00 PM - 9:00 PM",
-        location: "Championship Tennis Courts",
-        description: "Join the excitement of our in-house tennis doubles tournament! Open to all members — with trophies, refreshments, and evening celebrations.",
-        image: tt_tournament,
-        category: "sports"
-      }
-
-    ],
-    past: [
-      {
-        id: 6,
-        title: "Holi Splash Fest",
-        date: "2025-03-24",
-        time: "10:00 AM - 1:00 PM",
-        location: "Poolside & Lawn",
-        description: "A vibrant Holi celebration with organic colors, DJ music, rain dance, and festive snacks.",
-        image: holi_fest,
-        category: "festival"
-      },
-      {
-        id: 7,
-        title: "Republic Day Marathon",
-        date: "2025-01-26",
-        time: "6:00 AM - 9:00 AM",
-        location: "Club Jogging Track",
-        description: "A 5K and 10K marathon followed by tricolor breakfast and medal distribution.",
-        image: marathon,
-        category: "sports"
-      },
-      {
-        id: 8,
-        title: "Table Tennis Showdown 2024",
-        date: "2024-12-18",
-        time: "11:00 AM - 4:00 PM",
-        location: "Indoor Arena",
-        description: "An action-packed knockout-style TT tournament across all age groups. Winners featured on our club board.",
-        image: tt_tournament,
-        category: "tournament"
-      },
-      {
-        id: 9,
-        title: "Bollywood Retro Night",
-        date: "2024-11-09",
-        time: "8:00 PM - 11:30 PM",
-        location: "Club Banquet Hall",
-        description: "An evening of classic Bollywood hits, dance floor action, retro costumes, and a buffet dinner.",
-        image: retro_night,
-        category: "social"
-      },
-      {
-        id: 10,
-        title: "Yoga for Seniors – Wellness Week",
-        date: "2024-10-01",
-        time: "7:00 AM - 8:00 AM",
-        location: "Terrace Garden",
-        description: "Specially curated yoga sessions for senior members during our Wellness Week celebrations.",
-        image: seniors_yoga,
-        category: "wellness"
-      }
-    ]
-  };
-
+  upcoming: [
+    {
+      id: 1,
+      title: "Monsoon Football League",
+      date: "2025-09-05",
+      time: "4:00 PM - 8:00 PM",
+      location: "SSK Football Ground",
+      description: "Inter-club football tournament with senior and junior divisions",
+      image: monsoon_soccer,
+      category: "tournament"
+    },
+    {
+      id: 2,
+      title: "Autumn Badminton Open",
+      date: "2025-10-10",
+      time: "9:00 AM - 6:00 PM",
+      location: "Indoor Badminton Arena",
+      description: "Open tournament for men's, women's, and mixed doubles categories",
+      image: badminton,
+      category: "tournament"
+    },
+    {
+      id: 3,
+      title: "Winter Swimming Workshop",
+      date: "2025-12-01",
+      time: "7:00 AM - 9:00 AM",
+      location: "Olympic Swimming Pool",
+      description: "Special training sessions with certified coaches to improve speed and endurance",
+      image: swimming,
+      category: "workshop"
+    },
+    {
+      id: 4,
+      title: "Holiday Fitness Bootcamp",
+      date: "2025-12-20",
+      time: "6:00 AM - 8:00 AM",
+      location: "SSK Fitness Center",
+      description: "High-intensity group workouts to stay in shape during the festive season",
+      image: fitness,
+      category: "camp"
+    },
+    {
+      id: 5,
+      title: "New Year Fun Marathon",
+      date: "2026-01-05",
+      time: "6:00 AM - 10:00 AM",
+      location: "City Marathon Track",
+      description: "A 5K and 10K fun run to kickstart the year with energy and community spirit",
+      image: marathon,
+      category: "social"
+    },
+    {
+      id: 6,
+      title: "Spring Cricket Carnival",
+      date: "2026-02-15",
+      time: "8:00 AM - 6:00 PM",
+      location: "SSK Cricket Ground",
+      description: "Friendly matches, food stalls, and music for a fun-filled cricket week",
+      image: net_cricket,
+      category: "tournament"
+    }
+  ],
+  past: [
+    {
+      id: 7,
+      title: "Spring Tennis Doubles Championship",
+      date: "2025-03-15",
+      time: "9:00 AM - 6:00 PM",
+      location: "SSK Tennis Courts",
+      description: "Competitive doubles matches with players from across the city",
+      image: tennis_league,
+      category: "tournament",
+      media: [
+        { type: "image", src: tennis_league },
+        { type: "video", src: hero_video_1 }
+      ]
+    },
+    {
+      id: 8,
+      title: "Yoga & Wellness Day",
+      date: "2025-02-02",
+      time: "6:30 AM - 10:00 AM",
+      location: "Clubhouse Lawn",
+      description: "Morning yoga session followed by nutrition workshops and meditation",
+      image: yoga,
+      category: "wellness",
+      media: [
+        { type: "image", src: seniors_yoga },
+        { type: "image", src: hero_video_1 }
+      ]
+    },
+    {
+      id: 9,
+      title: "National Table Tennis Qualifiers",
+      date: "2024-11-12",
+      time: "10:00 AM - 5:00 PM",
+      location: "Indoor Sports Complex",
+      description: "Qualifier matches for the National Table Tennis Championship",
+      image: table_tennis,
+      category: "tournament",
+      media: [
+        { type: "image", src: tt_tournament },
+        { type: "video", src: hero_video_1 }
+      ]
+    },
+    {
+      id: 10,
+      title: "Annual Sports Gala",
+      date: "2024-12-20",
+      time: "7:00 PM - 11:00 PM",
+      location: "SSK Banquet Hall",
+      description: "An evening of celebration with award distribution, performances, and dinner",
+      image: tt_tournament,
+      category: "social",
+      media: [
+        { type: "image", src: diwali_sports },
+        { type: "video", src: hero_video_1 }
+      ]
+    },
+    {
+      id: 11,
+      title: "Independence Day Sports Meet",
+      date: "2024-08-15",
+      time: "8:00 AM - 1:00 PM",
+      location: "SSK Sports Grounds",
+      description: "Track & field events, tug-of-war, and fun games for all members",
+      image: ssk_club,
+      category: "tournament",
+      media: [
+        { type: "image", src: badminton },
+        { type: "image", src: swimming }
+      ]
+    },
+    {
+      id: 12,
+      title: "Club Anniversary Celebration",
+      date: "2024-07-01",
+      time: "6:00 PM - 10:00 PM",
+      location: "Main Lawn",
+      description: "Live band, fireworks, and dinner to mark the club's anniversary",
+      image: diwali_sports,
+      category: "social",
+      media: [
+        { type: "image", src: holi_fest },
+        { type: "video", src: hero_video_1 }
+      ]
+    }
+  ]
+};
   useEffect(() => {
     if (inView) {
       controls.start("visible");
@@ -387,7 +428,7 @@ const SignatureEvents = () => {
                   transition={{ delay: 0.6 }}
                 >
                   <motion.a
-                  href="/memberships"
+                  href="/membership"
                     whileHover={{
                       scale: 1.05,
                       boxShadow: "0 5px 15px rgba(255, 200, 87, 0.4)"

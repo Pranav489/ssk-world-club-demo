@@ -149,21 +149,21 @@ const ImmersiveCTA = () => {
             >
               Join The Club
               <motion.span
-                animate={{
-                  x: [0, 5, 0],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.5,
-                  ease: "easeInOut"
-                }}
+                // animate={{
+                //   x: [0, 5, 0],
+                // }}
+                // transition={{
+                //   repeat: Infinity,
+                //   duration: 1.5,
+                //   ease: "easeInOut"
+                // }}
               >
                 <ChevronRight className="h-5 w-5" />
               </motion.span>
             </motion.a>
 
             <motion.a
-              href="/tour"
+              href="/contact"
               className="border-2 border-white text-white px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
               variants={scaleUp}
               whileHover={{ 

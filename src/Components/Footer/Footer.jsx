@@ -71,30 +71,44 @@ const Footer = () => {
     {
       title: "Sports",
       links: [
-        { name: "Tennis", url: "#" },
-        { name: "Squash", url: "#" },
-        { name: "Swimming", url: "#" },
-        { name: "Fitness Center", url: "#" }
+        { name: "Badminton", url: "/sports/indoor/badminton" },
+        { name: "Carrom", url: "/sports/indoor/badminton" },
+        { name: "Chess", url: "/sports/indoor/chess" },
+        { name: "Crossfit", url: "/sports/indoor/crossfit" },
+        { name: "Gym", url: "/sports/indoor/gym" },
+        { name: "Net Cricket", url: "/sports/outdoor/net-cricket"},
+        { name: "Skating", url: "/sports/outdoor/skating" },
+        { name: "Swimming", url: "/sports/outdoor/swimming" },
+        { name: "Tennis", url: "/sports/outdoor/tennis" },
       ]
     },
     {
       title: "Amenities",
       links: [
-        { name: "Restaurants", url: "#" },
-        { name: "Luxury Suites", url: "#" },
-        { name: "Spa & Wellness", url: "#" },
-        { name: "Private Theater", url: "#" }
+        { name: "Billiards & Snooker", url: "billiards-and-snooker" },
+        // { name: "Business Center", url: "business-center" },
+        { name: "Card Room", url: "card-room" },
+        // { name: "Conference Room", url: "conference-room" },
+        { name: "Foosball", url: "foosball" },
+        // { name: "Kids Play Area", url: "kids-play-area" },
+        { name: "Mini Theatre", url: "mini-theatre" },
+        // { name: "Restaurant Cafe", url: "restaurant-cafe" },
+        { name: "Suite Rooms", url: "suite-rooms" },
+        { name: "Spa", url: "spa" },
+        { name: "Sports Shop", url: "sports-shop" },
+        { name: "AC Tents", url: "ac-tents" },
+        { name: "Wifi Library", url: "wifi-library" }
       ]
     },
-    {
-      title: "Membership",
-      links: [
-        { name: "Individual Plans", url: "#" },
-        { name: "Family Packages", url: "#" },
-        { name: "Corporate", url: "#" },
-        { name: "Day Pass", url: "#" }
-      ]
-    }
+    // {
+    //   title: "Membership",
+    //   links: [
+    //     { name: "Individual Plans", url: "#" },
+    //     { name: "Family Packages", url: "#" },
+    //     { name: "Corporate", url: "#" },
+    //     { name: "Day Pass", url: "#" }
+    //   ]
+    // }
   ];
 
   return (
@@ -106,7 +120,7 @@ const Footer = () => {
         variants={footerVariants}
         className="container mx-auto px-6 lg:px-12" // Increased side padding
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8"> {/* Reduced gap between columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"> {/* Reduced gap between columns */}
           {/* Club Logo Column */}
 <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-1">
   <motion.a 
