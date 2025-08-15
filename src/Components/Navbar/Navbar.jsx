@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Menu,
   X,
@@ -28,22 +28,31 @@ const Navbar = () => {
   const [openSubDropdown, setOpenSubDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [showNav, setShowNav] = useState(true);
 
-  // Scroll effect with debounce
-  React.useEffect(() => {
-    let timeoutId;
+  // Scroll effect for desktop
+  useEffect(() => {
     const handleScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setScrolled(window.scrollY > 50);
-      }, 50);
+      setScrolled(window.scrollY > 50);
+      
+      // Mobile scroll behavior
+      if (window.innerWidth < 1024) {
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 50) {
+          // Scrolling down
+          setShowNav(false);
+        } else {
+          // Scrolling up
+          setShowNav(true);
+        }
+        setLastScrollY(currentScrollY);
+      }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      clearTimeout(timeoutId);
-    };
-  }, []);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -55,9 +64,12 @@ const Navbar = () => {
   };
 
   const handleDropdownToggle = (dropdown, hasSubItems) => (e) => {
+    if (!hasSubItems) return;
+    
     const isChevronClick = e.target.closest('.chevron-container') !== null;
+    const isMobile = window.innerWidth < 1024;
 
-    if (hasSubItems && isChevronClick) {
+    if (isMobile || isChevronClick) {
       e.preventDefault();
       e.stopPropagation();
       setOpenDropdown(openDropdown === dropdown ? null : dropdown);
@@ -66,10 +78,11 @@ const Navbar = () => {
   };
 
   const handleSubDropdownToggle = (subDropdown, hasSubItems) => (e) => {
-    if (hasSubItems) {
-      e.preventDefault();
-      setOpenSubDropdown(openSubDropdown === subDropdown ? null : subDropdown);
-    }
+    if (!hasSubItems) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenSubDropdown(openSubDropdown === subDropdown ? null : subDropdown);
   };
 
   const closeAllMenus = () => {
@@ -172,7 +185,7 @@ const Navbar = () => {
     <header className="fixed w-full z-50 font-sans">
       {/* Main Navbar */}
       <motion.nav
-        className={`${scrolled ? 'bg-white shadow-sm' : 'bg-transparent'}`}
+        className={`${scrolled ? 'bg-white shadow-sm' : 'bg-transparent'} ${!showNav && 'lg:translate-y-0 -translate-y-full'} transition-transform duration-300`}
         initial={{ padding: "12px 0" }}
         animate={{
           padding: scrolled ? "8px 0" : "12px 0",
@@ -181,11 +194,13 @@ const Navbar = () => {
         transition={{ type: "tween", ease: "easeInOut" }}
       >
         <div className="container mx-auto px-4 flex justify-between items-center">
-          {/* Logo */}
+          {/* Logo - hidden on mobile when scrolling */}
           <motion.a
             href="/"
             className="flex items-center"
             whileHover={{ scale: 1.03 }}
+            animate={{ opacity: showNav ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
           >
             <motion.img
               src={scrolled ? LogoGold : LogoWhite}
@@ -323,12 +338,16 @@ const Navbar = () => {
             </motion.a>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - always visible */}
           <motion.button
             className={`lg:hidden ${scrolled ? 'text-[#0A2463]' : 'text-white'} focus:outline-none`}
             onClick={toggleMenu}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            animate={{ 
+              opacity: 1,
+              translateY: showNav ? 0 : 0 // Keep button visible
+            }}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </motion.button>
@@ -364,7 +383,10 @@ const Navbar = () => {
                           <a
                             href={item.path}
                             className="flex-1 flex items-center py-3 text-sm text-[#0A2463] font-medium uppercase tracking-wider"
-                            onClick={closeAllMenus}
+                            onClick={(e) => {
+                              if (!item.subItems) closeAllMenus();
+                              else e.preventDefault();
+                            }}
                           >
                             {item.icon}
                             <span className="ml-3">{item.label}</span>
@@ -373,7 +395,8 @@ const Navbar = () => {
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
-                                handleDropdownToggle(item.label, true)(e);
+                                setOpenDropdown(openDropdown === item.label ? null : item.label);
+                                setOpenSubDropdown(null);
                               }}
                               className="p-2"
                             >
@@ -391,19 +414,24 @@ const Navbar = () => {
                               transition={{ type: "spring", stiffness: 300, damping: 25 }}
                             >
                               {item.subItems.map((subItem) => (
-                                <div key={subItem.name}>
+                                <div key={subItem.name} className="border-t border-[#F1F1F1]">
                                   {subItem.subItems ? (
                                     <>
                                       <div className="flex items-center">
                                         <a
                                           href={subItem.href}
                                           className="flex-1 block py-2 text-sm text-[#0A2463]"
-                                          onClick={closeAllMenus}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                          }}
                                         >
                                           {subItem.name}
                                         </a>
                                         <button
-                                          onClick={handleSubDropdownToggle(subItem.name, true)}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            setOpenSubDropdown(openSubDropdown === subItem.name ? null : subItem.name);
+                                          }}
                                           className="p-2"
                                         >
                                           <ChevronRight className={`h-4 w-4 transition-transform ${openSubDropdown === subItem.name ? "rotate-90" : ""}`} />
@@ -422,7 +450,7 @@ const Navbar = () => {
                                               <a
                                                 key={sport.name}
                                                 href={sport.href}
-                                                className="block py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors"
+                                                className="block py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors border-t border-[#F1F1F1]"
                                                 onClick={closeAllMenus}
                                               >
                                                 {sport.name}

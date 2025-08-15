@@ -202,7 +202,7 @@ const AboutUs = () => {
             </motion.div>
 
             <motion.a
-              href="/our-story"
+              href="/about-us"
               className="inline-flex items-center text-[#0A2463] font-medium group"
               whileHover={{ x: 5 }}
               initial={{ opacity: 0 }}

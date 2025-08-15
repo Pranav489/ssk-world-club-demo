@@ -76,7 +76,7 @@ const Footer = () => {
         { name: "Chess", url: "/sports/indoor/chess" },
         { name: "Crossfit", url: "/sports/indoor/crossfit" },
         { name: "Gym", url: "/sports/indoor/gym" },
-        { name: "Net Cricket", url: "/sports/outdoor/net-cricket"},
+        { name: "Net Cricket", url: "/sports/outdoor/net-cricket" },
         { name: "Skating", url: "/sports/outdoor/skating" },
         { name: "Swimming", url: "/sports/outdoor/swimming" },
         { name: "Tennis", url: "/sports/outdoor/tennis" },
@@ -116,54 +116,54 @@ const Footer = () => {
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: false, margin: "-100px" }} 
+        viewport={{ once: false, margin: "-100px" }}
         variants={footerVariants}
         className="container mx-auto px-6 lg:px-12" // Increased side padding
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"> {/* Reduced gap between columns */}
           {/* Club Logo Column */}
-<motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-1">
-  <motion.a 
-    href="/" 
-    className="block mb-4"
-    whileHover={{ scale: 1.03 }}
-  >
-    <motion.img
-      src={LogoWhite}
-      alt="SSK World Club Logo"
-      className="h-35 w-auto " // Adjust height as needed
-      whileHover={{ scale: 1.05 }}
-      transition={{ type: "spring", stiffness: 400 }}
-    />
-  </motion.a>
-  
-  <motion.p 
-    className="text-gray-300 mb-6 leading-relaxed pr-4"
-    whileHover={{ scale: 1.01 }}
-  >
-    Experience unparalleled athletic luxury at our award-winning sports club.
-    Where peak performance meets premium comfort.
-  </motion.p>
-  
-  <motion.div 
-    className="flex space-x-4"
-    variants={footerVariants}
-  >
-    {socialLinks.map((social, index) => (
-      <motion.a
-        key={index}
-        href={social.url}
-        className="text-gray-300 hover:text-[#FFC857] transition-colors"
-        variants={itemVariants}
-        whileHover={{ y: -3, scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        {social.icon}
-        <span className="sr-only">{social.name}</span>
-      </motion.a>
-    ))}
-  </motion.div>
-</motion.div>
+          <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-1">
+            <motion.a
+              href="/"
+              className="block mb-4"
+              whileHover={{ scale: 1.03 }}
+            >
+              <motion.img
+                src={LogoWhite}
+                alt="SSK World Club Logo"
+                className="h-35 w-auto " // Adjust height as needed
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              />
+            </motion.a>
+
+            <motion.p
+              className="text-gray-300 mb-6 leading-relaxed pr-4"
+              whileHover={{ scale: 1.01 }}
+            >
+              Experience unparalleled athletic luxury at our award-winning sports club.
+              Where peak performance meets premium comfort.
+            </motion.p>
+
+            <motion.div
+              className="flex space-x-4"
+              variants={footerVariants}
+            >
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.url}
+                  className="text-gray-300 hover:text-[#FFC857] transition-colors"
+                  variants={itemVariants}
+                  whileHover={{ y: -3, scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {social.icon}
+                  <span className="sr-only">{social.name}</span>
+                </motion.a>
+              ))}
+            </motion.div>
+          </motion.div>
 
           {/* Footer Links */}
           {footerLinks.map((section, index) => (
@@ -171,16 +171,16 @@ const Footer = () => {
               key={index}
               variants={itemVariants}
               className="lg:col-span-1"
-              viewport={{ once: false }} 
+              viewport={{ once: false }}
             >
               <motion.h3
-                className="text-lg font-semibold mb-4 text-[#FFC857] uppercase tracking-wider" 
+                className="text-lg font-semibold mb-4 text-[#FFC857] uppercase tracking-wider"
                 whileHover={{ x: 3 }}
               >
                 {section.title}
               </motion.h3>
               <motion.ul
-                className="space-y-2" 
+                className="space-y-2"
                 variants={footerVariants}
               >
                 {section.links.map((link, linkIndex) => (
@@ -206,16 +206,16 @@ const Footer = () => {
           <motion.div
             variants={itemVariants}
             className="lg:col-span-1"
-            viewport={{ once: false }} 
+            viewport={{ once: false }}
           >
             <motion.h3
-              className="text-lg font-semibold mb-4 text-[#FFC857] uppercase tracking-wider" 
+              className="text-lg font-semibold mb-4 text-[#FFC857] uppercase tracking-wider"
               whileHover={{ x: 3 }}
             >
               Contact Us
             </motion.h3>
             <motion.div
-              className="space-y-3" 
+              className="space-y-3"
               variants={footerVariants}
             >
               {contactInfo.map((info, index) => (
@@ -243,11 +243,11 @@ const Footer = () => {
 
             {/* Newsletter Subscription */}
             <motion.div
-              className="mt-6" 
+              className="mt-6"
               variants={itemVariants}
             >
               <motion.h4
-                className="text-sm font-semibold mb-2 text-[#FFC857] uppercase tracking-wider" 
+                className="text-sm font-semibold mb-2 text-[#FFC857] uppercase tracking-wider"
                 whileHover={{ x: 3 }}
               >
                 Newsletter
@@ -292,7 +292,7 @@ const Footer = () => {
           className="border-t border-[#1E3A8A] my-8" // Slightly increased margin
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
-          viewport={{ once: false }} 
+          viewport={{ once: false }}
           transition={{ duration: 0.5 }}
         />
 
@@ -303,7 +303,7 @@ const Footer = () => {
           viewport={{ once: false }}
         >
           <motion.p
-            className="text-gray-400 text-sm mb-3 md:mb-0" 
+            className="text-gray-400 text-sm mb-3 md:mb-0 text-center"
             variants={itemVariants}
           >
             &copy; {new Date().getFullYear()} The SSK Sports Club. All rights reserved by Rich Systems Solutions.
@@ -316,7 +316,7 @@ const Footer = () => {
               <motion.a
                 key={index}
                 href="#"
-                className="text-gray-400 hover:text-[#FFC857] text-sm"
+                className="text-gray-400 hover:text-[#FFC857] text-sm text-center"
                 variants={itemVariants}
                 whileHover={{ y: -2 }}
               >
