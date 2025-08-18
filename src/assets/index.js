@@ -1,5 +1,6 @@
 import LogoGold from "../assets/Logo/LogoGold.png"
 import LogoWhite from "../assets/Logo/LogoWhite.png"
+import AboutUs from "../assets/images/SSKAboutUs.jpg"
 import basketball from "../assets/images/basketball.jpg"
 import fitness from "../assets/images/fitness.jpg"
 import squash from "../assets/images/squash.jpg"
@@ -76,4 +77,4 @@ import affiliated_logo10 from "../assets/images/affiliatedLogo11.png"
 import affiliated_Logo11 from "../assets/images/affiliatedLogo12.png"
 
 
-export { LogoGold, LogoWhite, basketball, fitness, squash, swimming, table_tennis, hero_video_1, hero_home, testimonial1, testimonial2, yoga, diwali_sports, badminton, monsoon_soccer, retro_night, tt_tournament, marathon, holi_fest, tennis_league, seniors_yoga, member1, member2, ssk_club, sport_turf, green_sport_campus, net_cricket, skating, volleyball, carrom, chess, crossfit, shooting, founder, leader1, leader2, leader3, spa, spa1, billiards, billiards1, business_center, business_center1, affiliated_logo, affiliated_logo1, affiliated_logo2, affiliated_logo3, affiliated_logo4, affiliated_logo5, affiliated_logo6, affiliated_logo7, affiliated_logo8, affiliated_logo9, affiliated_logo10, affiliated_Logo11, restaurant, dining, midnight_lounge, card_room, card_room1, conference_room, conference_room1, foosball, foosball1, play_area, play_area1, mini_theatre, mini_theatre1, room_suites, room_suites1, sports_shop, sports_shop1, ac_tents, ac_tents1, wifi_library, wifi_library1 };
+export { LogoGold, LogoWhite, basketball, fitness, squash, swimming, table_tennis, hero_video_1, hero_home, testimonial1, testimonial2, yoga, diwali_sports, badminton, monsoon_soccer, retro_night, tt_tournament, marathon, holi_fest, tennis_league, seniors_yoga, member1, member2, ssk_club, sport_turf, green_sport_campus, net_cricket, skating, volleyball, carrom, chess, crossfit, shooting, founder, leader1, leader2, leader3, spa, spa1, billiards, billiards1, business_center, business_center1, affiliated_logo, affiliated_logo1, affiliated_logo2, affiliated_logo3, affiliated_logo4, affiliated_logo5, affiliated_logo6, affiliated_logo7, affiliated_logo8, affiliated_logo9, affiliated_logo10, affiliated_Logo11, restaurant, dining, midnight_lounge, card_room, card_room1, conference_room, conference_room1, foosball, foosball1, play_area, play_area1, mini_theatre, mini_theatre1, room_suites, room_suites1, sports_shop, sports_shop1, ac_tents, ac_tents1, wifi_library, wifi_library1, AboutUs };

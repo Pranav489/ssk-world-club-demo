@@ -1,16 +1,27 @@
 import React from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { Play, ChevronRight, Target, Globe, Sparkles, MapPin, Shield, Clock, Award, HeartPulse, Utensils, Trophy, Activity, Medal, Waves, Briefcase, Users } from "lucide-react";
-import { founder, hero_video_1, leader2, leader3, ssk_club } from "../../assets";
+import { Play, ChevronRight, Target, Globe, Sparkles, MapPin, Shield, Clock, Award, HeartPulse, Utensils, Trophy, Activity, Medal, Waves, Briefcase, Users, X } from "lucide-react";
+import { AboutUs, founder, hero_video_1, leader2, leader3, ssk_club } from "../../assets";
 
 const AboutUsPage = () => {
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
   const heroControls = useAnimation();
   const storyControls = useAnimation();
   const clubControls = useAnimation();
   const navigate = useNavigate();
+
+  const openVideoModal = () => {
+    setIsVideoOpen(true);
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+  };
+
+  const closeVideoModal = () => {
+    setIsVideoOpen(false);
+    document.body.style.overflow = 'auto'; // Re-enable scrolling
+  };
 
   const [heroRef, heroInView] = useInView({
     triggerOnce: true,
@@ -98,7 +109,7 @@ const AboutUsPage = () => {
         ref={heroRef}
         className="relative h-screen w-full overflow-hidden"
       >
-        {/* Background Video */}
+        {/* Background Image */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={heroControls}
@@ -110,15 +121,11 @@ const AboutUsPage = () => {
           }}
           className="absolute inset-0 z-0"
         >
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
+          <img
+            src={ssk_club} // Replace with your hero image
+            alt="SSK World Club"
             className="w-full h-full object-cover"
-          >
-            <source src={hero_video_1} type="video/mp4" />
-          </video>
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" />
         </motion.div>
 
@@ -168,8 +175,9 @@ const AboutUsPage = () => {
                 }}
                 whileTap={{ scale: 0.98 }}
                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
+                onClick={openVideoModal} // Added click handler
               >
-                Watch Our Story
+                Take A Tour
                 <Play className="h-5 w-5" />
               </motion.button>
 
@@ -231,6 +239,50 @@ const AboutUsPage = () => {
           className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full"
         />
       </section>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {isVideoOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={closeVideoModal}
+          >
+            <motion.div
+  initial={{ scale: 0.9, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  exit={{ scale: 0.9, opacity: 0 }}
+  transition={{ type: "spring", damping: 20 }}
+  className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+  onClick={(e) => e.stopPropagation()} // prevent click bubbling
+>
+  {/* Close button */}
+  <button
+    onClick={closeVideoModal}
+    className="absolute top-4 right-4 text-white hover:text-[#FFC857] transition-colors"
+    aria-label="Close video"
+  >
+    <X className="h-10 w-10" />
+  </button>
+
+  {/* Video wrapper */}
+  <div className="w-full h-full flex items-center justify-center">
+    <iframe
+      className="w-full h-full"
+      src="https://www.youtube.com/embed/ZUNZ9XA9a5c?autoplay=1&controls=0"
+      title="YouTube video player"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+  </div>
+</motion.div>
+
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Our Story Section */}
       <section
