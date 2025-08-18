@@ -230,10 +230,10 @@ const AmenitiesPage = () => {
                 }}
                 whileTap={{ scale: 0.98 }}
                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
-                onClick={scrollToAmenities} // Use the new scroll function
+                onClick={() => navigate('/membership')} 
               >
-                Explore Amenities
-                {/* <ChevronRight className="h-5 w-5" /> */}
+                Explore Plans
+                <ChevronRight className="h-5 w-5" />
               </motion.button>
 
               <motion.button
