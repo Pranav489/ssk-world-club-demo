@@ -426,38 +426,29 @@ const SportsPage = () => {
         <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
             <section ref={ref} className="relative h-screen w-full overflow-hidden bg-black">
-                {/* Slanted Image Strips */}
+                {/* Sliding Background Images */}
                 <div className="absolute inset-0 flex">
                     {sportsFacilitiesHero.map((facility, index) => (
                         <motion.div
                             key={index}
-                            className={`h-full relative overflow-hidden transition-all duration-500 ${index === activeSlide ? 'w-1/2' : 'w-1/4'}`}
-                            initial={{ opacity: 0.5 }}
+                            className={`h-full relative overflow-hidden transition-all duration-1000 ${index === activeSlide ? 'w-full' : 'w-0'
+                                }`}
+                            initial={{ opacity: 0 }}
                             animate={{
-                                opacity: index === activeSlide ? 1 : 0.5,
-                                clipPath: index === activeSlide
-                                    ? 'polygon(0 0, 100% 0, 90% 100%, 0% 100%)'
-                                    : 'polygon(0 0, 100% 0, 80% 100%, 0% 100%)'
-                            }}
-                            style={{
-                                transform: `skewX(-15deg)`,
-                                marginLeft: index === 0 ? '-5%' : '-10%',
+                                opacity: index === activeSlide ? 1 : 0,
                                 zIndex: index === activeSlide ? 10 : 1
                             }}
+                            transition={{ duration: 1.5 }}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
                             <img
                                 src={facility.image}
                                 alt=""
-                                className="w-full h-full object-cover transform skewX(15deg)"
-                                style={{ transform: 'skewX(15deg) scale(1.2)' }}
+                                className="w-full h-full object-cover"
                             />
                         </motion.div>
                     ))}
-                    
                 </div>
-
-                
 
                 {/* Content */}
                 <motion.div
@@ -544,7 +535,8 @@ const SportsPage = () => {
                         <button
                             key={index}
                             onClick={() => setActiveSlide(index)}
-                            className={`h-3 w-3 rounded-full transition-all ${index === activeSlide ? 'bg-[#FFC857] w-6' : 'bg-white/50'}`}
+                            className={`h-3 w-3 rounded-full transition-all ${index === activeSlide ? 'bg-[#FFC857] w-6' : 'bg-white/50'
+                                }`}
                             aria-label={`View ${sportsFacilitiesHero[index].title}`}
                         />
                     ))}
@@ -564,7 +556,6 @@ const SportsPage = () => {
                     className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full z-10"
                 />
             </section>
-
             {/* Sports Grid Section */}
             <motion.section
                 className="relative py-24 bg-gray-50 overflow-hidden"

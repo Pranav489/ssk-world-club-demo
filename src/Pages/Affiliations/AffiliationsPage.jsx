@@ -4,7 +4,6 @@ import { useInView } from "react-intersection-observer";
 import { Trophy, Globe, Shield, ChevronRight, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { affiliated_logo, affiliated_logo1, affiliated_logo10, affiliated_Logo11, affiliated_logo2, affiliated_logo3, affiliated_logo4, affiliated_logo5, affiliated_logo6, affiliated_logo7, affiliated_logo8, affiliated_logo9, hero_home } from "../../assets";
-// import { affiliationsHero } from "../../assets";
 
 const AffiliationsPage = () => {
     const [showForm, setShowForm] = useState(false);
@@ -15,21 +14,12 @@ const AffiliationsPage = () => {
         triggerOnce: true,
         threshold: 0.4
     });
-    const partnershipsRef = useRef(null); // Create ref for partnerships section
 
     useEffect(() => {
         if (inView) {
             controls.start("visible");
         }
     }, [controls, inView]);
-
-    // Function to scroll to partnerships section
-    const scrollToPartnerships = () => {
-        partnershipsRef.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    };
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -144,10 +134,10 @@ const AffiliationsPage = () => {
 
     return (
         <div className="relative">
-            {/* Hero Section */}
+            {/* Hero Section - Height changed to h-96 */}
             <section
                 ref={ref}
-                className="relative h-screen w-full overflow-hidden bg-black"
+                className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
             >
                 {/* Background Image */}
                 <motion.div
@@ -162,10 +152,19 @@ const AffiliationsPage = () => {
                     className="absolute inset-0 z-0"
                 >
                     <img
-                        src={hero_home} // Replace with actual image path
+                        src={hero_home}
                         alt="SSK World Club Affiliations"
                         className="w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                    className="absolute inset-0"
+                >
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
                 </motion.div>
 
@@ -176,77 +175,33 @@ const AffiliationsPage = () => {
                     variants={containerVariants}
                     className="relative z-10 h-full flex items-center justify-center text-white px-6"
                 >
-                    <div className="max-w-4xl mx-auto text-center">
+                    <div className="max-w-4xl mx-auto text-center mt-14 md:mt-0">
                         {/* Badge */}
                         <motion.div
                             variants={itemVariants}
-                            className="inline-block border-2 border-[#FFC857] text-[#FFC857] px-6 py-1 rounded-full mb-8 font-bold uppercase tracking-wider text-sm"
+                            className="inline-block border-2 border-[#FFC857] text-[#FFC857] px-6 py-1 rounded-full mb-4 font-bold uppercase tracking-wider text-sm"
                         >
                             GLOBAL NETWORK
                         </motion.div>
 
                         {/* Main Heading */}
                         <motion.h1
-                            className="text-4xl md:text-6xl font-bold mb-6"
+                            className="text-3xl md:text-5xl font-bold mb-4"
                             variants={itemVariants}
                         >
-                            <span className="block">PRESTIGIOUS</span>
-                            <span className="block text-[#FFC857]">AFFILIATIONS</span>
+                            PRESTIGIOUS <span className="text-[#FFC857]">AFFILIATIONS</span>
+
                         </motion.h1>
 
                         {/* Subheading */}
                         <motion.p
-                            className="text-xl md:text-2xl max-w-2xl mx-auto mb-10"
+                            className="text-lg md:text-xl max-w-2xl mx-auto"
                             variants={itemVariants}
                         >
                             Partnered with elite sports associations and luxury brands worldwide
                         </motion.p>
-
-                        {/* Modified CTA Button */}
-                        <motion.div
-                            variants={itemVariants}
-                            className="flex justify-center"
-                        >
-                            <motion.button
-                                whileHover={{
-                                    scale: 1.05,
-                                    boxShadow: "0 8px 25px rgba(255, 200, 87, 0.3)"
-                                }}
-                                whileTap={{ scale: 0.98 }}
-                                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
-                                onClick={scrollToPartnerships} // Add click handler
-                            >
-                                Explore Partnerships
-                            </motion.button>
-                        </motion.div>
                     </div>
                 </motion.div>
-
-                {/* Scrolling Indicator
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ 
-            y: 0, 
-            opacity: 1,
-            transition: { duration: 0.8, ease: "easeOut" }
-          }}
-        >
-          <div className="w-6 h-10 border-2 border-[#FFC857] rounded-full flex justify-center">
-            <motion.div
-              className="w-1 h-2 bg-[#FFC857] rounded-full mt-2"
-              animate={{ 
-                y: [0, 4, 0],
-                transition: {
-                  delay: 0.8,
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }
-              }}
-            />
-          </div>
-        </motion.div> */}
 
                 {/* Decorative Elements */}
                 <motion.div
@@ -275,11 +230,9 @@ const AffiliationsPage = () => {
                 />
             </section>
 
-            {/* Affiliations Content */}
-            <section
-                ref={partnershipsRef}
-                className="relative py-24 bg-white overflow-hidden"
-            >                {/* Decorative elements */}
+            {/* Affiliations Content - Removed the ref since we don't need scroll anymore */}
+            <section className="relative py-24 bg-white overflow-hidden">
+                {/* Decorative elements */}
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 0.1 }}
@@ -312,7 +265,6 @@ const AffiliationsPage = () => {
                             </motion.h2>
                             <motion.div
                                 className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
-                                // initial={{ scaleX: 0 }}
                                 whileInView={{
                                     scaleX: 1,
                                     transition: { delay: 0.3, type: "spring", stiffness: 200 }
@@ -357,12 +309,12 @@ const AffiliationsPage = () => {
                                             whileHover={{ y: -8 }}
                                         >
                                             {/* Logo Display - Larger and Centered */}
-                                            <div className="h-40 mb-6 flex items-center justify-center p-4  rounded-lg">
+                                            <div className="h-40 mb-6 flex items-center justify-center p-4 rounded-lg">
                                                 {partner.logo ? (
                                                     <img
                                                         src={partner.logo}
                                                         alt={`${partner.name} logo`}
-                                                        className="h-50 w-auto max-w-full object-contain transition-transform "
+                                                        className="h-50 w-auto max-w-full object-contain transition-transform"
                                                     />
                                                 ) : (
                                                     <div className="flex flex-col items-center">
@@ -460,6 +412,7 @@ const AffiliationsPage = () => {
                     </motion.div>
                 </div>
             </section>
+
             {/* Partnership Form Modal */}
             <AnimatePresence>
                 {showForm && (

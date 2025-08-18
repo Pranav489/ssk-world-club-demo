@@ -12,8 +12,6 @@ const ContactPage = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0.4 });
-
-  // Create a ref for the contact grid section
   const contactGridRef = useRef(null);
 
   useEffect(() => {
@@ -45,6 +43,7 @@ const ContactPage = () => {
       }
     }
   };
+
 
   const fadeInVariants = {
     hidden: { opacity: 0 },
@@ -90,17 +89,17 @@ const ContactPage = () => {
 
   return (
     <div className="relative">
-      {/* Hero Section */}
+      {/* Hero Section - now h-96 */}
       <section
         ref={ref}
-        className="relative h-screen w-full overflow-hidden bg-black"
+        className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
       >
         {/* Background Image */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={controls}
           variants={{
-            visible: {
+            visible: { 
               opacity: 1,
               transition: { duration: 1.5 }
             }
@@ -108,10 +107,19 @@ const ContactPage = () => {
           className="absolute inset-0 z-0"
         >
           <img
-            src={basketball} // Replace with actual image path
+            src={basketball}
             alt="Contact SSK World Club"
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0"
+        >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
         </motion.div>
 
@@ -122,82 +130,20 @@ const ContactPage = () => {
           variants={containerVariants}
           className="relative z-10 h-full flex items-center justify-center text-white px-6"
         >
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Badge */}
-            <motion.div
-              variants={itemVariants}
-              className="inline-block border-2 border-[#FFC857] text-[#FFC857] px-6 py-1 rounded-full mb-8 font-bold uppercase tracking-wider text-sm"
-            >
-              GET IN TOUCH
-            </motion.div>
-
-            {/* Main Heading */}
+          <div className="max-w-4xl mx-auto text-center mt-10 md:mt-0">
             <motion.h1
-              className="text-4xl md:text-6xl font-bold mb-6"
+              className="text-4xl md:text-5xl font-bold mb-4"
               variants={itemVariants}
             >
-              <span className="block">CONTACT</span>
-              <span className="block text-[#FFC857]">SSK WORLD CLUB</span>
+              CONTACT <span className="text-[#FFC857]">SSK WORLD CLUB</span>
             </motion.h1>
 
-            {/* Subheading */}
             <motion.p
-              className="text-xl md:text-2xl max-w-2xl mx-auto mb-10"
+              className="text-lg text-white max-w-2xl mx-auto"
               variants={itemVariants}
             >
               Our team is ready to assist you with membership, events, and all club inquiries
             </motion.p>
-
-            {/* CTA Button - Modified to scroll to contact grid */}
-            <motion.div
-              variants={itemVariants}
-              className="flex justify-center"
-            >
-              <motion.button
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.3)"
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
-                onClick={() => {
-                  contactGridRef.current?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                  });
-                }}
-              >
-                Contact Information
-                <ChevronRight className="h-5 w-5" />
-              </motion.button>
-            </motion.div>
-
-          </div>
-        </motion.div>
-
-        {/* Scrolling Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{
-            y: 0,
-            opacity: 1,
-            transition: { duration: 0.8, ease: "easeOut" }
-          }}
-        >
-          <div className="w-6 h-10 border-2 border-[#FFC857] rounded-full flex justify-center">
-            <motion.div
-              className="w-1 h-2 bg-[#FFC857] rounded-full mt-2"
-              animate={{
-                y: [0, 4, 0],
-                transition: {
-                  delay: 0.8,
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }
-              }}
-            />
           </div>
         </motion.div>
 

@@ -85,6 +85,24 @@ const Navbar = () => {
     setOpenSubDropdown(openSubDropdown === subDropdown ? null : subDropdown);
   };
 
+  const handleMobileNavItemClick = (item, e) => {
+    const isChevronClick = e.target.closest('.chevron-container') !== null;
+    
+    if (item.subItems && !isChevronClick) {
+      // Navigate to parent page
+      window.location.href = item.path;
+      closeAllMenus();
+    } else if (item.subItems && isChevronClick) {
+      // Toggle dropdown
+      e.preventDefault();
+      setOpenDropdown(openDropdown === item.label ? null : item.label);
+      setOpenSubDropdown(null);
+    } else {
+      // Regular navigation
+      closeAllMenus();
+    }
+  };
+
   const closeAllMenus = () => {
     setIsMenuOpen(false);
     setOpenDropdown(null);
@@ -364,6 +382,15 @@ const Navbar = () => {
             transition={{ type: "tween", ease: "easeInOut" }}
             className="fixed inset-0 bg-white z-40 lg:hidden overflow-y-auto pt-20"
           >
+            <div className="container mx-auto px-4 py-4 flex justify-end">
+              <button
+                onClick={closeAllMenus}
+                className="text-[#0A2463] p-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
             <div className="container mx-auto px-4">
               <motion.div
                 className="grid gap-1"
@@ -383,10 +410,7 @@ const Navbar = () => {
                           <a
                             href={item.path}
                             className="flex-1 flex items-center py-3 text-sm text-[#0A2463] font-medium uppercase tracking-wider"
-                            onClick={(e) => {
-                              if (!item.subItems) closeAllMenus();
-                              else e.preventDefault();
-                            }}
+                            onClick={(e) => handleMobileNavItemClick(item, e)}
                           >
                             {item.icon}
                             <span className="ml-3">{item.label}</span>
@@ -398,7 +422,7 @@ const Navbar = () => {
                                 setOpenDropdown(openDropdown === item.label ? null : item.label);
                                 setOpenSubDropdown(null);
                               }}
-                              className="p-2"
+                              className="p-2 chevron-container"
                             >
                               <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.label ? "rotate-180" : ""}`} />
                             </button>

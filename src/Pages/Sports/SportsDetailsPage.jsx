@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
-import { Activity, Brain, ChevronRight, Clock, Crosshair, Disc, Dumbbell, Eclipse, Leaf, Square, Table, Target, Trophy, Volleyball, Waves, ChevronDown, Play, X } from "lucide-react";
+import { Activity, Brain, ChevronRight, Clock, Crosshair, Disc, Dumbbell, Eclipse, Leaf, Square, Table, Target, Trophy, Volleyball, Waves, ChevronDown, X } from "lucide-react";
 import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, net_cricket, shooting, skating, squash, swimming, table_tennis, tennis_league, tt_tournament } from "../../assets";
 
 const SportsDetailPage = () => {

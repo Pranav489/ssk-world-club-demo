@@ -200,7 +200,7 @@ const GalleryPage = () => {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative h-96 w-full overflow-hidden bg-black">
+      <section className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black">
         {/* Hero Image */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -215,13 +215,23 @@ const GalleryPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0"
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+        </motion.div>
+        
         {/* Content */}
         <div className="relative z-10 h-full flex items-center justify-center text-white px-6">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="max-w-4xl mx-auto text-center"
+            className="max-w-4xl mx-auto text-center mt-10 md:mt-0"
           >
             <motion.h1
               variants={itemVariants}
