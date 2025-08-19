@@ -306,7 +306,7 @@ const Footer = () => {
             className="text-gray-400 text-sm mb-3 md:mb-0 text-center"
             variants={itemVariants}
           >
-            &copy; {new Date().getFullYear()} The SSK Sports Club. All rights reserved by Rich Systems Solutions.
+            &copy; {new Date().getFullYear()} The SSK World Club. All rights reserved by Rich Systems Solutions.
           </motion.p>
           <motion.div
             className="flex space-x-6" // Increased space between links
