@@ -34,7 +34,7 @@ const SSKSolitaireGuestForm = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative h-96 w-full overflow-hidden bg-black">
+      <section className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
@@ -51,7 +51,7 @@ const SSKSolitaireGuestForm = () => {
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="max-w-4xl mx-auto text-center"
+            className="max-w-4xl mx-auto text-center mt-10 md:mt-0"
           >
             <motion.h1
               variants={fadeInUp}
