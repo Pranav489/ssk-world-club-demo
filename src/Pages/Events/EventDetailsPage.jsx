@@ -118,7 +118,7 @@ const EventDetailsPage = () => {
             {/* Hero Section */}
             <section
                 ref={ref}
-                className="relative h-96 w-full overflow-hidden bg-black"
+                className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
             >
                 {/* Background Image */}
                 <motion.div
@@ -140,7 +140,7 @@ const EventDetailsPage = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
                 </motion.div>
 
-                {/* Back Button */}
+                {/* Back Button
                 <motion.button
                     onClick={() => navigate(-1)}
                     className="absolute top-6 left-6 z-10 bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/20 transition-colors"
@@ -148,14 +148,14 @@ const EventDetailsPage = () => {
                     whileTap={{ scale: 0.95 }}
                 >
                     <ArrowLeft className="h-5 w-5" />
-                </motion.button>
+                </motion.button> */}
 
                 {/* Content */}
                 <motion.div
                     initial="hidden"
                     animate={controls}
                     variants={containerVariants}
-                    className="relative z-10 h-full flex items-end justify-center text-white px-6 pb-12"
+                    className="relative z-10 h-full flex items-end justify-center text-white px-6 pb-12 mt-10 md:mt-0"
                 >
                     <div className="max-w-4xl w-full">
                         <motion.div variants={itemVariants}>
