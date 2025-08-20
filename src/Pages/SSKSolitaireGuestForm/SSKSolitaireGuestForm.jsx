@@ -156,7 +156,7 @@ const SSKSolitaireGuestForm = () => {
       </div>
       <div className="mt-6 text-center">
         <a
-          href="https://maps.google.com?q=SSK+Solitaire+Club"
+          href="https://maps.google.com?q=SSK+World+Club"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center text-[#0A2463] font-medium hover:text-[#FFC857] transition-colors"
