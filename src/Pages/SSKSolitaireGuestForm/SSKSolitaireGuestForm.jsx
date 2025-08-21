@@ -141,10 +141,15 @@ const SSKSolitaireGuestForm = () => {
                   <span>Daily: 6:00 AM - 10:00 PM</span>
                 </div>
               </div>
-              <button className="bg-[#FFC857] hover:bg-[#F4A261] text-[#0A2463] px-6 py-3 rounded-sm font-bold flex items-center gap-2 transition-all duration-300">
+              <motion.button whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+                }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-[#FFC857] text-[#0A2463] px-6 py-3 rounded-sm font-bold flex items-center gap-2" >
                 Get Directions
                 <ArrowRight className="h-4 w-4" />
-              </button>
+              </motion.button>
             </div>
             <div className="h-96 md:h-auto">
               <iframe
