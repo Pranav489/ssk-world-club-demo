@@ -78,6 +78,15 @@ const SSKSolitaireGuestForm = () => {
           }}
           className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full"
         />
+        <motion.div
+        initial={{ scale: 0.8, opacity:0}}
+        animate={{
+          scale: 1,
+          opacity: 0.3,
+          transition: { delay: 0.8, duration: 1 }
+        }}
+        className="absolute bottom-1/3 left-8 w-16 h-16 border border-[#FFC857] rounded-full"
+        />
       </section>
 
       {/* Registration Form Section */}

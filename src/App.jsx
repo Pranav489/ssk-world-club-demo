@@ -28,7 +28,7 @@ const App = () => {
     createRoutesFromElements(
       <Route path='/' element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path='about-us' element={<AboutUsPage />} />
+        <Route path='/about-us' element={<AboutUsPage />} />
         <Route path="/sports" element={<SportsPage />} />
         <Route path="/sports/:category/:sportSlug" element={<SportsDetailPage />} />
         <Route path='/amenities' element={<AmenitiesPage />} />
@@ -39,8 +39,8 @@ const App = () => {
         <Route path='/events' element={<EventsPage />} />
         <Route path='/events/:eventSlug' element={<EventDetailsPage />} />
         <Route path='/contact' element={<ContactPage />} />
-        <Route path='/solitaire-guest-form' element={<SSKSolitaireGuestForm />} />
-        <Route path='/walking-visitor-form' element={<WalkingVisitorForm />} />
+        <Route path='/solitaire' element={<SSKSolitaireGuestForm />} />
+        <Route path='/walking' element={<WalkingVisitorForm />} />
         <Route path='*' element={<PageNotFound />} />
       </Route>
     )
