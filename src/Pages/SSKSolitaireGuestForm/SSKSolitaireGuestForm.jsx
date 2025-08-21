@@ -1,125 +1,98 @@
 import { motion } from "framer-motion";
-import { MapPin, Clock, User, Shield, ChevronRight } from "lucide-react";
-import { ssk_club } from "../../assets"; // Replace with your Solitaire club image
+import { fadeIn, staggerContainer, zoomIn } from "../../utils/motion";
+
+import {
+  Phone,
+  Mail,
+  MapPin,
+  User,
+  Calendar,
+  Clock,
+  ArrowRight,
+} from "lucide-react";
+import { useRef } from "react";
 
 const SSKSolitaireGuestForm = () => {
-  // Animation variants
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
+  const formRef = useRef(null);
+
+  // High-quality Unsplash images matching luxury sports club theme
+  const images = {
+    hero: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    amenities:
+      "https://images.unsplash.com/photo-1565992441121-4367c2967103?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    pool: "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
   };
 
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const clubInfo = {
-    name: "SSK Solitaire Club",
-    address: "Exclusive Location, Nashik",
-    hours: "Daily: 7 AM - 11 PM",
-    phone: "+91 555 987 6543",
+  const scrollToForm = () => {
+    formRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={ssk_club}
-            alt="SSK Solitaire Club"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 h-full flex items-center justify-center text-white px-6">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="max-w-4xl mx-auto text-center mt-10 md:mt-0"
-          >
-            <motion.h1
-              variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold mb-4"
-            >
-              <span className="text-[#FFC857]">Solitaire</span> Guest Registration
-            </motion.h1>
-            <motion.p
-              variants={fadeInUp}
-              className="text-xl text-[#FFC857] max-w-2xl mx-auto"
-            >
-              Exclusive access for members and their distinguished guests
-            </motion.p>
-          </motion.div>
-        </div>
-
-        {/* Decorative Elements */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{
-            scale: 1,
-            opacity: 0.3,
-            transition: { delay: 0.8, duration: 1 }
-          }}
-          className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full"
-        />
-        <motion.div
-        initial={{ scale: 0.8, opacity:0}}
-        animate={{
-          scale: 1,
-          opacity: 0.3,
-          transition: { delay: 0.8, duration: 1 }
+    <motion.div
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true }}
+      className="relative overflow-hidden"
+    >
+      {/* Hero Section with Parallax Effect */}
+      <motion.section
+        className="relative pt-20 md:pt-35 h-96 w-full overflow-hidden bg-black"
+        style={{
+          backgroundImage: `url(${images.hero})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
         }}
-        className="absolute bottom-1/3 left-8 w-16 h-16 border border-[#FFC857] rounded-full"
-        />
-      </section>
+      >
+        <div className="absolute inset-0 bg-[#0A2463]/80" />
+        <motion.div
+          variants={staggerContainer}
+          className="relative z-10 text-center px-6"
+        >
+          <motion.h1
+            variants={fadeIn("up", "spring", 0.2, 1)}
+            className="text-4xl md:text-6xl font-bold text-white mb-6 uppercase tracking-tight"
+          >
+            The SSK World Club
+          </motion.h1>
+          <motion.p
+            variants={fadeIn("up", "spring", 0.4, 1)}
+            className="text-xl text-white/90 max-w-2xl mx-auto mb-8"
+          >
+            Register for exclusive access to our premium sports and wellness
+            facilities
+          </motion.p>
+          <motion.button
+            // variants={fadeIn("up", "spring", 0.6, 1)}
+            onClick={scrollToForm}
+            whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+                }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold mx-auto  flex items-center gap-2"
+          >
+            Register Below
+            <User className="h-5 w-5" />
+          </motion.button>
+        </motion.div>
+      </motion.section>
 
-      {/* Registration Form Section */}
-      <section className="relative py-16 bg-white overflow-hidden">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-              className="mb-12 text-center"
-            >
-              <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-[#0A2463] mb-4">
-                Guest <span className="text-[#FFC857]">Registration</span>
-              </motion.h2>
-              <motion.div
-                variants={fadeInUp}
-                className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
-              />
-              <motion.p variants={fadeInUp} className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Please complete this form to register your guest at SSK World Club
-              </motion.p>
-            </motion.div>
-
-            {/* Embedded Form */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-50 rounded-xl shadow-md overflow-hidden border border-gray-200"
-            >
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1  gap-12">
+          {/* Form Section */}
+          <motion.div
+            ref={formRef}
+            variants={fadeIn("right", "spring", 0.2, 1)}
+            className="bg-white p-8 rounded-xl  border border-gray-100 relative overflow-hidden"
+          >
+            {/* Glowing accent */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#FFC857]/10 rounded-full filter blur-3xl" />
+            <h2 className="text-3xl font-bold text-[#0A2463] mb-6 relative z-10">
+              SSK World Club Information Form
+            </h2>
+            <div className="relative z-10">
               <iframe
                 src="https://admin.masteraix.io/widget/form/6891f916306bf"
                 style={{
@@ -135,140 +108,59 @@ const SSKSolitaireGuestForm = () => {
                 data-height="600"
                 title="SSK-solitaire-Guest-Form"
               />
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
-      </section>
-
-<section className="relative py-16 bg-gray-50">
-  <div className="container mx-auto px-6">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="max-w-4xl mx-auto"
-    >
-      <h2 className="text-3xl font-bold text-[#0A2463] mb-6 text-center">
-        Solitaire <span className="text-[#FFC857]">Location</span>
-      </h2>
-      <div className="h-96 rounded-xl overflow-hidden shadow-lg border border-gray-200">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3750.796060498386!2d73.7614670750005!3d19.93299708145612!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdd94bc37eb91ff%3A0x576425262ba1f1a!2sThe%20SSK%20World%20Club!5e0!3m2!1sen!2sin!4v1755022574999!5m2!1sen!2sin"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen=""
-          loading="lazy"
-          title="SSK Solitaire Club Location"
-        />
-      </div>
-      <div className="mt-6 text-center">
-        <a
-          href="https://maps.google.com?q=SSK+World+Club"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center text-[#0A2463] font-medium hover:text-[#FFC857] transition-colors"
+        <motion.section
+          variants={fadeIn("up", "spring", 1, 1)}
+          className="mt-16 bg-[#0A2463] rounded-xl overflow-hidden shadow-xl"
         >
-          Open in Google Maps
-          <ChevronRight className="ml-2 h-5 w-5" />
-        </a>
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="p-8 md:p-12 text-white">
+              <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+                <MapPin className="text-[#FFC857]" />
+                Our Location
+              </h2>
+              <div className="space-y-4 mb-6">
+                <p className="text-xl font-medium">The SSK WORLD CLUB</p>
+                <p className="text-white/90">
+                  Pathardi - Gaulane road, Pathardi,
+                  <br />
+                  Nashik, Maharashtra, India
+                </p>
+                <div className="flex items-center gap-3 mt-4">
+                  <Phone className="text-[#FFC857] flex-shrink-0" />
+                  <span>+91 77700 01005</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="text-[#FFC857] flex-shrink-0" />
+                  <span>info@thesskworld.com</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Clock className="text-[#FFC857] flex-shrink-0" />
+                  <span>Daily: 6:00 AM - 10:00 PM</span>
+                </div>
+              </div>
+              <button className="bg-[#FFC857] hover:bg-[#F4A261] text-[#0A2463] px-6 py-3 rounded-sm font-bold flex items-center gap-2 transition-all duration-300">
+                Get Directions
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="h-96 md:h-auto">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3750.796060058151!2d73.76185331744385!3d19.932997099999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdd94bc37eb91ff%3A0x576425262ba1f1a!2sThe%20SSK%20World%20Club!5e0!3m2!1sen!2sin!4v1754631508587!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                title="SSK World Club Location"
+              />
+            </div>
+          </div>
+        </motion.section>
       </div>
     </motion.div>
-  </div>
-</section>
-
-      {/* Club Information Section */}
-      <section className="relative py-24 bg-gradient-to-br from-[#0A2463] to-[#2E4052] text-white overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="absolute top-2 right-30 w-64 h-64 border-2 border-[#FFC857] rounded-full"
-        />
-        <div className="container mx-auto px-6">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex items-start gap-4"
-            >
-              <div className="bg-[#FFC857]/10 p-3 rounded-full">
-                <MapPin className="h-6 w-6 text-[#FFC857]" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Location</h3>
-                <p className="text-gray-300">{clubInfo.address}</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex items-start gap-4"
-            >
-              <div className="bg-[#FFC857]/10 p-3 rounded-full">
-                <Clock className="h-6 w-6 text-[#FFC857]" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Hours</h3>
-                <p className="text-gray-300">{clubInfo.hours}</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex items-start gap-4"
-            >
-              <div className="bg-[#FFC857]/10 p-3 rounded-full">
-                <User className="h-6 w-6 text-[#FFC857]" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Guest Policy</h3>
-                <p className="text-gray-300">Members may bring up to 2 guests</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex items-start gap-4"
-            >
-              <div className="bg-[#FFC857]/10 p-3 rounded-full">
-                <Shield className="h-6 w-6 text-[#FFC857]" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Dress Code</h3>
-                <p className="text-gray-300">Smart casual or business attire</p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-12 text-center"
-          >
-            <p className="text-[#FFC857] italic max-w-3xl mx-auto">
-              "{clubInfo.description}"
-            </p>
-          </motion.div> */}
-        </div>
-      </section>
-    </div>
   );
 };
 
