@@ -33,7 +33,7 @@ import {
     X
 
 } from 'lucide-react';
-import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, net_cricket, shooting, skating, squash, swimming, table_tennis, tennis_league, tt_tournament } from "../../assets";
+// import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, net_cricket, shooting, skating, squash, swimming, table_tennis, tennis_league, tt_tournament } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const SportsDetailPage = () => {

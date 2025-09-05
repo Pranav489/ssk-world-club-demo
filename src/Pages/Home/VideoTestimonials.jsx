@@ -2,7 +2,7 @@ import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Play, Pause, ChevronRight, ChevronLeft, Quote } from "lucide-react";
-import { hero_video_1, member1, member2, testimonial1, testimonial2 } from "../../assets";
+// import { hero_video_1, member1, member2, testimonial1, testimonial2 } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const VideoTestimonials = () => {

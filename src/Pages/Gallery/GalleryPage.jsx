@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { ChevronRight, Image as ImageIcon, ArrowRight, ArrowLeft, Phone, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { tennis_league, swimming, fitness, green_sport_campus, ssk_club, spa, restaurant, midnight_lounge, dining, tt_tournament } from "../../assets";
+import { ssk_club } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const GalleryPage = () => {

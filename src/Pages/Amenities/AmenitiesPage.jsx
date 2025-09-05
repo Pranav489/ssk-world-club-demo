@@ -2,7 +2,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import { ac_tents, billiards, business_center, card_room, conference_room, dining, foosball, mini_theatre, mini_theatre1, play_area, room_suites, spa, sports_shop, wifi_library } from "../../assets";
+// import { ac_tents, billiards, business_center, card_room, conference_room, dining, foosball, mini_theatre, mini_theatre1, play_area, room_suites, spa, sports_shop, wifi_library } from "../../assets";
 import axiosInstance from "../../services/api";
 import {
     Dumbbell,

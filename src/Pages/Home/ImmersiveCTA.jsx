@@ -2,7 +2,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { ChevronRight, Phone, MapPin, Clock } from "lucide-react";
-import { fitness, hero_home } from "../../assets";
+import { hero_home } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const ImmersiveCTA = () => {

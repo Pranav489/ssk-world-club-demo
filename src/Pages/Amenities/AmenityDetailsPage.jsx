@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import {  Image as ImageIcon } from "lucide-react";
 import { Flower, Briefcase, Film, Table2, Hotel, ShoppingBag, Tent, BookOpen, Trophy, Crosshair, Volleyball, Leaf, Eclipse, Calendar, Phone, MapPin, Star, ChevronRight, Clock, Users, Coffee, Utensils, } from "lucide-react";
-import { ac_tents, ac_tents1, billiards, billiards1, business_center, business_center1, card_room, card_room1, conference_room, conference_room1, dining, foosball, foosball1, midnight_lounge, mini_theatre, mini_theatre1, play_area, play_area1, restaurant, room_suites, room_suites1, spa, spa1, sports_shop, sports_shop1, wifi_library, wifi_library1 } from "../../assets";
+// import { ac_tents, ac_tents1, billiards, billiards1, business_center, business_center1, card_room, card_room1, conference_room, conference_room1, dining, foosball, foosball1, midnight_lounge, mini_theatre, mini_theatre1, play_area, play_area1, restaurant, room_suites, room_suites1, spa, spa1, sports_shop, sports_shop1, wifi_library, wifi_library1 } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const AmenityDetailsPage = () => {

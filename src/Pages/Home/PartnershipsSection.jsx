@@ -1,7 +1,7 @@
 import { useEffect,useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { affiliated_logo, affiliated_logo1, affiliated_logo2, affiliated_logo3, affiliated_logo4, affiliated_logo5, affiliated_logo6, affiliated_logo7 } from "../../assets";
+// import { affiliated_logo, affiliated_logo1, affiliated_logo2, affiliated_logo3, affiliated_logo4, affiliated_logo5, affiliated_logo6, affiliated_logo7 } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const PartnershipsSection = () => {

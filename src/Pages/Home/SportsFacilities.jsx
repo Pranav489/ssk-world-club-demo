@@ -33,7 +33,7 @@ import {
   ChevronDown,
   X
 } from 'lucide-react';
-import { basketball, fitness, squash, swimming, table_tennis, tennis_league, yoga } from "../../assets";
+// import { basketball, fitness, squash, swimming, table_tennis, tennis_league, yoga } from "../../assets";
 import { useNavigate } from "react-router";
 import AnimatedCounter from "./AnimatedCounter";
 import axiosInstance from "../../services/api";

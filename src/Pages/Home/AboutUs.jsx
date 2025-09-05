@@ -2,7 +2,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Trophy, Users, Clock, Star, ChevronRight, Sparkles } from "lucide-react";
-import { ssk_club } from "../../assets";
+// import { ssk_club } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const AboutUs = () => {

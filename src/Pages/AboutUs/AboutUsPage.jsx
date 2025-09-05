@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Play, ChevronRight, Target, Globe, Sparkles, MapPin, Shield, Clock, Award, HeartPulse, Utensils, Trophy, Activity, Medal, Waves, Briefcase, Users, X } from "lucide-react";
-import { AboutUs, founder, hero_video_1, leader2, leader3, ssk_club } from "../../assets";
+import { founder, leader2, leader3, ssk_club } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const convertToEmbedUrl = (url) => {

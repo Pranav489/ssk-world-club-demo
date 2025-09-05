@@ -19,7 +19,7 @@ import {
     Twitter
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
-import { basketball, green_sport_campus, hero_video_1, monsoon_soccer, sport_turf, table_tennis, tennis_league, tt_tournament } from "../../assets";
+// import { basketball, green_sport_campus, hero_video_1, monsoon_soccer, sport_turf, table_tennis, tennis_league, tt_tournament } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const EventDetailsPage = () => {

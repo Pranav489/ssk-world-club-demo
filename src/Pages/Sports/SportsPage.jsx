@@ -32,7 +32,7 @@ import {
     Phone,
     SquareDashedBottom
 } from 'lucide-react';
-import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, hero_home, net_cricket, shooting, skating, squash, ssk_club, swimming, table_tennis, tennis_league, volleyball } from '../../assets';
+// import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, hero_home, net_cricket, shooting, skating, squash, ssk_club, swimming, table_tennis, tennis_league, volleyball } from '../../assets';
 import { useNavigate } from 'react-router';
 
 const SportsPage = () => {
