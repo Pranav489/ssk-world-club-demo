@@ -20,33 +20,134 @@ import {
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { basketball, green_sport_campus, hero_video_1, monsoon_soccer, sport_turf, table_tennis, tennis_league, tt_tournament } from "../../assets";
+import axiosInstance from "../../services/api";
 
 const EventDetailsPage = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
+    const [event, setEvent] = useState(null);
+    const [relatedEvents, setRelatedEvents] = useState([]);
+    const [loadingRelated, setLoadingRelated] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const controls = useAnimation();
     const [ref, inView] = useInView({ threshold: 0.3 });
     const [activeMedia, setActiveMedia] = useState(0);
 
-    // Sample event data - in a real app, you'd fetch this based on the slug
-    const event = {
-        id: 1,
-        title: "Annual Tennis Tournament",
-        slug: "annual-tennis-tournament-2024",
-        date: "15-18 March 2024",
-        time: "9:00 AM - 6:00 PM",
-        location: "SSK Tennis Courts",
-        description: "Open to all members with prizes for winners in multiple categories",
-        longDescription: "The SSK World Club Annual Tennis Tournament is our flagship sporting event, featuring competitive matches across singles, doubles, and mixed doubles categories. With over 200 participants expected, this four-day event will showcase thrilling matches on our championship courts.\n\nThe tournament includes:\n\n• Professional referees and line judges\n• Prize money totaling ₹5,00,000\n• Catered lunches for all participants\n• Evening social mixers\n\nRegistration closes March 1st. Members receive 20% discount on entry fees.",
-        image: tennis_league,
-        type: "tournament",
-        status: "upcoming", // or "past"
-        gallery: [
-            { type: "image", src: monsoon_soccer, caption: "Championship Court" },
-            { type: "image", src: sport_turf, caption: "Previous Winner" },
-            { type: "video", src: hero_video_1, poster: green_sport_campus, caption: "2023 Highlights" }
-        ],
+    useEffect(() => {
+        console.log('Slug from URL:', slug);
+
+        // if (!slug) {
+        //     console.log('No slug provided, redirecting to events page');
+        //     navigate('/events');
+        //     return;
+        // }
+
+        const fetchEvent = async () => {
+            try {
+                setLoading(true);
+                console.log('Fetching event with slug:', slug);
+
+                const response = await axiosInstance.get(`/events/${slug}`);
+                console.log('API Response:', response);
+
+                if (response.data.success) {
+                    setEvent(response.data.data);
+                } else {
+                    setError('Event not found');
+                }
+            } catch (err) {
+                console.error('Error fetching event:', err);
+                setError('Failed to load event. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEvent();
+    }, [slug, navigate]);
+
+    const fetchRelatedEvents = async (currentEventId, eventType) => {
+        try {
+            setLoadingRelated(true);
+            const response = await axiosInstance.get('/events', {
+                params: {
+                    type: eventType,
+                    per_page: 3,
+                    exclude: currentEventId
+                }
+            });
+
+            if (response.data.success) {
+                setRelatedEvents(response.data.data);
+            }
+        } catch (err) {
+            console.error('Error fetching related events:', err);
+        } finally {
+            setLoadingRelated(false);
+        }
     };
+
+    // Call this when event data is loaded
+    useEffect(() => {
+        if (event) {
+            fetchRelatedEvents(event.id, event.type);
+        }
+    }, [event]);
+
+    const formatDescription = (htmlContent) => {
+        if (!htmlContent) return null;
+
+        // Create a temporary div to parse HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+
+        // Convert to plain text with line breaks or keep as HTML
+        return (
+            <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="space-y-4" />
+        );
+    };
+
+    const getYouTubeEmbedUrl = (url) => {
+        if (!url) return null;
+
+        // Handle various YouTube URL formats
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
+            /(?:youtube\.com\/embed\/)([^&]+)/,
+            /(?:youtube\.com\/v\/)([^&]+)/
+        ];
+
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match && match[1]) {
+                return `https://www.youtube.com/embed/${match[1]}`;
+            }
+        }
+
+        // If no match, return original URL
+        return url;
+    };
+
+    // Sample event data - in a real app, you'd fetch this based on the slug
+    // const event = {
+    //     id: 1,
+    //     title: "Annual Tennis Tournament",
+    //     slug: "annual-tennis-tournament-2024",
+    //     date: "15-18 March 2024",
+    //     time: "9:00 AM - 6:00 PM",
+    //     location: "SSK Tennis Courts",
+    //     description: "Open to all members with prizes for winners in multiple categories",
+    //     longDescription: "The SSK World Club Annual Tennis Tournament is our flagship sporting event, featuring competitive matches across singles, doubles, and mixed doubles categories. With over 200 participants expected, this four-day event will showcase thrilling matches on our championship courts.\n\nThe tournament includes:\n\n• Professional referees and line judges\n• Prize money totaling ₹5,00,000\n• Catered lunches for all participants\n• Evening social mixers\n\nRegistration closes March 1st. Members receive 20% discount on entry fees.",
+    //     image: tennis_league,
+    //     type: "tournament",
+    //     status: "upcoming", // or "past"
+    //     gallery: [
+    //         { type: "image", src: monsoon_soccer, caption: "Championship Court" },
+    //         { type: "image", src: sport_turf, caption: "Previous Winner" },
+    //         { type: "video", src: hero_video_1, poster: green_sport_campus, caption: "2023 Highlights" }
+    //     ],
+    // };
 
     useEffect(() => {
         if (inView) {
@@ -105,13 +206,30 @@ const EventDetailsPage = () => {
         }
     };
 
-    const formatDescription = (text) => {
-        return text.split('\n').map((paragraph, i) => (
-            <p key={i} className="mb-4 last:mb-0">
-                {paragraph}
-            </p>
-        ));
-    };
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+            </div>
+        );
+    }
+
+    if (error || !event) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-[#0A2463] mb-4">Event Not Found</h2>
+                    <p className="text-gray-600 mb-8">{error || 'The event you are looking for does not exist.'}</p>
+                    <button
+                        onClick={() => navigate('/events')}
+                        className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold hover:bg-[#FFD580] transition-colors"
+                    >
+                        Back to Events
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative">
@@ -132,11 +250,13 @@ const EventDetailsPage = () => {
                     }}
                     className="absolute inset-0 z-0"
                 >
-                    <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-full object-cover"
-                    />
+                    {event.image_url && (
+                        <img
+                            src={event.image_url}
+                            alt={event.title}
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
                 </motion.div>
 
@@ -231,95 +351,115 @@ const EventDetailsPage = () => {
                         >
                             <motion.article variants={itemVariants} className="prose max-w-none">
                                 <h2 className="text-2xl font-bold text-[#0A2463] mb-6">Event Details</h2>
-                                {formatDescription(event.longDescription)}
+                                {formatDescription(event.long_description)}
                             </motion.article>
 
                             {/* Gallery Section */}
-                            <motion.div variants={itemVariants} className="mt-12">
-                                <h2 className="text-2xl font-bold text-[#0A2463] mb-6 flex items-center gap-2">
-                                    <Film className="h-6 w-6 text-[#FFC857]" />
-                                    Event Gallery
-                                </h2>
+                            {event.gallery && event.gallery.length > 0 && (
+                                <motion.div variants={itemVariants} className="mt-12">
+                                    <h2 className="text-2xl font-bold text-[#0A2463] mb-6 flex items-center gap-2">
+                                        <Film className="h-6 w-6 text-[#FFC857]" />
+                                        Event Gallery
+                                    </h2>
 
-                                {/* Featured Media */}
-                                <motion.div
-                                    className="relative h-96 rounded-xl overflow-hidden mb-6 shadow-lg"
-                                    initial={{ opacity: 0 }}
-                                    whileInView={{ opacity: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.8 }}
-                                >
-                                    {event.gallery[activeMedia].type === 'image' ? (
-                                        <img
-                                            src={event.gallery[activeMedia].src}
-                                            alt={event.gallery[activeMedia].caption}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : event.gallery[activeMedia].type === 'video' ? (
-                                        <video
-                                            src={event.gallery[activeMedia].src}
-                                            controls
-                                            className="w-full h-full object-cover"
-                                        >
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    ) : (
-                                        <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                                            <button className="bg-[#FFC857] text-[#0A2463] p-4 rounded-full">
-                                                <Play className="h-8 w-8 fill-current" />
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                                        <p className="text-white font-medium">{event.gallery[activeMedia].caption}</p>
-                                    </div>
-                                </motion.div>
-
-                                {/* Thumbnail Grid */}
-                                <motion.div
-                                    className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={{ once: true, amount: 0.1 }}
-                                    variants={containerVariants}
-                                >
-                                    {event.gallery.map((media, index) => (
-                                        <motion.button
-                                            key={index}
-                                            custom={index}
-                                            variants={galleryItemVariants}
-                                            whileHover="hover"
-                                            onClick={() => setActiveMedia(index)}
-                                            className={`relative aspect-square overflow-hidden rounded-lg ${activeMedia === index ? 'ring-2 ring-[#FFC857]' : ''}`}
-                                        >
-                                            {media.type === 'image' ? (
-                                                <img
-                                                    src={media.src}
-                                                    alt={media.caption || 'Image'}
-                                                    className="w-full h-full object-cover"
+                                    {/* Featured Media */}
+                                    <motion.div
+                                        className="relative h-96 rounded-xl overflow-hidden mb-6 shadow-lg"
+                                        initial={{ opacity: 0 }}
+                                        whileInView={{ opacity: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.8 }}
+                                    >
+                                        {event.gallery[activeMedia].type === 'image' ? (
+                                            <img
+                                                src={event.gallery[activeMedia].src}
+                                                alt={event.gallery[activeMedia].caption}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : event.gallery[activeMedia].type === 'video' ? (
+                                            event.gallery[activeMedia].src?.includes('youtube.com') ||
+                                                event.gallery[activeMedia].src?.includes('youtu.be') ? (
+                                                // YouTube video - use iframe
+                                                <iframe
+                                                    src={getYouTubeEmbedUrl(event.gallery[activeMedia].src)}
+                                                    className="w-full h-full"
+                                                    frameBorder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                    title={event.gallery[activeMedia].caption || 'YouTube video'}
                                                 />
-                                            ) : media.type === 'video' ? (
-                                                <div className="relative w-full h-full">
+                                            ) : (
+                                                // Regular video file - use video tag
+                                                <video
+                                                    src={event.gallery[activeMedia].src}
+                                                    controls
+                                                    className="w-full h-full object-cover"
+                                                    poster={event.gallery[activeMedia].poster}
+                                                >
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            )
+                                        ) : (
+                                            // Fallback for unknown media types
+                                            <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                                                <button className="bg-[#FFC857] text-[#0A2463] p-4 rounded-full">
+                                                    <Play className="h-8 w-8 fill-current" />
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {event.gallery[activeMedia]?.caption && (
+                                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                                                <p className="text-white font-medium">{event.gallery[activeMedia].caption}</p>
+                                            </div>
+                                        )}
+                                    </motion.div>
+
+                                    {/* Thumbnail Grid */}
+                                    <motion.div
+                                        className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
+                                        initial="hidden"
+                                        whileInView="visible"
+                                        viewport={{ once: true, amount: 0.1 }}
+                                        variants={containerVariants}
+                                    >
+                                        {event.gallery.map((media, index) => (
+                                            <motion.button
+                                                key={index}
+                                                custom={index}
+                                                variants={galleryItemVariants}
+                                                whileHover="hover"
+                                                onClick={() => setActiveMedia(index)}
+                                                className={`relative aspect-square overflow-hidden rounded-lg ${activeMedia === index ? 'ring-2 ring-[#FFC857]' : ''}`}
+                                            >
+                                                {media.type === 'image' ? (
                                                     <img
-                                                        src={media.poster || '/placeholder-video-thumb.jpg'}
-                                                        alt={media.caption || 'Video thumbnail'}
+                                                        src={media.src}
+                                                        alt={media.caption || 'Image'}
                                                         className="w-full h-full object-cover"
                                                     />
-                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                                                        <Play className="h-8 w-8 text-white" />
+                                                ) : media.type === 'video' ? (
+                                                    <div className="relative w-full h-full">
+                                                        <img
+                                                            src={media.poster || '/placeholder-video-thumb.jpg'}
+                                                            alt={media.caption || 'Video thumbnail'}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                                                            <Play className="h-8 w-8 text-white" />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                                                    <Play className="h-5 w-5 text-white" />
-                                                </div>
-                                            )}
+                                                ) : (
+                                                    <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                                                        <Play className="h-5 w-5 text-white" />
+                                                    </div>
+                                                )}
 
-                                        </motion.button>
-                                    ))}
+                                            </motion.button>
+                                        ))}
+                                    </motion.div>
                                 </motion.div>
-                            </motion.div>
+                            )}
                         </motion.div>
 
                         {/* Sidebar */}
@@ -376,9 +516,9 @@ const EventDetailsPage = () => {
                                         }}
                                         whileTap={{ scale: 0.98 }}
                                         className="w-full bg-[#FFC857] text-[#0A2463] px-6 py-3 rounded-sm font-bold"
-                                        onClick={() => navigate('/contact')}
+                                        onClick={() => navigate(event.registrationLink)}
                                     >
-                                        Contact Now
+                                        Register Now
                                     </motion.button>
                                 </motion.div>
                             )}
@@ -427,7 +567,7 @@ const EventDetailsPage = () => {
                 <div className="container mx-auto px-6 relative z-10">
                     <motion.div
                         initial="hidden"
-                        whileInView="visible"
+                        animate="visible"
                         viewport={{ once: true }}
                         variants={containerVariants}
                     >
@@ -435,41 +575,57 @@ const EventDetailsPage = () => {
                             You Might Also Like
                         </motion.h2>
 
-                        <motion.div
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-                            variants={containerVariants}
-                        >
-                            {/* Sample related events - in a real app you'd fetch these */}
-                            {[1, 2, 3].map((i) => (
-                                <motion.div
-                                    key={i}
-                                    variants={itemVariants}
-                                    className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100"
-                                    whileHover={{ y: -5 }}
-                                    onClick={() => navigate(`/events/event-${i}`)}
-                                >
-                                    <div className="relative h-48 overflow-hidden">
-                                        <img
-                                            src={table_tennis}
-                                            alt={`Event ${i}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                                    </div>
-                                    <div className="p-6">
-                                        <h3 className="text-xl font-bold text-[#0A2463] mb-3">Related Event {i}</h3>
-                                        <div className="flex items-center gap-2 text-gray-600 mb-4">
-                                            <Calendar className="h-4 w-4" />
-                                            <span>Date TBD</span>
+                        {loadingRelated ? (
+                            <div className="flex justify-center">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FFC857]"></div>
+                            </div>
+                        ) : relatedEvents.length > 0 ? (
+                            <motion.div
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                                variants={containerVariants}
+                            >
+                                {relatedEvents.map((relatedEvent) => (
+                                    <motion.div
+                                        key={relatedEvent.id}
+                                        variants={itemVariants}
+                                        className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100"
+                                        whileHover={{ y: -5 }}
+                                        onClick={() => navigate(`/events/${relatedEvent.slug}`)}
+                                    >
+                                        <div className="relative h-48 overflow-hidden">
+                                            <img
+                                                src={relatedEvent.image_url || '/placeholder-image.jpg'}
+                                                alt={relatedEvent.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                            <div className="absolute top-3 left-3">
+                                                <span className="bg-[#0A2463] text-white px-2 py-1 rounded-full text-xs font-bold uppercase">
+                                                    {relatedEvent.status}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <p className="text-gray-600 line-clamp-2 mb-4">Sample description for related event</p>
-                                        <div className="flex items-center text-[#0A2463] font-medium">
-                                            View details <ChevronRight className="ml-2 h-5 w-5" />
+                                        <div className="p-6">
+                                            <h3 className="text-xl font-bold text-[#0A2463] mb-3 line-clamp-1">
+                                                {relatedEvent.title}
+                                            </h3>
+                                            <div className="flex items-center gap-2 text-gray-600 mb-4">
+                                                <Calendar className="h-4 w-4" />
+                                                <span>{relatedEvent.date}</span>
+                                            </div>
+                                            <p className="text-gray-600 line-clamp-2 mb-4">
+                                                {relatedEvent.description}
+                                            </p>
+                                            <div className="flex items-center text-[#0A2463] font-medium">
+                                                View details <ChevronRight className="ml-2 h-5 w-5" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </motion.div>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        ) : (
+                            <p className="text-center text-gray-600">No related events found</p>
+                        )}
                     </motion.div>
                 </div>
             </section>

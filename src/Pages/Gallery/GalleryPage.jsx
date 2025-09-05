@@ -1,42 +1,59 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import { ChevronRight, Image as ImageIcon, ArrowRight, ArrowLeft, Phone, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { tennis_league, swimming, fitness, green_sport_campus, ssk_club, spa, restaurant, midnight_lounge, dining, tt_tournament } from "../../assets";
+import axiosInstance from "../../services/api";
 
 const GalleryPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [filteredImages, setFilteredImages] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
   const navigate = useNavigate();
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.4
+  });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Gallery data with categories
-  const galleryImages = [
-    // Sports
-    { id: 1, src: tennis_league, category: 'sports', alt: "Championship tennis courts at sunset" },
-    { id: 2, src: swimming, category: 'sports', alt: "Olympic-sized swimming pool" },
-    { id: 3, src: fitness, category: 'sports', alt: "State-of-the-art fitness center" },
-    { id: 4, src: green_sport_campus, category: 'sports', alt: "Lush green sports campus" },
 
-    // Amenities
-    { id: 5, src: spa, category: 'amenities', alt: "Luxury spa with massage rooms" },
-    { id: 6, src: spa, category: 'amenities', alt: "Quiet reading library with premium selections" },
-    { id: 7, src: spa, category: 'amenities', alt: "Private mini theater with recliners" },
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [controls, inView]);
 
-    // Dining
-    { id: 8, src: restaurant, category: 'dining', alt: "Fine dining restaurant with panoramic views" },
-    { id: 9, src: midnight_lounge, category: 'dining', alt: "Members-only lounge with craft cocktails" },
+  useEffect(() => {
+    const fetchGalleryData = async () => {
+      try {
+        const response = await axiosInstance.get('/gallery');
+        if (response.data.success) {
+          const images = response.data.data.images.map(img => ({
+            id: img.id,
+            src: img.image_url,
+            alt: img.alt_text,
+            category: img.category,
+            title: img.title,
+            description: img.description
+          }));
+          setGalleryImages(images);
+          setFilteredImages(images);
+        }
+      } catch (err) {
+        console.error('Error fetching gallery data:', err);
+        setError('Failed to load gallery. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Events
-    { id: 10, src: dining, category: 'events', alt: "Annual gala dinner with live music" },
-    { id: 11, src: tt_tournament, category: 'events', alt: "International tennis tournament" },
-
-    // Premises
-    { id: 12, src: ssk_club, category: 'premises', alt: "SSK World Club grand entrance" },
-    { id: 13, src: swimming, category: 'premises', alt: "Resort-style pool area" },
-  ];
-
+    fetchGalleryData();
+  }, []);
 
   // Open lightbox with clicked image
   const openLightbox = (index) => {
@@ -89,22 +106,21 @@ const GalleryPage = () => {
       : galleryImages.filter(img => img.category === selectedCategory);
 
     setFilteredImages(newFilteredImages);
-  }, [selectedCategory]);
+  }, [selectedCategory, galleryImages]);
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.2,
         delayChildren: 0.3
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
+    hidden: { y: 40, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
@@ -113,6 +129,14 @@ const GalleryPage = () => {
         damping: 12,
         stiffness: 100
       }
+    }
+  };
+
+  const fadeInVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 1.2 }
     }
   };
 
@@ -127,6 +151,30 @@ const GalleryPage = () => {
     visible: { scale: 1, opacity: 1 },
     exit: { scale: 0.9, opacity: 0 }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 text-lg mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
 
   return (
@@ -145,7 +193,7 @@ const GalleryPage = () => {
             {/* Close Button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-6 right-6 text-white hover:text-[#FFC857] transition-colors"
+              className="absolute top-6 right-6 text-white hover:text-[#FFC857] transition-colors z-10"
               aria-label="Close lightbox"
             >
               <X className="h-8 w-8" />
@@ -154,7 +202,7 @@ const GalleryPage = () => {
             {/* Navigation Arrows */}
             <button
               onClick={goToPrevious}
-              className="absolute left-6 md:left-12 text-white hover:text-[#FFC857] transition-colors"
+              className="absolute left-6 md:left-12 text-white hover:text-[#FFC857] transition-colors z-10"
               aria-label="Previous image"
             >
               <ArrowLeft className="h-8 w-8" />
@@ -162,7 +210,7 @@ const GalleryPage = () => {
 
             <button
               onClick={goToNext}
-              className="absolute right-6 md:right-12 text-white hover:text-[#FFC857] transition-colors"
+              className="absolute right-6 md:right-12 text-white hover:text-[#FFC857] transition-colors z-10"
               aria-label="Next image"
             >
               <ArrowRight className="h-8 w-8" />
@@ -187,25 +235,36 @@ const GalleryPage = () => {
               {/* Caption Below Image */}
               <div className="mt-4 text-center text-white">
                 <p className="text-lg font-medium">
-                  {filteredImages[currentImageIndex]?.alt}
+                  {filteredImages[currentImageIndex]?.title || filteredImages[currentImageIndex]?.alt}
                 </p>
-                <p className="text-sm text-[#FFC857]">
+                {filteredImages[currentImageIndex]?.description && (
+                  <p className="text-sm mt-2 text-gray-300">
+                    {filteredImages[currentImageIndex]?.description}
+                  </p>
+                )}
+                <p className="text-sm mt-2 text-[#FFC857]">
                   {currentImageIndex + 1} of {filteredImages.length}
                 </p>
               </div>
             </motion.div>
-
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black">
+      <section
+        ref={ref}
+        className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black">
         {/* Hero Image */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          animate={controls}
+          variants={{
+            visible: {
+              opacity: 1,
+              transition: { duration: 1.5 }
+            }
+          }}
           className="absolute inset-0 z-0"
         >
           <img
@@ -224,12 +283,12 @@ const GalleryPage = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
         </motion.div>
-        
+
         {/* Content */}
         <div className="relative z-10 h-full flex items-center justify-center text-white px-6">
           <motion.div
             initial="hidden"
-            animate="visible"
+            animate={controls}
             variants={containerVariants}
             className="max-w-4xl mx-auto text-center mt-10 md:mt-0"
           >
@@ -251,19 +310,25 @@ const GalleryPage = () => {
         {/* Decorative Elements */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={{
-            scale: 1,
-            opacity: 0.3,
-            transition: { delay: 1, duration: 1 }
+          animate={controls}
+          variants={{
+            visible: {
+              scale: 1,
+              opacity: 0.3,
+              transition: { delay: 1, duration: 1 }
+            }
           }}
           className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full"
         />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={{
-            scale: 1,
-            opacity: 0.2,
-            transition: { delay: 1.2, duration: 1 }
+          animate={controls}
+          variants={{
+            visible: {
+              scale: 1,
+              opacity: 0.2,
+              transition: { delay: 1.2, duration: 1 }
+            }
           }}
           className="absolute bottom-1/3 left-8 w-16 h-16 border border-[#FFC857] rounded-full"
         />
@@ -274,57 +339,58 @@ const GalleryPage = () => {
         {/* Decorative Elements */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.1 }}
+          whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="absolute top-20 -left-20 w-64 h-64 border-2 border-[#0A2463] rounded-full"
+          className="absolute top-20 -left-20 w-64 h-64 border border-[#0A2463] rounded-full z-20"
         />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.1 }}
+          whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="absolute bottom-1/3 -right-20 w-48 h-48 border border-[#FFC857] rounded-full"
+          className="absolute bottom-20 -right-16 w-48 h-48 border border-[#FFC857] rounded-full z-20"
         />
 
         <div className="container mx-auto px-6 relative z-10">
           {/* Category Filters */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
             className="flex flex-wrap justify-center gap-4 mb-12"
           >
             {['all', 'premises', 'sports', 'amenities', 'dining', 'events'].map((category) => (
-              <motion.button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2 rounded-full font-medium uppercase tracking-wider text-sm relative ${selectedCategory === category
-                  ? 'bg-[#0A2463] text-white'
-                  : 'bg-gray-100 text-[#0A2463] hover:bg-gray-200'
-                  }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-                {selectedCategory === category && (
-                  <motion.div
-                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-0.5 bg-[#FFC857]"
-                    layoutId="categoryUnderline"
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  />
-                )}
-              </motion.button>
+              <motion.div key={category} variants={itemVariants}>
+                <motion.button
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-6 py-2 rounded-full font-medium uppercase tracking-wider text-sm relative ${selectedCategory === category
+                    ? 'bg-[#0A2463] text-white'
+                    : 'bg-gray-100 text-[#0A2463] hover:bg-gray-200'
+                    }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                  {selectedCategory === category && (
+                    <motion.div
+                      className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-0.5 bg-[#FFC857]"
+                      layoutId="categoryUnderline"
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    />
+                  )}
+                </motion.button>
+              </motion.div>
             ))}
           </motion.div>
 
           {/* Image Grid */}
+          {filteredImages.length > 0 ? (
           <motion.div
             key={selectedCategory}
             initial="hidden"
             animate="visible"
-            viewport={{ once: true, amount: 0.2 }}
             variants={containerVariants}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
@@ -332,31 +398,25 @@ const GalleryPage = () => {
               <motion.div
                 key={image.id}
                 variants={itemVariants}
-                className="relative group overflow-hidden rounded-xl shadow-md"
-                whileHover={{
-                  scale: 1.02,
-                  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)"
-                }}
+                className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 onClick={() => openLightbox(index)}
               >
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-64 object-cover cursor-pointer"
+                  className="w-full h-64 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute bottom-0 left-0 p-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                  <div className="flex items-center gap-2 text-white">
-                    <ImageIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">
-                      {image.category.charAt(0).toUpperCase() + image.category.slice(1)}
-                    </span>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.div>
             ))}
           </motion.div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No images found for this category</p>
+              </div>
+          )}
         </div>
       </section>
 

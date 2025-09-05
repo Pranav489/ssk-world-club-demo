@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { fadeIn, staggerContainer, zoomIn } from "../../utils/motion";
+import { motion, useAnimation } from "framer-motion";
+// import { fadeIn, staggerContainer, zoomIn } from "../../utils/motion";
 
 import {
   Phone,
@@ -11,20 +11,45 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useRef } from "react";
+import { ssk_club } from "../../assets";
 
 const SSKSolitaireGuestForm = () => {
   const formRef = useRef(null);
+  const controls = useAnimation();
 
-  // High-quality Unsplash images matching luxury sports club theme
-  const images = {
-    hero: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    amenities:
-      "https://images.unsplash.com/photo-1565992441121-4367c2967103?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    pool: "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+
+
+  const staggerContainer = (staggerChildren, delayChildren) => {
+    return {
+      hidden: {},
+      show: {
+        transition: {
+          staggerChildren: staggerChildren,
+          delayChildren: delayChildren || 0,
+        },
+      },
+    };
   };
 
-  const scrollToForm = () => {
-    formRef.current.scrollIntoView({ behavior: "smooth" });
+  const fadeIn = (direction, type, delay, duration) => {
+    return {
+      hidden: {
+        x: direction === "left" ? 100 : direction === "right" ? -100 : 0,
+        y: direction === "up" ? 100 : direction === "down" ? -100 : 0,
+        opacity: 0,
+      },
+      show: {
+        x: 0,
+        y: 0,
+        opacity: 1,
+        transition: {
+          type: type,
+          delay: delay,
+          duration: duration,
+          ease: "easeOut",
+        },
+      },
+    };
   };
 
   return (
@@ -34,49 +59,64 @@ const SSKSolitaireGuestForm = () => {
       viewport={{ once: true }}
       className="relative overflow-hidden"
     >
-      {/* Hero Section with Parallax Effect */}
-      <motion.section
-        className="relative pt-20 md:pt-35 h-96 w-full overflow-hidden bg-black"
-        style={{
-          backgroundImage: `url(${images.hero})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
+      <div className="relative overflow-hidden">
+  {/* Hero Section */}
+  <div className="relative">
+    <motion.section
+      className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
+      style={{
+        backgroundImage: `url(${ssk_club})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40 z-0" />
+      
+      {/* Content */}
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        variants={staggerContainer}
+        className="relative z-10 h-full flex items-center justify-center text-white px-6"
       >
-        <div className="absolute inset-0 bg-[#0A2463]/80" />
-        <motion.div
-          variants={staggerContainer}
-          className="relative z-10 text-center px-6"
-        >
+        <div className="max-w-4xl mx-auto text-center mt-10 md:mt-0">
           <motion.h1
             variants={fadeIn("up", "spring", 0.2, 1)}
-            className="text-4xl md:text-6xl font-bold text-white mb-6 uppercase tracking-tight"
+            className="text-4xl md:text-5xl font-bold mb-4"
           >
             The SSK World Club
           </motion.h1>
+
           <motion.p
             variants={fadeIn("up", "spring", 0.4, 1)}
-            className="text-xl text-white/90 max-w-2xl mx-auto mb-8"
+            className="text-lg text-[#FFC857] max-w-2xl mx-auto"
           >
             Register for exclusive access to our premium sports and wellness
             facilities
           </motion.p>
-          <motion.button
-            // variants={fadeIn("up", "spring", 0.6, 1)}
-            onClick={scrollToForm}
-            whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold mx-auto  flex items-center gap-2"
-          >
-            Register Below
-            <User className="h-5 w-5" />
-          </motion.button>
-        </motion.div>
-      </motion.section>
+        </div>
+      </motion.div>
+
+      {/* Decorative Elements */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 0.3 }}
+        viewport={{ once: true }}
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full"
+      />
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 0.2 }}
+        viewport={{ once: true }}
+        transition={{ delay: 1.2, duration: 1 }}
+        className="absolute bottom-1/3 left-8 w-16 h-16 border border-[#FFC857] rounded-full"
+      />
+    </motion.section>
+  </div>
+</div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -142,9 +182,9 @@ const SSKSolitaireGuestForm = () => {
                 </div>
               </div>
               <motion.button whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
-                }}
+                scale: 1.05,
+                boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+              }}
                 whileTap={{ scale: 0.98 }}
                 className="bg-[#FFC857] text-[#0A2463] px-6 py-3 rounded-sm font-bold flex items-center gap-2" >
                 Get Directions

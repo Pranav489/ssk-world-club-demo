@@ -6,13 +6,40 @@ import { useInView } from "react-intersection-observer";
 import { Phone, Mail, MapPin, Clock, User, ChevronRight, Send } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { basketball } from "../../assets";
+import axiosInstance from "../../services/api"
 
 const ContactPage = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [contactInfo, setContactInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0.4 });
   const contactGridRef = useRef(null);
+
+  // Fetch contact information
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('/contact-info');
+        
+        if (response.data.success) {
+          setContactInfo(response.data.data);
+        } else {
+          setError('Failed to load contact information');
+        }
+      } catch (err) {
+        console.error('Error fetching contact information:', err);
+        setError('Failed to load contact information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
 
   useEffect(() => {
     if (inView) {
@@ -44,7 +71,6 @@ const ContactPage = () => {
     }
   };
 
-
   const fadeInVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -59,8 +85,8 @@ const ContactPage = () => {
       scale: 1,
       opacity: 1,
       transition: {
-        // delay: 0.1 * i,
-        // type: "spring",
+        delay: 0.1 * i,
+        type: "spring",
         stiffness: 200,
         damping: 10
       }
@@ -72,24 +98,71 @@ const ContactPage = () => {
     }
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
-    setFormSubmitted(true);
-    // Here you would typically send the data to your backend
+  const onSubmit = async (data) => {
+    try {
+      const response = await axiosInstance.post('/enquiries', data);
+      
+      if (response.data.success) {
+        setFormSubmitted(true);
+        reset(); // Reset form fields
+      } else {
+        setError('Failed to submit enquiry. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error submitting enquiry:', err);
+      if (err.response?.data?.errors) {
+        // Handle validation errors
+        setError('Please check the form for errors');
+      } else {
+        setError('Failed to submit enquiry. Please try again.');
+      }
+    }
   };
 
-  const socialLinks = [
-    { icon: FaFacebook, url: "https://facebook.com/sskworldclub", color: "#3b5998" },
-    { icon: FaInstagram, url: "https://instagram.com/sskworldclub", color: "#E1306C" },
-    { icon: FaTwitter, url: "https://twitter.com/sskworldclub", color: "#1DA1F2" },
-    { icon: FaLinkedin, url: "https://linkedin.com/company/sskworldclub", color: "#0077B5" },
-    { icon: FaYoutube, url: "https://youtube.com/sskworldclub", color: "#FF0000" }
+  // Social media icons mapping
+  const socialIcons = {
+    facebook: FaFacebook,
+    instagram: FaInstagram,
+    twitter: FaTwitter,
+    linkedin: FaLinkedin,
+    youtube: FaYoutube
+  };
+
+  // Default social links as fallback
+  const defaultSocialLinks = [
+    { platform: 'facebook', url: "https://facebook.com/sskworldclub", color: "#3b5998" },
+    { platform: 'instagram', url: "https://instagram.com/sskworldclub", color: "#E1306C" },
+    { platform: 'twitter', url: "https://twitter.com/sskworldclub", color: "#1DA1F2" },
+    { platform: 'linkedin', url: "https://linkedin.com/company/sskworldclub", color: "#0077B5" },
+    { platform: 'youtube', url: "https://youtube.com/sskworldclub", color: "#FF0000" }
   ];
 
+  // Get social links from API or use defaults
+  const socialLinks = contactInfo?.social_links 
+    ? Object.entries(contactInfo.social_links)
+        .filter(([_, url]) => url)
+        .map(([platform, url]) => ({
+          platform,
+          url,
+          color: defaultSocialLinks.find(s => s.platform === platform)?.color || "#666",
+          icon: socialIcons[platform]
+        }))
+    : defaultSocialLinks;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"></div>
+          <p className="text-[#0A2463] font-medium">Loading contact information...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
-      {/* Hero Section - now h-96 */}
+      {/* Hero Section */}
       <section
         ref={ref}
         className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
@@ -174,7 +247,7 @@ const ContactPage = () => {
         />
       </section>
 
-      {/* Contact Content - Add ref to this section */}
+      {/* Contact Content */}
       <section
         ref={contactGridRef}
         className="relative py-24 bg-white overflow-hidden"
@@ -182,21 +255,28 @@ const ContactPage = () => {
         {/* Decorative elements */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.1 }}
+          whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+          className="absolute top-20 left-10 w-64 h-64 border border-[#FFC857] rounded-full z-20"
         />
 
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.1 }}
+          whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
           className="absolute bottom-1/3 right-8 w-48 h-48 border border-[#0A2463] rounded-full"
         />
 
         <div className="container mx-auto px-6 relative z-10">
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+              {error}
+            </div>
+          )}
+
           {/* First Row - Form and Contact Info */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             {/* Contact Form */}
@@ -233,68 +313,73 @@ const ContactPage = () => {
                     </h3>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                       <div>
-                        <label className="block text-gray-700 mb-2">Full Name</label>
+                        <label className="block text-gray-700 mb-2">Full Name *</label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                           <input
-                            {...register("name", { required: true })}
+                            {...register("full_name", { required: "Full name is required" })}
                             type="text"
                             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
                             placeholder="John Doe"
                           />
                         </div>
-                        {errors.name && <p className="text-red-500 text-sm mt-1">Name is required</p>}
+                        {errors.full_name && <p className="text-red-500 text-sm mt-1">{errors.full_name.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-gray-700 mb-2">Email Address</label>
+                        <label className="block text-gray-700 mb-2">Email Address *</label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                           <input
-                            {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
+                            {...register("email", { 
+                              required: "Email is required", 
+                              pattern: {
+                                value: /^\S+@\S+$/i,
+                                message: "Invalid email address"
+                              }
+                            })}
                             type="email"
                             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
                             placeholder="john@example.com"
                           />
                         </div>
-                        {errors.email && <p className="text-red-500 text-sm mt-1">Valid email is required</p>}
+                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                       </div>
                       <div>
                         <label className="block text-gray-700 mb-2">Phone Number</label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                           <input
-                            {...register("phone", { required: true })}
+                            {...register("phone")}
                             type="tel"
                             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
                             placeholder="+91 9876543210"
                           />
                         </div>
-                        {errors.phone && <p className="text-red-500 text-sm mt-1">Phone is required</p>}
                       </div>
                       <div>
-                        <label className="block text-gray-700 mb-2">Subject</label>
+                        <label className="block text-gray-700 mb-2">Subject *</label>
                         <select
-                          {...register("subject", { required: true })}
+                          {...register("subject", { required: "Subject is required" })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
                         >
                           <option value="">Select a subject</option>
-                          <option value="membership">Membership Enquiry</option>
-                          <option value="events">Event Booking</option>
-                          <option value="facilities">Facilities Information</option>
-                          <option value="feedback">Feedback/Suggestions</option>
-                          <option value="other">Other</option>
+                          <option value="Membership Enquiry">Membership Enquiry</option>
+                          <option value="Event Booking">Event Booking</option>
+                          <option value="Facilities Information">Facilities Information</option>
+                          <option value="Feedback/Suggestions">Feedback/Suggestions</option>
+                          <option value="Other">Other</option>
                         </select>
-                        {errors.subject && <p className="text-red-500 text-sm mt-1">Subject is required</p>}
+                        {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>}
                       </div>
                       <div>
-                        <label className="block text-gray-700 mb-2">Message</label>
+                        <label className="block text-gray-700 mb-2">Message *</label>
                         <textarea
-                          {...register("message", { required: true })}
+                          {...register("message", { required: "Message is required" })}
                           rows="4"
                           className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#FFC857] focus:border-transparent"
                           placeholder="Your message here..."
                         ></textarea>
-                        {errors.message && <p className="text-red-500 text-sm mt-1">Message is required</p>}
+                        {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
                       </div>
                       <button
                         type="submit"
@@ -328,83 +413,111 @@ const ContactPage = () => {
                 variants={containerVariants}
               >
                 {/* Club Address */}
-                <motion.div
-                  className="flex items-start gap-4"
-                  variants={itemVariants}
-                >
-                  <div className="bg-[#0A2463]/10 p-3 rounded-full">
-                    <MapPin className="h-6 w-6 text-[#FFC857]" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-[#0A2463] mb-2">Club Address</h3>
-                    <p className="text-gray-600">
-                      SSK World Club<br />
-                      Pathardi Phata, Nashik-Pune Highway<br />
-                      Nashik, Maharashtra 422010<br />
-                      India
-                    </p>
-                  </div>
-                </motion.div>
+                {contactInfo?.club_address && contactInfo.club_address.length > 0 && (
+                  <motion.div
+                    className="flex items-start gap-4"
+                    variants={itemVariants}
+                  >
+                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                      <MapPin className="h-6 w-6 text-[#FFC857]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-[#0A2463] mb-2">Club Address</h3>
+                      <p className="text-gray-600">
+                        {contactInfo.club_address.map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Office Address */}
-                <motion.div
-                  className="flex items-start gap-4"
-                  variants={itemVariants}
-                >
-                  <div className="bg-[#0A2463]/10 p-3 rounded-full">
-                    <MapPin className="h-6 w-6 text-[#FFC857]" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-[#0A2463] mb-2">Office Address</h3>
-                    <p className="text-gray-600">
-                      SSK World Club Corporate Office<br />
-                      12th Floor, Business Tower<br />
-                      College Road, Nashik 422005<br />
-                      Maharashtra, India
-                    </p>
-                  </div>
-                </motion.div>
+                {contactInfo?.office_address && contactInfo.office_address.length > 0 && (
+                  <motion.div
+                    className="flex items-start gap-4"
+                    variants={itemVariants}
+                  >
+                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                      <MapPin className="h-6 w-6 text-[#FFC857]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-[#0A2463] mb-2">Office Address</h3>
+                      <p className="text-gray-600">
+                        {contactInfo.office_address.map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            <br />
+                          </span>
+                        ))}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Contact Details */}
-                <motion.div
-                  className="flex items-start gap-4"
-                  variants={itemVariants}
-                >
-                  <div className="bg-[#0A2463]/10 p-3 rounded-full">
-                    <Phone className="h-6 w-6 text-[#FFC857]" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-[#0A2463] mb-2">Contact</h3>
-                    <p className="text-gray-600 mb-2">
-                      <span className="font-medium">Phone:</span> +91 555 123 4567
-                    </p>
-                    <p className="text-gray-600">
-                      <span className="font-medium">Email:</span> info@sskworldclub.com
-                    </p>
-                  </div>
-                </motion.div>
+                {contactInfo?.contact && (
+                  <motion.div
+                    className="flex items-start gap-4"
+                    variants={itemVariants}
+                  >
+                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                      <Phone className="h-6 w-6 text-[#FFC857]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-[#0A2463] mb-2">Contact</h3>
+                      {contactInfo.contact.phone && (
+                        <p className="text-gray-600 mb-2">
+                          <span className="font-medium">Phone:</span> {contactInfo.contact.phone}
+                        </p>
+                      )}
+                      {contactInfo.contact.whatsapp && (
+                        <p className="text-gray-600 mb-2">
+                          <span className="font-medium">WhatsApp:</span> {contactInfo.contact.whatsapp}
+                        </p>
+                      )}
+                      {contactInfo.contact.email && (
+                        <p className="text-gray-600">
+                          <span className="font-medium">Email:</span> {contactInfo.contact.email}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Hours */}
-                <motion.div
-                  className="flex items-start gap-4"
-                  variants={itemVariants}
-                >
-                  <div className="bg-[#0A2463]/10 p-3 rounded-full">
-                    <Clock className="h-6 w-6 text-[#FFC857]" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-[#0A2463] mb-2">Hours</h3>
-                    <p className="text-gray-600 mb-1">
-                      <span className="font-medium">Sports Facilities:</span> 6:00 AM - 10:00 PM
-                    </p>
-                    <p className="text-gray-600 mb-1">
-                      <span className="font-medium">Club Office:</span> 9:00 AM - 6:00 PM (Mon-Sat)
-                    </p>
-                    <p className="text-gray-600">
-                      <span className="font-medium">Restaurants:</span> 7:30 AM - 11:00 PM
-                    </p>
-                  </div>
-                </motion.div>
+                {contactInfo?.hours && (
+                  <motion.div
+                    className="flex items-start gap-4"
+                    variants={itemVariants}
+                  >
+                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                      <Clock className="h-6 w-6 text-[#FFC857]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-[#0A2463] mb-2">Hours</h3>
+                      {contactInfo.hours.sports_facilities && (
+                        <p className="text-gray-600 mb-1">
+                          <span className="font-medium">Sports Facilities:</span> {contactInfo.hours.sports_facilities}
+                        </p>
+                      )}
+                      {contactInfo.hours.club_office && (
+                        <p className="text-gray-600 mb-1">
+                          <span className="font-medium">Club Office:</span> {contactInfo.hours.club_office}
+                        </p>
+                      )}
+                      {contactInfo.hours.restaurants && (
+                        <p className="text-gray-600">
+                          <span className="font-medium">Restaurants:</span> {contactInfo.hours.restaurants}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Social Media Links */}
                 <motion.div
                   className="flex items-start gap-4"
@@ -424,21 +537,24 @@ const ContactPage = () => {
                       initial="hidden"
                       animate="visible"
                     >
-                      {socialLinks.map((social, index) => (
-                        <motion.a
-                          key={social.url}
-                          href={social.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          custom={index}
-                          variants={socialLinkVariants}
-                          whileHover="hover"
-                          className="p-2 rounded-full bg-gray-100 hover:shadow-md transition-all"
-                          style={{ color: social.color }}
-                        >
-                          <social.icon className="h-6 w-6" />
-                        </motion.a>
-                      ))}
+                      {socialLinks.map((social, index) => {
+                        const IconComponent = social.icon;
+                        return (
+                          <motion.a
+                            key={social.platform}
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            custom={index}
+                            variants={socialLinkVariants}
+                            whileHover="hover"
+                            className="p-2 rounded-full bg-gray-100 hover:shadow-md"
+                            style={{ color: social.color }}
+                          >
+                            <IconComponent className="h-6 w-6" />
+                          </motion.a>
+                        );
+                      })}
                     </motion.div>
                   </div>
                 </motion.div>
@@ -468,7 +584,6 @@ const ContactPage = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="h-96 rounded-xl overflow-hidden shadow-lg border border-gray-200"
           >
-
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3750.796060498386!2d73.7614670750005!3d19.93299708145612!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdd94bc37eb91ff%3A0x576425262ba1f1a!2sThe%20SSK%20World%20Club!5e0!3m2!1sen!2sin!4v1755022574999!5m2!1sen!2sin"
               width="100%"
@@ -487,10 +602,10 @@ const ContactPage = () => {
         {/* Decorative elements */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 0.1 }}
+          whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="absolute top-20 right-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+          className="absolute top-20 right-10 w-64 h-64 border border-[#FFC857] rounded-full"
         />
 
         <div className="container mx-auto px-6 relative z-10">
@@ -514,24 +629,25 @@ const ContactPage = () => {
                   scale: 1.05,
                   boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
                 }}
-
                 whileTap={{ scale: 0.98 }}
                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
               >
                 Book a Tour
               </motion.button>
-              <motion.button
-                onClick={() => window.location.href = "tel:+915551234567"}
-                whileHover={{
-                  backgroundColor: "rgba(255, 200, 87, 0.1)",
-                  scale: 1.02,
-                  borderColor: "#FFD700"
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
-              >
-                Call Now: +91 555 123 4567
-              </motion.button>
+              {contactInfo?.contact?.phone && (
+                <motion.button
+                  onClick={() => window.location.href = `tel:${contactInfo.contact.phone}`}
+                  whileHover={{
+                    backgroundColor: "rgba(255, 200, 87, 0.1)",
+                    scale: 1.02,
+                    borderColor: "#FFD700"
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+                >
+                  Call Now: {contactInfo.contact.phone}
+                </motion.button>
+              )}
             </div>
           </motion.div>
         </div>

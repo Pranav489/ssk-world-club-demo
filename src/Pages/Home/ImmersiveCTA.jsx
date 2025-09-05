@@ -1,15 +1,41 @@
 import { motion, useAnimation } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { ChevronRight, Phone, MapPin, Clock } from "lucide-react";
 import { fitness, hero_home } from "../../assets";
+import axiosInstance from "../../services/api";
 
 const ImmersiveCTA = () => {
+  const [contactInfo, setContactInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const controls = useAnimation();
   const [ref, inView] = useInView({
     triggerOnce: false,
     threshold: 0.2
   });
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('/contact-info');
+
+        if (response.data.success) {
+          setContactInfo(response.data.data);
+        } else {
+          setError('Failed to load contact information');
+        }
+      } catch (err) {
+        console.error('Error fetching contact information:', err);
+        setError('Failed to load contact information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
 
   useEffect(() => {
     if (inView) {
@@ -43,7 +69,7 @@ const ImmersiveCTA = () => {
 
   const fadeInVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: { duration: 0.8 }
     }
@@ -62,7 +88,7 @@ const ImmersiveCTA = () => {
   };
 
   return (
-    <section 
+    <section
       ref={ref}
       className="relative py-32 overflow-hidden"
       style={{
@@ -91,9 +117,9 @@ const ImmersiveCTA = () => {
             transition: { delay: 0.5, duration: 1 }
           }
         }}
-        className="absolute top-1/4 left-1/4 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+        className="absolute top-1/4 left-1/4 w-64 h-64 border border-[#FFC857] rounded-full"
       />
-      
+
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={controls}
@@ -122,8 +148,11 @@ const ImmersiveCTA = () => {
           </motion.h2>
 
           <motion.div
-            className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
-            variants={fadeInVariants}
+            className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
           />
 
           <motion.p
@@ -141,7 +170,7 @@ const ImmersiveCTA = () => {
               href="/membership"
               className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
               variants={scaleUp}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 boxShadow: "0 8px 25px rgba(255, 200, 87, 0.5)"
               }}
@@ -149,14 +178,14 @@ const ImmersiveCTA = () => {
             >
               Join The Club
               <motion.span
-                // animate={{
-                //   x: [0, 5, 0],
-                // }}
-                // transition={{
-                //   repeat: Infinity,
-                //   duration: 1.5,
-                //   ease: "easeInOut"
-                // }}
+              // animate={{
+              //   x: [0, 5, 0],
+              // }}
+              // transition={{
+              //   repeat: Infinity,
+              //   duration: 1.5,
+              //   ease: "easeInOut"
+              // }}
               >
                 <ChevronRight className="h-5 w-5" />
               </motion.span>
@@ -166,7 +195,7 @@ const ImmersiveCTA = () => {
               href="/contact"
               className="border-2 border-white text-white px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
               variants={scaleUp}
-              whileHover={{ 
+              whileHover={{
                 backgroundColor: "rgba(255,255,255,0.1)",
                 scale: 1.02
               }}
@@ -184,48 +213,68 @@ const ImmersiveCTA = () => {
           animate={controls}
           variants={containerVariants}
         >
-          <motion.div
-            className="flex flex-col items-center text-center"
-            variants={itemVariants}
-          >
-            <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full mb-4">
-              <Phone className="h-6 w-6" />
-            </div>
-            <h3 className="text-white font-medium mb-2">CALL US</h3>
-            <a 
-              href="tel:+917770001005" 
-              className="text-white/80 hover:text-[#FFC857] transition-colors"
+          {contactInfo?.contact && (
+            <motion.div
+              className="flex flex-col items-center text-center"
+              variants={itemVariants}
             >
-              +91 77700 01005
-            </a>
-          </motion.div>
+              <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full mb-4">
+                <Phone className="h-6 w-6" />
+              </div>
+              <h3 className="text-white font-medium mb-2">CALL US</h3>
+              {contactInfo.contact.phone && (
+                <a
+                  href={`tel:${contactInfo.contact.phone}`}
+                  className="text-white/80 hover:text-[#FFC857] transition-colors"
+                >
+                  {contactInfo.contact.phone}
+                </a>
+              )}
+            </motion.div>
+          )}
 
-          <motion.div
-            className="flex flex-col items-center text-center"
-            variants={itemVariants}
-          >
-            <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full mb-4">
-              <MapPin className="h-6 w-6" />
-            </div>
-            <h3 className="text-white font-medium mb-2">VISIT US</h3>
-            <p className="text-white/80">
-              THE SSK WORLD CLUB, Pathardi Gaulane Road, Pathardi Nashik.
-            </p>
-          </motion.div>
+          {contactInfo?.club_address && contactInfo.club_address.length > 0 && (
+            <motion.div
+              className="flex flex-col items-center text-center"
+              variants={itemVariants}
+            >
+              <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full mb-4">
+                <MapPin className="h-6 w-6" />
+              </div>
+              <h3 className="text-white font-medium mb-2">VISIT US</h3>
+              <p className="text-white/80">
+                {contactInfo.club_address.map((line, index) => (
+                  <span key={index}>
+                    {line}
+                  </span>
+                ))}
+              </p>
+            </motion.div>
+          )}
 
-          <motion.div
-            className="flex flex-col items-center text-center"
-            variants={itemVariants}
-          >
-            <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full mb-4">
-              <Clock className="h-6 w-6" />
-            </div>
-            <h3 className="text-white font-medium mb-2">HOURS</h3>
-            <p className="text-white/80">
-              Daily: 6AM - 11PM<br />
-              Holidays: 8AM - 9PM
-            </p>
+          {contactInfo?.hours && (
+            <motion.div
+              className="flex flex-col items-center text-center"
+              variants={itemVariants}
+            >
+              <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full mb-4">
+                <Clock className="h-6 w-6" />
+              </div>
+              <h3 className="text-white font-medium mb-2">HOURS</h3>
+              {contactInfo.hours.sports_facilities && (
+                <p className="text-white/80">
+                  <span>Sports Facilities: </span>{ contactInfo.hours.sports_facilities }
+                </p>
+              )}
+              
+              {contactInfo.hours.club_office && (
+              <p className= "text-white/80">
+                  <span>Club Office: </span>{ contactInfo.hours.club_office }
+                </p>
+              )}
+            
           </motion.div>
+          )}
         </motion.div>
       </div>
     </section>

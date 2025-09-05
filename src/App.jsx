@@ -37,7 +37,7 @@ const App = () => {
         <Route path='/membership' element={<MembershipPage />} />
         <Route path='/affiliations' element={<AffiliationsPage />} />
         <Route path='/events' element={<EventsPage />} />
-        <Route path='/events/:eventSlug' element={<EventDetailsPage />} />
+        <Route path='/events/:slug' element={<EventDetailsPage />} />
         <Route path='/contact' element={<ContactPage />} />
         <Route path='/ssksolitaire' element={<SSKSolitaireGuestForm />} />
         <Route path='/walking' element={<WalkingVisitorForm />} />
