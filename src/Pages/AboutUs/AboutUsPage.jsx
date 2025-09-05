@@ -4,23 +4,123 @@ import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Play, ChevronRight, Target, Globe, Sparkles, MapPin, Shield, Clock, Award, HeartPulse, Utensils, Trophy, Activity, Medal, Waves, Briefcase, Users, X } from "lucide-react";
-import { AboutUs, founder, hero_video_1, leader2, leader3, ssk_club } from "../../assets";
+import { founder, leader2, leader3, ssk_club } from "../../assets";
+import axiosInstance from "../../services/api";
+
+const convertToEmbedUrl = (url) => {
+  if (!url) return null;
+
+  // If it's already an embed URL, return as is
+  if (url.includes('youtube.com/embed/')) {
+    return url;
+  }
+
+  // Convert share links to embed URLs
+  if (url.includes('youtube.com/watch?v=')) {
+    const videoId = url.split('v=')[1];
+    const ampersandPosition = videoId.indexOf('&');
+    if (ampersandPosition !== -1) {
+      return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1];
+    const ampersandPosition = videoId.indexOf('?');
+    if (ampersandPosition !== -1) {
+      return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  // For non-YouTube videos, return original URL
+  return url;
+};
+
+const isYouTubeUrl = (url) => {
+  return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+};
 
 const AboutUsPage = () => {
+  const [aboutData, setAboutData] = useState(null);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const heroControls = useAnimation();
   const storyControls = useAnimation();
   const clubControls = useAnimation();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const fetchAboutUs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axiosInstance.get('/about-us-settings');
+
+        if (response.data.success) {
+          setAboutData(response.data.data);
+        } else {
+          setError(response.data.message);
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch about us content');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAboutUs();
+  }, []);
+
+  // YouTube URL conversion functions
+  const convertToEmbedUrl = (url) => {
+    if (!url) return null;
+
+    // If it's already an embed URL, return as is
+    if (url.includes('youtube.com/embed/')) {
+      return url;
+    }
+
+    // Convert share links to embed URLs
+    if (url.includes('youtube.com/watch?v=')) {
+      const videoId = url.split('v=')[1];
+      const ampersandPosition = videoId.indexOf('&');
+      if (ampersandPosition !== -1) {
+        return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
+      }
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1];
+      const questionMarkPosition = videoId.indexOf('?');
+      if (questionMarkPosition !== -1) {
+        return `https://www.youtube.com/embed/${videoId.substring(0, questionMarkPosition)}`;
+      }
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // For non-YouTube videos, return original URL
+    return url;
+  };
+
+  const isYouTubeUrl = (url) => {
+    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+  };
 
   const openVideoModal = () => {
     setIsVideoOpen(true);
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    setVideoReady(false);
+    document.body.style.overflow = 'hidden';
   };
 
   const closeVideoModal = () => {
     setIsVideoOpen(false);
-    document.body.style.overflow = 'auto'; // Re-enable scrolling
+    document.body.style.overflow = 'auto';
   };
 
   const [heroRef, heroInView] = useInView({
@@ -102,6 +202,35 @@ const AboutUsPage = () => {
     }
   };
 
+  // Get video URL and type
+  const videoUrl = aboutData?.hero?.video_url;
+  const embedUrl = videoUrl ? convertToEmbedUrl(videoUrl) : null;
+  const isYouTube = videoUrl ? isYouTubeUrl(videoUrl) : false;
+
+  if (loading) {
+    return (
+      <div className="relative h-screen w-full bg-[#0A2463] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="relative h-screen w-full bg-[#0A2463] flex items-center justify-center">
+        <div className="text-white text-center">
+          <p className="text-red-300 mb-4">Error loading content</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       {/* Hero Section */}
@@ -121,11 +250,22 @@ const AboutUsPage = () => {
           }}
           className="absolute inset-0 z-0"
         >
-          <img
-            src={ssk_club} // Replace with your hero image
-            alt="SSK World Club"
-            className="w-full h-full object-cover"
-          />
+          {aboutData?.hero?.image ? (
+            <img
+              src={aboutData.hero.image}
+              alt="SSK World Club"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.src = ssk_club;
+              }}
+            />
+          ) : (
+            <img
+              src={ssk_club}
+              alt="SSK World Club"
+              className="w-full h-full object-cover"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" />
         </motion.div>
 
@@ -175,7 +315,8 @@ const AboutUsPage = () => {
                 }}
                 whileTap={{ scale: 0.98 }}
                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
-                onClick={openVideoModal} // Added click handler
+                onClick={openVideoModal}
+                disabled={!videoUrl}
               >
                 Take A Tour
                 <Play className="h-5 w-5" />
@@ -238,48 +379,97 @@ const AboutUsPage = () => {
           }}
           className="absolute top-1/4 right-10 w-32 h-32 border-2 border-[#FFC857] rounded-full"
         />
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={heroControls}
+          variants={{
+            visible: {
+              scale: 1,
+              opacity: 0.3,
+              transition: { delay: 1, duration: 1 }
+            }
+          }}
+          className="absolute bottom-1/3 left-8 w-16 h-16 border border-[#FFC857] rounded-full"
+        />
       </section>
 
-      {/* Video Modal */}
+      {/* Full Screen Video Modal */}
       <AnimatePresence>
         {isVideoOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black z-50 flex items-center justify-center"
             onClick={closeVideoModal}
           >
+            {/* Close Button */}
+            <button
+              onClick={closeVideoModal}
+              className="absolute top-6 right-6 z-60 text-white hover:text-[#FFC857] transition-colors bg-black/50 rounded-full p-2"
+              aria-label="Close video"
+            >
+              <X className="h-8 w-8" />
+            </button>
+
+            {/* Video Container */}
             <motion.div
-  initial={{ scale: 0.9, opacity: 0 }}
-  animate={{ scale: 1, opacity: 1 }}
-  exit={{ scale: 0.9, opacity: 0 }}
-  transition={{ type: "spring", damping: 20 }}
-  className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-  onClick={(e) => e.stopPropagation()} // prevent click bubbling
->
-  {/* Close button */}
-  <button
-    onClick={closeVideoModal}
-    className="absolute top-4 right-4 text-white hover:text-[#FFC857] transition-colors"
-    aria-label="Close video"
-  >
-    <X className="h-10 w-10" />
-  </button>
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20 }}
+              className="relative w-full h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Loading Overlay */}
+              {!videoReady && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black z-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+                </div>
+              )}
 
-  {/* Video wrapper */}
-  <div className="w-full h-full flex items-center justify-center">
-    <iframe
-      className="w-full h-full"
-      src="https://www.youtube.com/embed/ZUNZ9XA9a5c?autoplay=1&controls=0"
-      title="YouTube video player"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    />
-  </div>
-</motion.div>
+              {/* Video Player */}
+              {embedUrl && (
+                <div className="w-full h-full flex items-center justify-center">
+                  {isYouTube ? (
+                    <iframe
+                      src={`${embedUrl}?autoplay=1&mute=0&rel=0&modestbranding=1&controls=1&playsinline=1`}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      onLoad={() => setVideoReady(true)}
+                    />
+                  ) : (
+                    <video
+                      autoPlay
+                      controls
+                      className="w-full h-full object-contain"
+                      onLoadedData={() => setVideoReady(true)}
+                      onError={() => setVideoReady(true)}
+                    >
+                      <source src={embedUrl} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </div>
+              )}
 
+              {/* No Video Available */}
+              {!embedUrl && (
+                <div className="flex items-center justify-center h-full text-white">
+                  <div className="text-center">
+                    <p className="text-2xl mb-4">No tour video available</p>
+                    <button
+                      onClick={closeVideoModal}
+                      className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -296,11 +486,11 @@ const AboutUsPage = () => {
           variants={{
             visible: {
               scale: 1,
-              opacity: 0.1,
+              opacity: 0.2,
               transition: { delay: 0.5, duration: 1 }
             }
           }}
-          className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+          className="absolute top-20 left-10 w-64 h-64 border border-[#FFC857] rounded-full z-20"
         />
 
         <div className="container px-6 mx-auto">
@@ -316,18 +506,30 @@ const AboutUsPage = () => {
               variants={fadeInVariants}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#0A2463]/80 to-[#2E4052]/80" />
-              <img
-                src={leader3}
-                alt="Founder"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              {aboutData?.about_content?.image ? (
+                <img
+                  src={aboutData.about_content.image}
+                  alt="Founder"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to local image if API image fails
+                    e.target.src = leader3;
+                  }}
+                />
+              ) : (
+                <img
+                  src={leader3}
+                  alt="Founder"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
               <motion.div
                 className="absolute bottom-6 left-6 bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                Founder & CEO
+                {aboutData?.about_content?.badge_text || "Founder & CEO"}
               </motion.div>
             </motion.div>
 
@@ -353,7 +555,7 @@ const AboutUsPage = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
                 >
-                  "To create a new standard where world-class athletic training and contemporary luxury coexist seamlessly for the modern enthusiast."
+                  "{aboutData?.about_content?.quote || "To create a new standard where world-class athletic training and contemporary luxury coexist seamlessly for the modern enthusiast."}"
                 </motion.blockquote>
               </motion.div>
 
@@ -361,7 +563,7 @@ const AboutUsPage = () => {
                 className="text-gray-600 mb-8"
                 variants={itemVariants}
               >
-                Founded in 2020, SSK World Club was born from a vision to disrupt traditional sports clubs by combining cutting-edge facilities with boutique hospitality. We're pioneering a movement where performance and lifestyle elevate each other.
+                {aboutData?.about_content?.content || "Founded in 2020, SSK World Club was born from a vision to disrupt traditional sports clubs by combining cutting-edge facilities with boutique hospitality. We're pioneering a movement where performance and lifestyle elevate each other."}
               </motion.p>
 
               <motion.div
@@ -421,7 +623,7 @@ const AboutUsPage = () => {
               transition: { delay: 0.5, duration: 1 }
             }
           }}
-          className="absolute bottom-20 right-10 w-64 h-64 border-2 border-[#0A2463] rounded-full z-0"
+          className="absolute bottom-20 right-10 w-64 h-64 border border-[#0A2463] rounded-full z-20"
         />
 
         <div className="container px-6 mx-auto relative z-10">
@@ -462,11 +664,22 @@ const AboutUsPage = () => {
               className="relative h-96 rounded-xl overflow-hidden shadow-2xl z-10"
               variants={slideInFromLeft}
             >
-              <img
-                src={ssk_club}
-                alt="SSK World Club aerial view"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              {aboutData?.club_info?.image ? (
+                <img
+                  src={aboutData.club_info.image}
+                  alt="SSK World Club aerial view"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = ssk_club;
+                  }}
+                />
+              ) : (
+                <img
+                  src={ssk_club}
+                  alt="SSK World Club aerial view"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/80 via-transparent to-transparent" />
               <motion.div
                 className="absolute bottom-6 left-6 text-white z-10"
@@ -502,18 +715,21 @@ const AboutUsPage = () => {
                   className="text-gray-600 mb-4"
                   variants={itemVariants}
                 >
-                  Nestled in the peaceful tranquility of lush green Pathardi, overlooking the historical Pandav Leni, our 10-acre property offers:
+                  {aboutData?.club_info?.description || "Nestled in the peaceful tranquility of lush green Pathardi, overlooking the historical Pandav Leni, our 10-acre property offers:"}
                 </motion.p>
                 <motion.ul
                   className="space-y-3 mb-6"
                   variants={containerVariants}
                 >
-                  {[
-                    "Plethora of world-class sports facilities",
-                    "Five-star relaxation in luxurious surroundings",
-                    "Wellness center, restaurant & mini theatre",
-                    "Upcoming nightclub and banquet hall"
-                  ].map((item, index) => (
+                  {(aboutData?.club_info?.features && aboutData.club_info.features.length > 0
+                    ? aboutData.club_info.features
+                    : [
+                      "Plethora of world-class sports facilities",
+                      "Five-star relaxation in luxurious surroundings",
+                      "Wellness center, restaurant & mini theatre",
+                      "Upcoming nightclub and banquet hall"
+                    ]
+                  ).map((item, index) => (
                     <motion.li
                       key={index}
                       className="flex items-start"
@@ -523,7 +739,7 @@ const AboutUsPage = () => {
                       <div className="bg-[#FFC857] rounded-full p-1 mr-3 mt-1">
                         <ChevronRight className="h-3 w-3 text-[#0A2463]" />
                       </div>
-                      <span className="text-gray-700">{item}</span>
+                      <span className="text-gray-700">{typeof item === 'object' ? item.feature : item}</span>
                     </motion.li>
                   ))}
                 </motion.ul>
@@ -556,8 +772,8 @@ const AboutUsPage = () => {
                     <h4 className="font-bold text-[#0A2463]">Club Timings</h4>
                   </div>
                   <ul className="text-gray-600 text-sm space-y-2">
-                    <li>Sports: 7AM-12PM / 4PM-7PM</li>
-                    <li>Wellness & Dining: 8AM-11PM</li>
+                    <li>Sports: {aboutData?.club_info?.timings?.sports || "7AM-12PM / 4PM-7PM"}</li>
+                    <li>Wellness & Dining: {aboutData?.club_info?.timings?.wellness || "8AM-11PM"}</li>
                   </ul>
                 </motion.div>
               </motion.div>
@@ -596,13 +812,38 @@ const AboutUsPage = () => {
   );
 };
 
-// Leadership Component (paste this at the bottom of your file)
+// Leadership Component
 const LeadershipSection = () => {
+  const [leadershipData, setLeadershipData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const controls = useAnimation();
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.2
   });
+
+  useEffect(() => {
+    const fetchLeadershipData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axiosInstance.get('/about-us-settings');
+        
+        if (response.data.success) {
+          setLeadershipData(response.data.data.leadership_team || []);
+        } else {
+          setError(response.data.message);
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch leadership data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeadershipData();
+  }, []);
 
   useEffect(() => {
     if (inView) {
@@ -642,7 +883,8 @@ const LeadershipSection = () => {
     }
   };
 
-  const leadershipTeam = [
+  // Fallback leadership team data
+  const fallbackLeadershipTeam = [
     {
       name: "Mr. Shailesh Shrihari Kute",
       title: "Managing Director",
@@ -655,8 +897,8 @@ const LeadershipSection = () => {
         "Counselor"
       ],
       personal: [
-        { icon: <HeartPulse className="h-4 w-4" />, text: "Believes a fit body is the best fashion statement" },
-        { icon: <Utensils className="h-4 w-4" />, text: "Self-proclaimed foodie with a focus on flavorful, portion-controlled meals" }
+        { icon: "heart-pulse", text: "Believes a fit body is the best fashion statement" },
+        { icon: "utensils", text: "Self-proclaimed foodie with a focus on flavorful, portion-controlled meals" }
       ]
     },
     {
@@ -670,8 +912,8 @@ const LeadershipSection = () => {
         "Member of Nasik Automotive Sports Association"
       ],
       personal: [
-        { icon: <Trophy className="h-4 w-4" />, text: "Multiple-time winner in national rallies and off-road racing events" },
-        { icon: <Activity className="h-4 w-4" />, text: "Passionate basketball and skating enthusiast" }
+        { icon: "trophy", text: "Multiple-time winner in national rallies and off-road racing events" },
+        { icon: "activity", text: "Passionate basketball and skating enthusiast" }
       ]
     },
     {
@@ -683,11 +925,51 @@ const LeadershipSection = () => {
         "Alumnus of London-based Business Administration program"
       ],
       personal: [
-        { icon: <Medal className="h-4 w-4" />, text: "Passionate football player with a competitive spirit" },
-        { icon: <Waves className="h-4 w-4" />, text: "Enjoys swimming as a way to stay fit and focused" }
+        { icon: "medal", text: "Passionate football player with a competitive spirit" },
+        { icon: "waves", text: "Enjoys swimming as a way to stay fit and focused" }
       ]
     }
   ];
+
+  // Use API data if available, otherwise fallback
+  const teamData = leadershipData.length > 0 ? leadershipData : fallbackLeadershipTeam;
+
+  // Icon mapping
+  const iconComponents = {
+    "heart-pulse": HeartPulse,
+    "utensils": Utensils,
+    "trophy": Trophy,
+    "activity": Activity,
+    "medal": Medal,
+    "waves": Waves,
+    "briefcase": Briefcase,
+    "users": Users,
+    "award": Award
+  };
+
+  if (loading) {
+    return (
+      <section className="relative py-24 bg-white overflow-hidden" id="leadership">
+        <div className="container px-6 mx-auto">
+          <div className="flex items-center justify-center h-96">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="relative py-24 bg-white overflow-hidden" id="leadership">
+        <div className="container px-6 mx-auto">
+          <div className="text-center text-red-500">
+            <p>Error loading leadership data: {error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -702,11 +984,11 @@ const LeadershipSection = () => {
         variants={{
           visible: {
             scale: 1,
-            opacity: 0.1,
+            opacity: 0.2,
             transition: { delay: 0.5, duration: 1 }
           }
         }}
-        className="absolute top-20 right-10 w-64 h-64 border-2 border-[#FFC857] rounded-full z-0"
+        className="absolute top-20 right-10 w-64 h-64 border border-[#FFC857] rounded-full z-10"
       />
 
       <div className="container px-6 mx-auto">
@@ -725,7 +1007,10 @@ const LeadershipSection = () => {
           </motion.h2>
           <motion.div
             className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
-            variants={fadeInVariants}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
           />
           <motion.p
             className="text-lg text-gray-600 max-w-3xl mx-auto"
@@ -737,82 +1022,115 @@ const LeadershipSection = () => {
 
         {/* Leadership Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {leadershipTeam.map((leader, index) => (
-            <motion.div
-              key={leader.name}
-              className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
-              initial="hidden"
-              animate={controls}
-              variants={itemVariants}
-              custom={index}
-            >
-              {/* Leader Photo */}
-              <div className="relative h-64 w-full">
-                <img
-                  src={leader.image}
-                  alt={leader.name}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/80 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider inline-block">
-                    {leader.title}
+          {teamData.map((leader, index) => {
+            // const IconComponent = iconComponents[leader.icon] || Users;
+            
+            return (
+              <motion.div
+                key={leader.name}
+                className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+                initial="hidden"
+                animate={controls}
+                variants={itemVariants}
+                custom={index}
+              >
+                {/* Leader Photo */}
+                <div className="relative h-64 w-full">
+                  {leader.image ? (
+                    <img
+                      src={leader.image}
+                      alt={leader.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to local images based on title
+                        if (leader.title?.includes("Managing")) {
+                          e.target.src = leader3;
+                        } else if (leader.title?.includes("Operational")) {
+                          e.target.src = leader2;
+                        } else {
+                          e.target.src = founder;
+                        }
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={
+                        leader.title?.includes("Managing") ? leader3 :
+                        leader.title?.includes("Operational") ? leader2 :
+                        founder
+                      }
+                      alt={leader.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/80 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider inline-block">
+                      {leader.title}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Leader Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#0A2463] mb-2">
-                  {leader.name}
-                </h3>
+                {/* Leader Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-[#0A2463] mb-2">
+                    {leader.name}
+                  </h3>
 
-                <p className="text-gray-600 mb-4 text-sm">
-                  {leader.bio}
-                </p>
+                  <p className="text-gray-600 mb-4 text-sm">
+                    {leader.bio}
+                  </p>
 
-                {/* Professional Roles */}
-                <div className="mb-4">
-                  <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
-                    <Briefcase className="h-4 w-4 text-[#FFC857]" />
-                    Key Positions:
-                  </h4>
-                  <ul className="space-y-2">
-                    {leader.roles.map((role, i) => (
-                      <li key={i} className="flex items-start">
-                        <div className="flex-shrink-0 mr-2 mt-0.5">
-                          <div className="bg-[#0A2463] rounded-full p-1">
-                            <Award className="h-3 w-3 text-[#FFC857]" />
-                          </div>
-                        </div>
-                        <span className="text-gray-700 text-xs">{role}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  {/* Professional Roles */}
+                  {leader.roles && leader.roles.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
+                        <Briefcase className="h-4 w-4 text-[#FFC857]" />
+                        Key Positions:
+                      </h4>
+                      <ul className="space-y-2">
+                        {leader.roles.map((role, i) => (
+                          <li key={i} className="flex items-start">
+                            <div className="flex-shrink-0 mr-2 mt-0.5">
+                              <div className="bg-[#0A2463] rounded-full p-1">
+                                <Award className="h-3 w-3 text-[#FFC857]" />
+                              </div>
+                            </div>
+                            <span className="text-gray-700 text-xs">{typeof role === 'object' ? role.role : role}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-                {/* Personal Insights */}
-                <div>
-                  <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
-                    <Users className="h-4 w-4 text-[#FFC857]" />
-                    Personal:
-                  </h4>
-                  <div className="space-y-2">
-                    {leader.personal.map((item, i) => (
-                      <div key={i} className="flex items-start">
-                        <div className="flex-shrink-0 mr-2 mt-0.5">
-                          <div className="bg-[#0A2463] text-[#FFC857] p-1 rounded-full">
-                            {React.cloneElement(item.icon, { className: "h-3 w-3" })}
-                          </div>
-                        </div>
-                        <span className="text-gray-700 text-xs">{item.text}</span>
+                  {/* Personal Insights */}
+                  {leader.personal && leader.personal.length > 0 && (
+                    <div>
+                      <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
+                        <Users className="h-4 w-4 text-[#FFC857]" />
+                        Personal:
+                      </h4>
+                      <div className="space-y-2">
+                        {leader.personal.map((item, i) => {
+                          const PersonalIcon = iconComponents[item.icon] || Users;
+                          return (
+                            <div key={i} className="flex items-start">
+                              <div className="flex-shrink-0 mr-2 mt-0.5">
+                                <div className="bg-[#0A2463] text-[#FFC857] p-1 rounded-full">
+                                  <PersonalIcon className="h-3 w-3" />
+                                </div>
+                              </div>
+                              <span className="text-gray-700 text-xs">{item.text}</span>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

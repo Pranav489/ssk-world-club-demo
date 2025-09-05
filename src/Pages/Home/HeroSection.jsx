@@ -1,21 +1,61 @@
+import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
-import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useInView } from "react-intersection-observer";
-import { Phone, ArrowRight } from "lucide-react";
-import { hero_video_1 } from "../../assets";
+import { Play, ChevronRight, Phone, X } from "lucide-react";
+import axiosInstance from "../../services/api"
 
 const HeroSection = () => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({
+  const [videoData, setVideoData] = useState(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const heroControls = useAnimation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchHeroVideo = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance('/hero-video');
+
+        if (response.data.success) {
+          setVideoData(response.data.data);
+        } else {
+          setError(response.data.message);
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch hero video');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroVideo();
+  }, []);
+
+  const [heroRef, heroInView] = useInView({
     triggerOnce: true,
-    threshold: 0.3
+    threshold: 0.4
   });
 
   useEffect(() => {
-    if (inView) {
-      controls.start("visible");
+    if (heroInView) {
+      heroControls.start("visible");
     }
-  }, [controls, inView]);
+  }, [heroControls, heroInView]);
+
+  // Set timeout for fallback in case video fails to load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!videoLoaded && videoData?.video_url) {
+        setShowFallback(true);
+      }
+    }, 5000); // 5 second timeout
+
+    return () => clearTimeout(timer);
+  }, [videoLoaded, videoData]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -23,7 +63,7 @@ const HeroSection = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.2,
-        delayChildren: 0.3
+        delayChildren: 0.4
       }
     }
   };
@@ -52,39 +92,126 @@ const HeroSection = () => {
     }
   };
 
-  return (
-    <section 
-      ref={ref}
-      className="relative h-screen w-full overflow-hidden bg-[#0A2463]"
-    >
-      {/* Background Video */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: { opacity: 1, transition: { delay: 0.5, duration: 1.5 } }
-        }}
-        className="absolute inset-0 z-0"
-      >
+  // Function to extract YouTube ID from URL
+  const getYouTubeId = (url) => {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url?.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : null;
+  };
+
+  // Function to check if URL is YouTube
+  const isYouTubeUrl = (url) => {
+    return url?.includes('youtube.com') || url?.includes('youtu.be');
+  };
+
+  // Render appropriate video element based on URL type
+  const renderVideoContent = () => {
+    if (!videoData?.video_url) {
+      return (
+        <div className="bg-[#0A2463] w-full h-full" />
+      );
+    }
+
+    if (isYouTubeUrl(videoData.video_url)) {
+      const videoId = getYouTubeId(videoData.video_url);
+      return (
+        <div className="relative w-full h-screen overflow-hidden">
+  <iframe
+    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&fs=0&disablekb=1`}
+    className="absolute top-0 left-0 w-full h-full object-cover opacity-70"
+    frameBorder="0"
+    allow="autoplay; encrypted-media"
+    allowFullScreen={true}
+  />
+  
+  {/* Transparent overlay to hide watermark */}
+  <div className="absolute inset-0 pointer-events-none bg-black/0" />
+</div>
+
+
+      );
+    }
+
+    return (
+      <>
         <video
           autoPlay
           muted
           loop
           playsInline
           className="w-full h-full object-cover opacity-70"
+          onLoadedData={() => setVideoLoaded(true)}
+          onError={() => setShowFallback(true)}
         >
-          <source src={hero_video_1} type="video/mp4" />
+          <source src={videoData.video_url} type={`video/${videoData.video_type || 'mp4'}`} />
+          Your browser does not support the video tag.
         </video>
+        {showFallback && (
+          <div className="bg-[#0A2463] w-full h-full" />
+        )}
+      </>
+    );
+  };
+
+  if (loading) {
+    return (
+      <section className="relative h-screen w-full overflow-hidden bg-[#0A2463] flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"></div>
+          <p>Loading premium experience...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="relative h-screen w-full overflow-hidden bg-[#0A2463] flex items-center justify-center">
+        <div className="text-white text-center">
+          <p className="text-red-300 mb-4">Error loading content</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-sm font-bold"
+          >
+            Retry
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+
+  return (
+    <section
+      ref={heroRef}
+      className="relative h-screen w-full overflow-hidden bg-[#0A2463]"
+    >
+      {/* Background Video/Image */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={heroControls}
+        variants={{
+          visible: {
+            opacity: 1,
+            transition: { delay: 0.5, duration: 1.5 }
+          }
+        }}
+        className="absolute inset-0 z-0"
+      >
+        {renderVideoContent()}
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" /> */}
+
+
       </motion.div>
 
       {/* Content Container */}
       <motion.div
         initial="hidden"
-        animate={controls}
+        animate={heroControls}
         variants={containerVariants}
         className="relative z-10 h-full flex items-center justify-center text-white"
       >
-        <div className="container px-6 mx-auto">
+        <div className="container px-6 mx-auto ">
           {/* Club Name with Mask Reveal */}
           <div className="overflow-hidden mb-4">
             <motion.div
@@ -110,11 +237,10 @@ const HeroSection = () => {
           {/* CTA Buttons */}
           <motion.div
             variants={containerVariants}
-            className="flex flex-wrap gap-4"
+            className="flex flex-wrap gap-4 "
           >
-            <motion.a
+            <motion.button
               variants={itemVariants}
-              href="/membership"
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 8px 20px rgba(255, 200, 87, 0.3)"
@@ -123,11 +249,10 @@ const HeroSection = () => {
               className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold flex items-center gap-2"
             >
               Explore Memberships
-              <ArrowRight className="h-5 w-5" />
-            </motion.a>
+              <ChevronRight className="h-5 w-5" />
+            </motion.button>
 
-            <motion.a
-              href="/contact"
+            <motion.button
               variants={itemVariants}
               whileHover={{
                 backgroundColor: "rgba(255,255,255,0.1)",
@@ -138,7 +263,7 @@ const HeroSection = () => {
             >
               <Phone className="h-5 w-5" />
               Book Private Tour
-            </motion.a>
+            </motion.button>
           </motion.div>
 
           {/* Scrolling Indicator */}
@@ -173,7 +298,7 @@ const HeroSection = () => {
       {/* Decorative Elements */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
+        animate={heroControls}
         variants={{
           visible: {
             scale: 1,
@@ -185,7 +310,7 @@ const HeroSection = () => {
       />
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
+        animate={heroControls}
         variants={{
           visible: {
             scale: 1,
