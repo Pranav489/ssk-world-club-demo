@@ -516,7 +516,7 @@ const EventDetailsPage = () => {
                                         }}
                                         whileTap={{ scale: 0.98 }}
                                         className="w-full bg-[#FFC857] text-[#0A2463] px-6 py-3 rounded-sm font-bold"
-                                        onClick={() => navigate(event.registrationLink)}
+                                        onClick={() => navigate('/membership')}
                                     >
                                         Register Now
                                     </motion.button>
@@ -588,8 +588,8 @@ const EventDetailsPage = () => {
                                     <motion.div
                                         key={relatedEvent.id}
                                         variants={itemVariants}
-                                        className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100"
-                                        whileHover={{ y: -5 }}
+                                        className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100"
+                                        // whileHover={{ y: -5 }}
                                         onClick={() => navigate(`/events/${relatedEvent.slug}`)}
                                     >
                                         <div className="relative h-48 overflow-hidden">
@@ -616,9 +616,18 @@ const EventDetailsPage = () => {
                                             <p className="text-gray-600 line-clamp-2 mb-4">
                                                 {relatedEvent.description}
                                             </p>
-                                            <div className="flex items-center text-[#0A2463] font-medium">
-                                                View details <ChevronRight className="ml-2 h-5 w-5" />
-                                            </div>
+                                            <motion.div
+                                                className="flex items-center text-[#0A2463] font-medium group-hover:text-[#FFC857] transition-colors"
+                                                initial={{ opacity: 0 }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    transition: { delay: 0.5 } // you can remove this or adjust timing
+                                                }}
+                                            >
+                                                View details
+                                                <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                            </motion.div>
+
                                         </div>
                                     </motion.div>
                                 ))}

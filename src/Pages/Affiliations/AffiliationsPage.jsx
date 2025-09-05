@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Trophy, Globe, Shield, ChevronRight, X } from "lucide-react";
 import { useNavigate } from "react-router";
-// import { affiliated_logo, affiliated_logo1, affiliated_logo10, affiliated_Logo11, affiliated_logo2, affiliated_logo3, affiliated_logo4, affiliated_logo5, affiliated_logo6, affiliated_logo7, affiliated_logo8, affiliated_logo9, hero_home } from "../../assets";
+import { hero_home } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const AffiliationsPage = () => {
