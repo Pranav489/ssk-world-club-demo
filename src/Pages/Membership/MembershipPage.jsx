@@ -98,58 +98,7 @@ const MembershipPage = () => {
 
  
 
-  // const membershipPlans = [
-  //   {
-  //     name: "Family Membership",
-  //     price: "₹25,000",
-  //     period: "per year",
-  //     icon: <Users className="h-8 w-8 text-[#FFC857]" />,
-  //     features: [
-  //       "Access for 2 adults + 2 children",
-  //       "All sports facilities",
-  //       "Priority booking",
-  //       "10% discount on F&B",
-  //       "Free kids club access"
-  //     ],
-  //     bestValue: true
-  //   },
-  //   {
-  //     name: "Senior Citizen Membership",
-  //     price: "₹18,000",
-  //     period: "per year",
-  //     icon: <Heart className="h-8 w-8 text-[#FFC857]" />,
-  //     features: [
-  //       "Single membership",
-  //       "Special morning hours",
-  //       "Senior-friendly activities",
-  //       "Health checkups",
-  //       "15% spa discount"
-  //     ]
-  //   },
-  //   {
-  //     name: "Couple Membership",
-  //     price: "₹20,000",
-  //     period: "per year",
-  //     icon: <User className="h-8 w-8 text-[#FFC857]" />,
-  //     features: [
-  //       "Access for 2 adults",
-  //       "All sports facilities",
-  //       "Date night discounts",
-  //       "Free valet parking",
-  //       "Spa package included"
-  //     ]
-  //   }
-  // ];
-
-  // Animation variants
-  // const fadeInUp = {
-  //   hidden: { opacity: 0, y: 20 },
-  //   visible: {
-  //     opacity: 1,
-  //     y: 0,
-  //     transition: { duration: 0.6 }
-  //   }
-  // };
+ 
 
   const staggerContainer = {
     hidden: { opacity: 0 },

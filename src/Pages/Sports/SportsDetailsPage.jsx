@@ -30,7 +30,9 @@ import {
     Contact,
     Phone,
     ChevronDown,
-    X
+    X,
+    SquareDashedBottom,
+    Briefcase
 
 } from 'lucide-react';
 // import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, net_cricket, shooting, skating, squash, swimming, table_tennis, tennis_league, tt_tournament } from "../../assets";
@@ -96,6 +98,16 @@ const SportsDetailPage = () => {
   // Icon mapping function
     const getSportIcon = (iconName, props = { className:"h-8 w-8 text-[#FFC857]"}) => {
         const iconMap = {
+            briefcase: Briefcase,
+            brain: Brain,
+            activity: Activity,
+            chevronright: ChevronRight,
+            dumbbell: Dumbbell,
+            square: Square,
+            target: Target,
+            table: Table,
+            disc: Disc,
+            waves: Waves,
             trophy: Trophy,
             crosshair: Crosshair,
             volleyball: Volleyball,
@@ -111,6 +123,7 @@ const SportsDetailPage = () => {
             mapPin: MapPin,
             clock: Clock,
             star: Star,
+            squaredashedbottom: SquareDashedBottom
             // Add other icon mappings as needed
         };
 

@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogoWhite, LogoGold } from "../../assets";
+import axios from "axios";
+import axiosInstance from "../../services/api";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,6 +32,69 @@ const Navbar = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showNav, setShowNav] = useState(true);
+  const [sportsData, setSportsData] = useState({ indoor: [], outdoor: [] });
+  const [amenitiesData, setAmenitiesData] = useState([]);
+  const [loading, setLoading] = useState({ sports: true, amenities: true });
+  const [error, setError] = useState({ sports: null, amenities: null });
+
+
+  // Fetch sports data for navbar
+  useEffect(() => {
+    const fetchSportsData = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('/sports/navbar');
+        setSportsData(response.data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching sports data:', err);
+        setError('Failed to load sports data');
+        // Fallback to static data if API fails
+        setSportsData({
+          indoor: [
+            { id: 1, name: "Badminton", slug: "badminton", category: "indoor", icon: "badminton" },
+            { id: 2, name: "Table Tennis", slug: "table-tennis", category: "indoor", icon: "table-tennis" },
+            { id: 3, name: "Squash", slug: "squash", category: "indoor", icon: "squash" },
+            { id: 4, name: "Gym", slug: "gym", category: "indoor", icon: "gym" }
+          ],
+          outdoor: [
+            { id: 5, name: "Tennis", slug: "tennis", category: "outdoor", icon: "tennis" },
+            { id: 6, name: "Swimming", slug: "swimming", category: "outdoor", icon: "swimming" },
+            { id: 7, name: "Basketball", slug: "basketball", category: "outdoor", icon: "basketball" },
+            { id: 8, name: "Cricket Nets", slug: "net-cricket", category: "outdoor", icon: "cricket" }
+          ]
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Fetch amenities data for navbar
+    const fetchAmenitiesData = async () => {
+      try {
+        setLoading(prev => ({ ...prev, amenities: true }));
+        const response = await axiosInstance.get('/amenities/navbar');
+        setAmenitiesData(response.data);
+        setError(prev => ({ ...prev, amenities: null }));
+      } catch (err) {
+        console.error('Error fetching amenities data:', err);
+        setError(prev => ({ ...prev, amenities: 'Failed to load amenities data' }));
+        // Fallback to static data if API fails
+        setAmenitiesData([
+          { id: 1, name: "Billiards & Snooker", slug: "billiards-and-snooker", icon: "billiards" },
+          { id: 2, name: "Kids Play Area", slug: "kids-play-area", icon: "kids" },
+          { id: 3, name: "Mini Theatre", slug: "mini-theatre", icon: "theatre" },
+          { id: 4, name: "Spa", slug: "spa", icon: "spa" },
+          { id: 5, name: "Wifi Library", slug: "wifi-library", icon: "library" }
+        ]);
+      } finally {
+        setLoading(prev => ({ ...prev, amenities: false }));
+      }
+    };
+
+    fetchSportsData();
+    fetchAmenitiesData();
+  }, []);
 
   // Scroll effect for desktop
   useEffect(() => {
@@ -125,22 +190,18 @@ const Navbar = () => {
         {
           name: "Indoor Sports",
           href: "/sports/indoor",
-          subItems: [
-            { name: "Badminton", href: "/sports/indoor/badminton" },
-            { name: "Table Tennis", href: "/sports/indoor/table-tennis" },
-            { name: "Squash", href: "/sports/indoor/squash" },
-            { name: "Gym", href: "/sports/indoor/gym" }
-          ]
+          subItems: sportsData.indoor.map(sport => ({
+            name: sport.name,
+            href: `/sports/indoor/${sport.slug}`,
+          }))
         },
         {
           name: "Outdoor Sports",
           href: "/sports/outdoor",
-          subItems: [
-            { name: "Tennis", href: "/sports/outdoor/tennis" },
-            { name: "Swimming", href: "/sports/outdoor/swimming" },
-            { name: "Basketball", href: "/sports/outdoor/basketball" },
-            { name: "Cricket Nets", href: "/sports/outdoor/net-cricket" }
-          ]
+          subItems: sportsData.outdoor.map(sport => ({
+            name: sport.name,
+            href: `/sports/outdoor/${sport.slug}`,
+          }))
         }
       ]
     },
@@ -148,13 +209,11 @@ const Navbar = () => {
       label: "Amenities",
       path: "/amenities",
       icon: <Hotel className="h-4 w-4 mr-2" />,
-      subItems: [
-        { name: "Billiards & Snooker", href: "/amenities/billiards-and-snooker" },
-        { name: "Kids Play Area", href: "/amenities/kids-play-area" },
-        { name: "Mini Theatre", href: "/amenities/mini-theatre" },
-        { name: "Spa", href: "/amenities/spa" },
-        { name: "Wifi Library", href: "/amenities/wifi-library" }
-      ]
+      subItems: amenitiesData.map(amenity => ({
+        name: amenity.name,
+        href: `/amenities/${amenity.slug}`,
+        // icon: getIconComponent(amenity.icon)
+      }))
     },
     {
       label: "Gallery",
@@ -198,6 +257,20 @@ const Navbar = () => {
     hidden: { y: -20, opacity: 0 },
     show: { y: 0, opacity: 1 }
   };
+
+  // // Show loading state if needed
+  // if (loading) {
+  //   return (
+  //     <header className="fixed w-full z-50 font-sans bg-white shadow-sm">
+  //       <div className="container mx-auto px-4 flex justify-between items-center h-16">
+  //         <a href="/" className="flex items-center">
+  //           <img src={LogoGold} alt="Elite Sports Club" className="w-40" />
+  //         </a>
+  //         <div className="text-sm text-gray-500">Loading sports...</div>
+  //       </div>
+  //     </header>
+  //   );
+  // }
 
   return (
     <header className="fixed w-full z-50 font-sans">
@@ -330,7 +403,8 @@ const Navbar = () => {
                                     variants={itemVariants}
                                     whileHover={{ x: 3 }}
                                   >
-                                    {sport.name}
+                                    {sport.icon}
+                                    <span className="ml-2">{sport.name}</span>
                                   </motion.a>
                                 ))}
                               </motion.div>
@@ -474,7 +548,7 @@ const Navbar = () => {
                                               <a
                                                 key={sport.name}
                                                 href={sport.href}
-                                                className="block py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors border-t border-[#F1F1F1]"
+                                                className="flex items-center py-2 text-xs text-[#2E4052] hover:text-[#0A2463] transition-colors border-t border-[#F1F1F1]"
                                                 onClick={closeAllMenus}
                                               >
                                                 {sport.name}
@@ -505,8 +579,7 @@ const Navbar = () => {
                         className="flex items-center py-3 text-sm text-[#0A2463] font-medium uppercase tracking-wider"
                         onClick={closeAllMenus}
                       >
-                        {item.icon}
-                        <span className="ml-3">{item.label}</span>
+                        {item.label}
                       </a>
                     )}
                   </motion.div>

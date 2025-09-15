@@ -32,7 +32,8 @@ import {
     Play,
     Contact,
     Phone,
-    Briefcase
+    Briefcase,
+    SquareDashedBottom
 } from 'lucide-react';
 
 const AmenitiesPage = () => {
@@ -50,6 +51,16 @@ const AmenitiesPage = () => {
 
   const getAmenityIcon = (iconName, props = { className:"h-8 w-8 text-[#FFC857]"}) => {
         const iconMap = {
+            briefcase: Briefcase,
+            brain: Brain,
+            activity: Activity,
+            chevronright: ChevronRight,
+            dumbbell: Dumbbell,
+            square: Square,
+            target: Target,
+            table: Table,
+            disc: Disc,
+            waves: Waves,
             trophy: Trophy,
             crosshair: Crosshair,
             volleyball: Volleyball,
@@ -65,7 +76,7 @@ const AmenitiesPage = () => {
             mapPin: MapPin,
             clock: Clock,
             star: Star,
-            briefcase: Briefcase
+            squaredashedbottom: SquareDashedBottom
             // Add other icon mappings as needed
         };
 

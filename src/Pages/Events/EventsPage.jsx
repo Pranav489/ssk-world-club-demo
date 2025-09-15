@@ -442,7 +442,7 @@ if (loading) {
             ))}
           </motion.div>
 
-          {/* Events Grid with AnimatePresence for smooth tab transitions */}
+          {/* Events Grid */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
-import {  Image as ImageIcon } from "lucide-react";
+import {  Activity, Brain, Disc, Dumbbell, Image as ImageIcon, Square, SquareDashedBottom, Table, Target, Waves } from "lucide-react";
 import { Flower, Briefcase, Film, Table2, Hotel, ShoppingBag, Tent, BookOpen, Trophy, Crosshair, Volleyball, Leaf, Eclipse, Calendar, Phone, MapPin, Star, ChevronRight, Clock, Users, Coffee, Utensils, } from "lucide-react";
 // import { ac_tents, ac_tents1, billiards, billiards1, business_center, business_center1, card_room, card_room1, conference_room, conference_room1, dining, foosball, foosball1, midnight_lounge, mini_theatre, mini_theatre1, play_area, play_area1, restaurant, room_suites, room_suites1, spa, spa1, sports_shop, sports_shop1, wifi_library, wifi_library1 } from "../../assets";
 import axiosInstance from "../../services/api";
@@ -72,32 +72,34 @@ const AmenityDetailsPage = () => {
     if (!iconName) return <ChevronRight {...props} />;
     
     const iconMap = {
-      // Lucide icons
-      coffee: Coffee,
-      utensils: Utensils,
-      flower: Flower,
-      briefcase: Briefcase,
-      film: Film,
-      table2: Table2,
-      hotel: Hotel,
-      shoppingbag: ShoppingBag,
-      tent: Tent,
-      bookopen: BookOpen,
-      clock: Clock,
-      users: Users,
-      calendar: Calendar,
-      phone: Phone,
-      mapPin: MapPin,
-      star: Star,
-      crosshair: Crosshair,
-      volleyball: Volleyball,
-      leaf: Leaf,
-      eclipse: Eclipse,
-      trophy: Trophy,
-      chevronright: ChevronRight,
-      
-      // Add other icon mappings as needed
-    };
+            briefcase: Briefcase,
+            brain: Brain,
+            activity: Activity,
+            chevronright: ChevronRight,
+            dumbbell: Dumbbell,
+            square: Square,
+            target: Target,
+            table: Table,
+            disc: Disc,
+            waves: Waves,
+            trophy: Trophy,
+            crosshair: Crosshair,
+            volleyball: Volleyball,
+            leaf: Leaf,
+            eclipse: Eclipse,
+            utensils: Utensils,
+            hotel: Hotel,
+            bookopen: BookOpen,
+            film: Film,
+            calendar: Calendar,
+            users: Users,
+            phone: Phone,
+            mapPin: MapPin,
+            clock: Clock,
+            star: Star,
+            squaredashedbottom: SquareDashedBottom
+            // Add other icon mappings as needed
+        };
 
     // Check if it's a Lucide icon name
     const IconComponent = iconMap[iconName.toLowerCase()];
@@ -343,15 +345,7 @@ const AmenityDetailsPage = () => {
                     <motion.div
                       key={detailIndex}
                       className="bg-gray-50 p-6 rounded-lg shadow-sm relative"
-                    >
-                        {/* Small decorative circle inside detail cards */}
-                        <motion.div
-                          className="absolute -top-2 -right-2 w-4 h-4 border border-[#FFC857]/20 rounded-full"
-                          initial={{ scale: 0, opacity: 0 }}
-                          whileInView={{ scale: 1, opacity: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.6, delay: detailIndex * 0.1 + 0.6 }}
-                        />
+                    >                       
                         <div className="flex items-center gap-3 mb-4">
                           {getIconComponent(detail.icon)}
                           <h3 className="font-bold text-[#0A2463]">

@@ -30,7 +30,8 @@ import {
     Play,
     Contact,
     Phone,
-    SquareDashedBottom
+    SquareDashedBottom,
+    Briefcase
 } from 'lucide-react';
 // import { badminton, basketball, carrom, chess, crossfit, fitness, green_sport_campus, hero_home, net_cricket, shooting, skating, squash, ssk_club, swimming, table_tennis, tennis_league, volleyball } from '../../assets';
 import { useNavigate } from 'react-router';
@@ -52,8 +53,10 @@ const SportsPage = () => {
     // Icon mapping function
     const getSportIcon = (iconName, props = { className:"h-8 w-8 text-[#FFC857]"}) => {
         const iconMap = {
+            briefcase: Briefcase,
             brain: Brain,
             activity: Activity,
+            chevronright: ChevronRight,
             dumbbell: Dumbbell,
             square: Square,
             target: Target,

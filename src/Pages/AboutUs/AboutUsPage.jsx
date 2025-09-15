@@ -883,56 +883,10 @@ const LeadershipSection = () => {
     }
   };
 
-  // Fallback leadership team data
-  const fallbackLeadershipTeam = [
-    {
-      name: "Mr. Shailesh Shrihari Kute",
-      title: "Managing Director",
-      image: leader3,
-      bio: "Former Trustee for Shirdi Sai Baba Board with eight years of distinguished service. Political leader who has championed economic modernization.",
-      roles: [
-        "Youth Congress President for District",
-        "District Congress President",
-        "State Secretary for Congress",
-        "Counselor"
-      ],
-      personal: [
-        { icon: "heart-pulse", text: "Believes a fit body is the best fashion statement" },
-        { icon: "utensils", text: "Self-proclaimed foodie with a focus on flavorful, portion-controlled meals" }
-      ]
-    },
-    {
-      name: "Mr. Suraj Dhananjay Kute",
-      title: "Operational Director",
-      image: leader2,
-      bio: "Diploma in Mechanical Engineering and Post Graduate Diploma in Business Management. Entrepreneur, motorsports champion, and active contributor to social and sporting communities.",
-      roles: [
-        "Founder Member of Patanjali Yogpeeth Haridwar",
-        "Director at Jay Malhar Nagari Sahakari Patsanstha, Nasik",
-        "Member of Nasik Automotive Sports Association"
-      ],
-      personal: [
-        { icon: "trophy", text: "Multiple-time winner in national rallies and off-road racing events" },
-        { icon: "activity", text: "Passionate basketball and skating enthusiast" }
-      ]
-    },
-    {
-      name: "Mr. Swapnil Dhananjay Kute",
-      title: "Operational Director",
-      image: founder,
-      bio: "Bachelor's degree in Business Administration from London. A dynamic sports enthusiast with a love for both team and individual challenges.",
-      roles: [
-        "Alumnus of London-based Business Administration program"
-      ],
-      personal: [
-        { icon: "medal", text: "Passionate football player with a competitive spirit" },
-        { icon: "waves", text: "Enjoys swimming as a way to stay fit and focused" }
-      ]
-    }
-  ];
+
 
   // Use API data if available, otherwise fallback
-  const teamData = leadershipData.length > 0 ? leadershipData : fallbackLeadershipTeam;
+  // const teamData = leadershipData.length > 0 ? leadershipData : fallbackLeadershipTeam;
 
   // Icon mapping
   const iconComponents = {
@@ -1022,8 +976,7 @@ const LeadershipSection = () => {
 
         {/* Leadership Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {teamData.map((leader, index) => {
-            // const IconComponent = iconComponents[leader.icon] || Users;
+          {leadershipData.map((leader, index) => {
             
             return (
               <motion.div
@@ -1040,7 +993,7 @@ const LeadershipSection = () => {
                     <img
                       src={leader.image}
                       alt={leader.name}
-                      className="absolute inset-0 w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-contain"
                       onError={(e) => {
                         // Fallback to local images based on title
                         if (leader.title?.includes("Managing")) {
@@ -1063,7 +1016,7 @@ const LeadershipSection = () => {
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/80 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/40 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider inline-block">
                       {leader.title}
