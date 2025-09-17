@@ -7,6 +7,7 @@ import { ssk_club } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const GalleryPage = () => {
+  const [contactInfo, setContactInfo] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [filteredImages, setFilteredImages] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
@@ -21,6 +22,96 @@ const GalleryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100
+      }
+    }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
+
+  const scaleUp = {
+    hidden: { scale: 0.95, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.43, 0.13, 0.23, 0.96]
+      }
+    }
+  };
+
+  const maskVariants = {
+    hidden: { width: 0 },
+    visible: {
+      width: "100%",
+      transition: {
+        duration: 1.2,
+        ease: [0.19, 1, 0.22, 1]
+      }
+    }
+  };
+
+  const lightboxVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
+
+  const imageVariants = {
+    hidden: { scale: 0.9, opacity: 0 },
+    visible: { scale: 1, opacity: 1 },
+    exit: { scale: 0.9, opacity: 0 }
+  };
+
+  // Fetch contact information
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('/contact-info');
+        
+        if (response.data.success) {
+          setContactInfo(response.data.data);
+        } else {
+          setError('Failed to load contact information');
+        }
+      } catch (err) {
+        console.error('Error fetching contact information:', err);
+        setError('Failed to load contact information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
 
   useEffect(() => {
     if (inView) {
@@ -108,78 +199,85 @@ const GalleryPage = () => {
     setFilteredImages(newFilteredImages);
   }, [selectedCategory, galleryImages]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 40, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100
-      }
-    }
-  };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 1.2 }
-    }
-  };
-
-  const lightboxVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-    exit: { opacity: 0 }
-  };
-
-  const imageVariants = {
-    hidden: { scale: 0.9, opacity: 0 },
-    visible: { scale: 1, opacity: 1 },
-    exit: { scale: 0.9, opacity: 0 }
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[#0A2463] font-medium"
+          >
+            Loading gallery...
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 text-lg mb-4">{error}</p>
-          <button
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center p-8 bg-white rounded-xl shadow-md max-w-md mx-auto"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="text-red-500 mb-4"
+          >
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </motion.div>
+          <motion.h3
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-xl font-bold text-[#0A2463] mb-2"
+          >
+            Oops! Something went wrong
+          </motion.h3>
+          <motion.p
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-600 mb-6"
+          >
+            {error}
+          </motion.p>
+          <motion.button
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 5px 15px rgba(244, 162, 97, 0.4)"
+            }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => window.location.reload()}
-            className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+            className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-md font-medium hover:bg-amber-400 transition-colors"
           >
             Try Again
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
 
-
   return (
     <div className="min-h-screen bg-gray-50">
-
       {/* Lightbox Slider */}
       <AnimatePresence>
         {isLightboxOpen && (
@@ -191,30 +289,36 @@ const GalleryPage = () => {
             variants={lightboxVariants}
           >
             {/* Close Button */}
-            <button
+            <motion.button
               onClick={closeLightbox}
               className="absolute top-6 right-6 text-white hover:text-[#FFC857] transition-colors z-10"
               aria-label="Close lightbox"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               <X className="h-8 w-8" />
-            </button>
+            </motion.button>
 
             {/* Navigation Arrows */}
-            <button
+            <motion.button
               onClick={goToPrevious}
               className="absolute left-6 md:left-12 text-white hover:text-[#FFC857] transition-colors z-10"
               aria-label="Previous image"
+              whileHover={{ scale: 1.1, backgroundColor: "#FFC857", color: "#0A2463" }}
+              whileTap={{ scale: 0.9 }}
             >
               <ArrowLeft className="h-8 w-8" />
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
               onClick={goToNext}
               className="absolute right-6 md:right-12 text-white hover:text-[#FFC857] transition-colors z-10"
               aria-label="Next image"
+              whileHover={{ scale: 1.1, backgroundColor: "#FFC857", color: "#0A2463" }}
+              whileTap={{ scale: 0.9 }}
             >
               <ArrowRight className="h-8 w-8" />
-            </button>
+            </motion.button>
 
             {/* Current Image */}
             <motion.div
@@ -233,7 +337,12 @@ const GalleryPage = () => {
               />
 
               {/* Caption Below Image */}
-              <div className="mt-4 text-center text-white">
+              <motion.div
+                className="mt-4 text-center text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
                 <p className="text-lg font-medium">
                   {filteredImages[currentImageIndex]?.title || filteredImages[currentImageIndex]?.alt}
                 </p>
@@ -245,7 +354,7 @@ const GalleryPage = () => {
                 <p className="text-sm mt-2 text-[#FFC857]">
                   {currentImageIndex + 1} of {filteredImages.length}
                 </p>
-              </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
@@ -403,19 +512,25 @@ const GalleryPage = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 onClick={() => openLightbox(index)}
               >
-                <img
+                <motion.img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-64 object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-64 object-cover cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.div>
             ))}
           </motion.div>
           ) : (
-            <div className="text-center py-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-12"
+            >
               <p className="text-gray-500 text-lg">No images found for this category</p>
-              </div>
+            </motion.div>
           )}
         </div>
       </section>
@@ -461,32 +576,32 @@ const GalleryPage = () => {
                 }}
                 whileTap={{ scale: 0.98 }}
                 className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
-                onClick={() => navigate('/contact')}              >
+                onClick={() => navigate('/contact')}
+              >
                 Book a Private Tour
                 <ChevronRight className="h-5 w-5" />
               </motion.button>
 
-              <a href="tel:7770001005">
-                <motion.button
-                  whileHover={{
-                    backgroundColor: "rgba(255, 200, 87, 0.1)",
-                    scale: 1.02,
-                    borderColor: "#FFD700"
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                  className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
-                >
-                  <Phone className="h-5 w-5" />
-                  Contact Membership
-                </motion.button>
-              </a>
-
+              {contactInfo && contactInfo.contact && contactInfo.contact.phone && (
+                <a href={`tel:${contactInfo.contact.phone}`}>
+                  <motion.button
+                    whileHover={{
+                      backgroundColor: "rgba(255, 200, 87, 0.1)",
+                      scale: 1.02,
+                      borderColor: "#FFD700"
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider flex items-center gap-2"
+                  >
+                    <Phone className="h-5 w-5" />
+                    Contact Membership
+                  </motion.button>
+                </a>
+              )}
             </div>
           </motion.div>
         </div>
       </section>
-
-
     </div>
   );
 };

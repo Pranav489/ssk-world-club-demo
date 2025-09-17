@@ -3,9 +3,36 @@ import { FaWhatsapp } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone } from "lucide-react";
+import axiosInstance from "../../services/api";
 
 function WhatsAppPopup() {
   const [show, setShow] = useState(false);
+  const [contactInfo, setContactInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch contact information
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('/contact-info');
+        
+        if (response.data.success) {
+          setContactInfo(response.data.data);
+        } else {
+          setError('Failed to load contact information');
+        }
+      } catch (err) {
+        console.error('Error fetching contact information:', err);
+        setError('Failed to load contact information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
 
   // Close popup when clicking outside
   useEffect(() => {
@@ -51,8 +78,9 @@ function WhatsAppPopup() {
               <p className="text-gray-600 text-sm mb-3">
                 Our experts will reply to you shortly
               </p>
+              {contactInfo?.contact?.whatsapp && (
               <a
-                href="https://wa.me/918261079943?text=Hello%20there!"
+                href={`https://wa.me/${contactInfo.contact.whatsapp}?text=Hello%20there!`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors w-full"
@@ -60,15 +88,18 @@ function WhatsAppPopup() {
                 <FaWhatsapp className="mr-2" />
                 Send Message
               </a>
+              )}
             </div>
             <div className="px-4 pb-2 text-center">
-              <a
-                href="tel:+918261079943"
-                className="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors w-full"
-              >
-                <Phone className="mr-2" />
-                Call Now
-              </a>
+              {contactInfo?.contact?.phone && (
+                <a
+                  href={`tel:${contactInfo.contact.phone}`}
+                  className="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors w-full"
+                >
+                  <Phone className="mr-2" />
+                  Call Now
+                </a>
+              )}
             </div>
           </motion.div>
         )}

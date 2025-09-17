@@ -19,7 +19,6 @@ import {
     Twitter
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
-// import { basketball, green_sport_campus, hero_video_1, monsoon_soccer, sport_turf, table_tennis, tennis_league, tt_tournament } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const EventDetailsPage = () => {
@@ -34,14 +33,83 @@ const EventDetailsPage = () => {
     const [ref, inView] = useInView({ threshold: 0.3 });
     const [activeMedia, setActiveMedia] = useState(0);
 
+    // Animation variants
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.3
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 30, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                type: "spring",
+                damping: 12,
+                stiffness: 100
+            }
+        }
+    };
+
+    const fadeIn = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { duration: 0.8 }
+        }
+    };
+
+    const scaleUp = {
+        hidden: { scale: 0.95, opacity: 0 },
+        visible: {
+            scale: 1,
+            opacity: 1,
+            transition: {
+                duration: 0.8,
+                ease: [0.43, 0.13, 0.23, 0.96]
+            }
+        }
+    };
+
+    const maskVariants = {
+        hidden: { width: 0 },
+        visible: {
+            width: "100%",
+            transition: {
+                duration: 1.2,
+                ease: [0.19, 1, 0.22, 1]
+            }
+        }
+    };
+
+    const galleryItemVariants = {
+        hidden: { scale: 0.9, opacity: 0 },
+        visible: (i) => ({
+            scale: 1,
+            opacity: 1,
+            transition: {
+                delay: 0.1 * i,
+                type: "spring",
+                stiffness: 200,
+                damping: 10
+            }
+        }),
+        hover: {
+            scale: 1.02,
+            zIndex: 1,
+            transition: { duration: 0.2 }
+        }
+    };
+
     useEffect(() => {
         console.log('Slug from URL:', slug);
-
-        // if (!slug) {
-        //     console.log('No slug provided, redirecting to events page');
-        //     navigate('/events');
-        //     return;
-        // }
 
         const fetchEvent = async () => {
             try {
@@ -88,7 +156,6 @@ const EventDetailsPage = () => {
         }
     };
 
-    // Call this when event data is loaded
     useEffect(() => {
         if (event) {
             fetchRelatedEvents(event.id, event.type);
@@ -97,12 +164,6 @@ const EventDetailsPage = () => {
 
     const formatDescription = (htmlContent) => {
         if (!htmlContent) return null;
-
-        // Create a temporary div to parse HTML
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = htmlContent;
-
-        // Convert to plain text with line breaks or keep as HTML
         return (
             <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="space-y-4" />
         );
@@ -111,7 +172,6 @@ const EventDetailsPage = () => {
     const getYouTubeEmbedUrl = (url) => {
         if (!url) return null;
 
-        // Handle various YouTube URL formats
         const patterns = [
             /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/,
             /(?:youtube\.com\/embed\/)([^&]+)/,
@@ -125,29 +185,8 @@ const EventDetailsPage = () => {
             }
         }
 
-        // If no match, return original URL
         return url;
     };
-
-    // Sample event data - in a real app, you'd fetch this based on the slug
-    // const event = {
-    //     id: 1,
-    //     title: "Annual Tennis Tournament",
-    //     slug: "annual-tennis-tournament-2024",
-    //     date: "15-18 March 2024",
-    //     time: "9:00 AM - 6:00 PM",
-    //     location: "SSK Tennis Courts",
-    //     description: "Open to all members with prizes for winners in multiple categories",
-    //     longDescription: "The SSK World Club Annual Tennis Tournament is our flagship sporting event, featuring competitive matches across singles, doubles, and mixed doubles categories. With over 200 participants expected, this four-day event will showcase thrilling matches on our championship courts.\n\nThe tournament includes:\n\n• Professional referees and line judges\n• Prize money totaling ₹5,00,000\n• Catered lunches for all participants\n• Evening social mixers\n\nRegistration closes March 1st. Members receive 20% discount on entry fees.",
-    //     image: tennis_league,
-    //     type: "tournament",
-    //     status: "upcoming", // or "past"
-    //     gallery: [
-    //         { type: "image", src: monsoon_soccer, caption: "Championship Court" },
-    //         { type: "image", src: sport_turf, caption: "Previous Winner" },
-    //         { type: "video", src: hero_video_1, poster: green_sport_campus, caption: "2023 Highlights" }
-    //     ],
-    // };
 
     useEffect(() => {
         if (inView) {
@@ -155,78 +194,79 @@ const EventDetailsPage = () => {
         }
     }, [controls, inView]);
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.3
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { y: 30, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                type: "spring",
-                damping: 12,
-                stiffness: 100
-            }
-        }
-    };
-
-    const fadeInVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { duration: 0.8 }
-        }
-    };
-
-    const galleryItemVariants = {
-        hidden: { scale: 0.9, opacity: 0 },
-        visible: (i) => ({
-            scale: 1,
-            opacity: 1,
-            transition: {
-                delay: 0.1 * i,
-                type: "spring",
-                stiffness: 200,
-                damping: 10
-            }
-        }),
-        hover: {
-            scale: 1.02,
-            zIndex: 1,
-            transition: { duration: 0.2 }
-        }
-    };
-
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center"
+                >
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
+                    />
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-[#0A2463] font-medium"
+                    >
+                        Loading event details...
+                    </motion.p>
+                </motion.div>
             </div>
         );
     }
 
     if (error || !event) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold text-[#0A2463] mb-4">Event Not Found</h2>
-                    <p className="text-gray-600 mb-8">{error || 'The event you are looking for does not exist.'}</p>
-                    <button
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center p-8 bg-white rounded-xl shadow-md max-w-md mx-auto"
+                >
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="text-red-500 mb-4"
+                    >
+                        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </motion.div>
+                    <motion.h3
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-xl font-bold text-[#0A2463] mb-2"
+                    >
+                        Event Not Found
+                    </motion.h3>
+                    <motion.p
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-gray-600 mb-6"
+                    >
+                        {error || 'The event you are looking for does not exist.'}
+                    </motion.p>
+                    <motion.button
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{
+                            scale: 1.05,
+                            boxShadow: "0 5px 15px rgba(244, 162, 97, 0.4)"
+                        }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => navigate('/events')}
                         className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold hover:bg-[#FFD580] transition-colors"
                     >
                         Back to Events
-                    </button>
-                </div>
+                    </motion.button>
+                </motion.div>
             </div>
         );
     }
@@ -259,16 +299,6 @@ const EventDetailsPage = () => {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
                 </motion.div>
-
-                {/* Back Button
-                <motion.button
-                    onClick={() => navigate(-1)}
-                    className="absolute top-6 left-6 z-10 bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/20 transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    <ArrowLeft className="h-5 w-5" />
-                </motion.button> */}
 
                 {/* Content */}
                 <motion.div
@@ -371,15 +401,17 @@ const EventDetailsPage = () => {
                                         transition={{ duration: 0.8 }}
                                     >
                                         {event.gallery[activeMedia].type === 'image' ? (
-                                            <img
+                                            <motion.img
                                                 src={event.gallery[activeMedia].src}
                                                 alt={event.gallery[activeMedia].caption}
                                                 className="w-full h-full object-cover"
+                                                initial={{ scale: 1.1 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ duration: 0.5 }}
                                             />
                                         ) : event.gallery[activeMedia].type === 'video' ? (
                                             event.gallery[activeMedia].src?.includes('youtube.com') ||
                                                 event.gallery[activeMedia].src?.includes('youtu.be') ? (
-                                                // YouTube video - use iframe
                                                 <iframe
                                                     src={getYouTubeEmbedUrl(event.gallery[activeMedia].src)}
                                                     className="w-full h-full"
@@ -389,7 +421,6 @@ const EventDetailsPage = () => {
                                                     title={event.gallery[activeMedia].caption || 'YouTube video'}
                                                 />
                                             ) : (
-                                                // Regular video file - use video tag
                                                 <video
                                                     src={event.gallery[activeMedia].src}
                                                     controls
@@ -400,18 +431,26 @@ const EventDetailsPage = () => {
                                                 </video>
                                             )
                                         ) : (
-                                            // Fallback for unknown media types
                                             <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                                                <button className="bg-[#FFC857] text-[#0A2463] p-4 rounded-full">
+                                                <motion.button
+                                                    className="bg-[#FFC857] text-[#0A2463] p-4 rounded-full"
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
                                                     <Play className="h-8 w-8 fill-current" />
-                                                </button>
+                                                </motion.button>
                                             </div>
                                         )}
 
                                         {event.gallery[activeMedia]?.caption && (
-                                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                                            <motion.div
+                                                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4"
+                                                initial={{ y: 20, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                transition={{ delay: 0.3 }}
+                                            >
                                                 <p className="text-white font-medium">{event.gallery[activeMedia].caption}</p>
-                                            </div>
+                                            </motion.div>
                                         )}
                                     </motion.div>
 
@@ -454,7 +493,6 @@ const EventDetailsPage = () => {
                                                         <Play className="h-5 w-5 text-white" />
                                                     </div>
                                                 )}
-
                                             </motion.button>
                                         ))}
                                     </motion.div>
@@ -522,32 +560,6 @@ const EventDetailsPage = () => {
                                     </motion.button>
                                 </motion.div>
                             )}
-
-                            {/* Share Card */}
-                            <motion.div
-                                variants={itemVariants}
-                                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
-                            >
-                                <h3 className="text-xl font-bold text-[#0A2463] mb-4">Share This Event</h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {[
-                                        { icon: <Facebook className="h-5 w-5" />, color: "bg-[#3b5998]", name: "Facebook" },
-                                        { icon: <Twitter className="h-5 w-5" />, color: "bg-[#1DA1F2]", name: "Twitter" },
-                                        { icon: <Instagram className="h-5 w-5" />, color: "bg-[#E1306C]", name: "Instagram" },
-                                        { icon: <Share2 className="h-5 w-5" />, color: "bg-[#0A2463]", name: "Copy Link" }
-                                    ].map((social, index) => (
-                                        <motion.button
-                                            key={social.name}
-                                            custom={index}
-                                            variants={galleryItemVariants}
-                                            whileHover={{ y: -3 }}
-                                            className={`${social.color} text-white p-3 rounded-full`}
-                                        >
-                                            {social.icon}
-                                        </motion.button>
-                                    ))}
-                                </div>
-                            </motion.div>
                         </motion.aside>
                     </div>
                 </div>
@@ -577,7 +589,11 @@ const EventDetailsPage = () => {
 
                         {loadingRelated ? (
                             <div className="flex justify-center">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FFC857]"></div>
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                    className="rounded-full h-8 w-8 border-b-2 border-[#FFC857]"
+                                />
                             </div>
                         ) : relatedEvents.length > 0 ? (
                             <motion.div
@@ -589,14 +605,16 @@ const EventDetailsPage = () => {
                                         key={relatedEvent.id}
                                         variants={itemVariants}
                                         className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-100"
-                                        // whileHover={{ y: -5 }}
+                                        whileHover={{ y: -5 }}
                                         onClick={() => navigate(`/events/${relatedEvent.slug}`)}
                                     >
                                         <div className="relative h-48 overflow-hidden">
-                                            <img
+                                            <motion.img
                                                 src={relatedEvent.image_url || '/placeholder-image.jpg'}
                                                 alt={relatedEvent.title}
                                                 className="w-full h-full object-cover"
+                                                whileHover={{ scale: 1.05 }}
+                                                transition={{ duration: 0.3 }}
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                                             <div className="absolute top-3 left-3">
@@ -618,16 +636,23 @@ const EventDetailsPage = () => {
                                             </p>
                                             <motion.div
                                                 className="flex items-center text-[#0A2463] font-medium group-hover:text-[#FFC857] transition-colors"
-                                                initial={{ opacity: 0 }}
-                                                animate={{
-                                                    opacity: 1,
-                                                    transition: { delay: 0.5 } // you can remove this or adjust timing
-                                                }}
+                                                whileHover={{ x: 5 }}
                                             >
                                                 View details
-                                                <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                                <motion.span
+                                                    className="ml-2 group-hover:translate-x-1 transition-transform"
+                                                    animate={{
+                                                        x: [0, 5, 0],
+                                                    }}
+                                                    transition={{
+                                                        repeat: Infinity,
+                                                        duration: 1.5,
+                                                        ease: "easeInOut"
+                                                    }}
+                                                >
+                                                    <ChevronRight className="h-5 w-5" />
+                                                </motion.span>
                                             </motion.div>
-
                                         </div>
                                     </motion.div>
                                 ))}
@@ -635,6 +660,84 @@ const EventDetailsPage = () => {
                         ) : (
                             <p className="text-center text-gray-600">No related events found</p>
                         )}
+                    </motion.div>
+                </div>
+            </section>
+            {/* CTA Section */}
+            <section className="relative py-24 bg-gradient-to-br from-[#0A2463] to-[#2E4052] overflow-hidden">
+                {/* Decorative elements */}
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 0.1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1 }}
+                    className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+                />
+
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 0.1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                    className="absolute bottom-1/3 right-10 w-48 h-48 border border-white rounded-full"
+                />
+
+                <div className="container mx-auto px-6 relative z-10">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={containerVariants}
+                        className="text-center text-white"
+                    >
+                        <motion.h2
+                            variants={itemVariants}
+                            className="text-3xl md:text-4xl font-bold text-white mb-6"
+                        >
+                            Ready for Your Next <span className="text-[#FFC857]">SSK Experience</span>?
+                        </motion.h2>
+                        <motion.div
+                            variants={itemVariants}
+                            className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+                        />
+                        <motion.p
+                            variants={itemVariants}
+                            className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
+                        >
+                            Join our vibrant community and never miss out on exclusive events and tournaments
+                        </motion.p>
+
+                        <motion.div
+                            variants={containerVariants}
+                            className="flex flex-wrap justify-center gap-6"
+                        >
+                            <motion.button
+                                variants={itemVariants}
+                                onClick={() => navigate('/events')}
+                                whileHover={{
+                                    scale: 1.05,
+                                    boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+                                }}
+                                whileTap={{ scale: 0.98 }}
+                                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+                            >
+                                View All Events
+                            </motion.button>
+
+                            <motion.button
+                                variants={itemVariants}
+                                onClick={() => navigate('/membership')}
+                                whileHover={{
+                                    backgroundColor: "rgba(255, 200, 87, 0.1)",
+                                    scale: 1.02,
+                                    borderColor: "#FFD700"
+                                }}
+                                whileTap={{ scale: 0.98 }}
+                                className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+                            >
+                                Become a Member
+                            </motion.button>
+                        </motion.div>
                     </motion.div>
                 </div>
             </section>

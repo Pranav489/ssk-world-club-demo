@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Trophy, Globe, Shield, ChevronRight, X } from "lucide-react";
+import { Trophy, Globe, Shield, ChevronRight, X, Phone } from "lucide-react";
 import { useNavigate } from "react-router";
 import { hero_home } from "../../assets";
 import axiosInstance from "../../services/api";
@@ -26,13 +26,69 @@ const AffiliationsPage = () => {
         threshold: 0.4
     });
 
+    // Animation variants
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2,
+                delayChildren: 0.3
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 40, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                type: "spring",
+                damping: 12,
+                stiffness: 100
+            }
+        }
+    };
+
+    const fadeIn = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { duration: 0.8 }
+        }
+    };
+
+    const scaleUp = {
+        hidden: { scale: 0.95, opacity: 0 },
+        visible: {
+            scale: 1,
+            opacity: 1,
+            transition: {
+                duration: 0.8,
+                ease: [0.43, 0.13, 0.23, 0.96]
+            }
+        }
+    };
+
+    const maskVariants = {
+        hidden: { width: 0 },
+        visible: {
+            width: "100%",
+            transition: {
+                duration: 1.2,
+                ease: [0.19, 1, 0.22, 1]
+            }
+        }
+    };
+
     // Fetch affiliations data
     useEffect(() => {
         const fetchAffiliations = async () => {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get('/affiliations');
-                
+
                 if (response.data.success) {
                     setAffiliations(response.data.data);
                 }
@@ -61,7 +117,7 @@ const AffiliationsPage = () => {
 
         try {
             const response = await axiosInstance.post('/partnership/enquiry', formData);
-            
+
             if (response.data.success) {
                 setFormSubmitted(true);
                 setFormData({
@@ -78,146 +134,92 @@ const AffiliationsPage = () => {
         }
     };
 
-    
     useEffect(() => {
         if (inView) {
             controls.start("visible");
         }
     }, [controls, inView]);
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.3
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { y: 40, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                type: "spring",
-                damping: 12,
-                stiffness: 100
-            }
-        }
-    };
-
-    const fadeInVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { duration: 1.2 }
-        }
-    };
-
-    // const affiliations = [
-    //     {
-    //         category: "Sports Associations",
-    //         partners: [
-    //             {
-    //                 name: "GOREGAON SPORTS CLUB",
-    //                 logo: affiliated_logo,
-    //                 location: "COLABA, MUMBAI"
-    //             },
-    //             {
-    //                 name: "EMERALD CLUB",
-    //                 logo: affiliated_logo1,
-    //                 location: "CHEMBUR, MUMBAI"
-    //             },
-    //             {
-    //                 name: "HALCYON TIMES CLUB",
-    //                 logo: affiliated_logo2,
-    //                 location: "KAKINADA, ANDHRA PRADESH"
-    //             },
-    //             {
-    //                 name: "SHIVAJI PARK GYMKHANA",
-    //                 logo: affiliated_logo3,
-    //                 location: "DADAR, MUMBAI THANE"
-    //             },
-    //             {
-    //                 name: "NAVI MUMBAI SPORTS CLUB",
-    //                 logo: affiliated_logo4,
-    //                 location: "VASHI, NEW MUMBAI"
-    //             },
-    //             {
-    //                 name: "THE HYDERABAD GYMKHANA",
-    //                 logo: affiliated_logo5,
-    //                 location: "BANJARA HILLS, HYDERABAD"
-    //             }
-    //         ]
-    //     },
-    //     {
-    //         category: "Luxury Partners",
-    //         partners: [
-    //             {
-    //                 name: "CLUB MERIDIAN SPORTS & RECREATION",
-    //                 logo: affiliated_logo6,
-    //                 location: "UDUPI, KARNATAKA"
-    //             },
-    //             {
-    //                 name: "CLUB AQUARIA",
-    //                 logo: affiliated_logo7,
-    //                 location: "BORIVALI WEST,MUMBAI"
-    //             },
-    //             {
-    //                 name: "AMANORA FERN HOTELS & CLUB",
-    //                 logo: affiliated_logo8,
-    //                 location: "PUNE, MAHARASHTRA"
-    //             },
-    //             {
-    //                 name: "AMANORA FERN HOTELS & CLUB",
-    //                 logo: affiliated_logo9,
-    //                 location: "PUNE, MAHARASHTRA"
-    //             },
-    //             {
-    //                 name: "AMANORA FERN HOTELS & CLUB",
-    //                 logo: affiliated_logo10,
-    //                 location: "PUNE, MAHARASHTRA"
-    //             },
-    //             {
-    //                 name: "THE ISCON CLUB & RESORT",
-    //                 logo: affiliated_Logo11,
-    //                 location: "BHAVNAGAR, GUJRAT"
-    //             },
-    //         ]
-    //     }
-    // ];
-
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center"
+                >
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
+                    />
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-[#0A2463] font-medium"
+                    >
+                        Loading affiliations...
+                    </motion.p>
+                </motion.div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-red-500 text-lg mb-4">{error}</p>
-                    <button
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center p-8 bg-white rounded-xl shadow-md max-w-md mx-auto"
+                >
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="text-red-500 mb-4"
+                    >
+                        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </motion.div>
+                    <motion.h3
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-xl font-bold text-[#0A2463] mb-2"
+                    >
+                        Oops! Something went wrong
+                    </motion.h3>
+                    <motion.p
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-gray-600 mb-6"
+                    >
+                        {error}
+                    </motion.p>
+                    <motion.button
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{
+                            scale: 1.05,
+                            boxShadow: "0 5px 15px rgba(244, 162, 97, 0.4)"
+                        }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => window.location.reload()}
-                        className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+                        className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-md font-medium hover:bg-amber-400 transition-colors"
                     >
                         Try Again
-                    </button>
-                </div>
+                    </motion.button>
+                </motion.div>
             </div>
         );
     }
 
-
     return (
         <div className="relative">
-            {/* Hero Section - Height changed to h-96 */}
+            {/* Hero Section */}
             <section
                 ref={ref}
                 className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
@@ -273,7 +275,6 @@ const AffiliationsPage = () => {
                             variants={itemVariants}
                         >
                             PRESTIGIOUS <span className="text-[#FFC857]">AFFILIATIONS</span>
-
                         </motion.h1>
 
                         {/* Subheading */}
@@ -362,67 +363,65 @@ const AffiliationsPage = () => {
                         </motion.p>
                     </motion.div>
 
-                    <div className="space-y-20">
-                        {affiliations.map((affiliation, index) => (
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                    >
+                        {affiliations.map((partner, index) => (
                             <motion.div
                                 key={index}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true }}
-                                variants={containerVariants}
+                                variants={itemVariants}
+                                className="group bg-white p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-shadow"
+                                whileHover={{ y: -5 }}
                             >
-                                <motion.h3
-                                    className="text-2xl font-bold text-[#0A2463] mb-8 flex items-center gap-3"
-                                    variants={itemVariants}
-                                >
-                                    {affiliation.category === "Sports Associations" ? (
-                                        <Trophy className="h-8 w-8 text-[#FFC857]" />
+                                {/* Logo Display */}
+                                <div className="h-40 mb-6 flex items-center justify-center p-4 rounded-lg">
+                                    {partner.logo ? (
+                                        <motion.img
+                                            src={partner.logo}
+                                            alt={`${partner.name} logo`}
+                                            className="h-50 w-auto max-w-full object-contain"
+                                            whileHover={{ scale: 1.05 }}
+                                            transition={{ duration: 0.3 }}
+                                        />
                                     ) : (
-                                        <Globe className="h-8 w-8 text-[#FFC857]" />
+                                        <div className="flex flex-col items-center">
+                                            <motion.div
+                                                className="bg-[#0A2463]/10 p-5 rounded-full mb-3"
+                                                whileHover={{ scale: 1.1 }}
+                                            >
+                                                <Shield className="h-10 w-10 text-[#FFC857]" />
+                                            </motion.div>
+                                            <span className="text-sm text-gray-500">Logo Coming Soon</span>
+                                        </div>
                                     )}
-                                    {affiliation.category}
-                                </motion.h3>
+                                </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    {affiliation.partners.map((partner, partnerIndex) => (
-                                        <motion.div
-                                            key={partnerIndex}
-                                            className="group bg-white p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-shadow"
-                                        // whileHover={{ y: -8 }}
+                                {/* Partner Info */}
+                                <div className="text-center">
+                                    <h4 className="text-xl font-bold text-[#0A2463] mb-2 transition-colors group-hover:text-[#FFC857]">
+                                        {partner.name}
+                                    </h4>
+                                    <p className="text-gray-600 text-sm">{partner.location}</p>
+                                    {partner.contact_number && (
+                                        <motion.a
+                                            href={`tel:${partner.contact_number}`}
+                                            className="text-[#0A2463] transition flex items-center justify-center text-sm mt-1 group"
+                                            whileHover={{ x: 5 }}
                                         >
-                                            {/* Logo Display - Larger and Centered */}
-                                            <div className="h-40 mb-6 flex items-center justify-center p-4 rounded-lg">
-                                                {partner.logo ? (
-                                                    <img
-                                                        src={partner.logo}
-                                                        alt={`${partner.name} logo`}
-                                                        className="h-50 w-auto max-w-full object-contain transition-transform"
-                                                    />
-                                                ) : (
-                                                    <div className="flex flex-col items-center">
-                                                        <div className="bg-[#0A2463]/10 p-5 rounded-full mb-3">
-                                                            <Shield className="h-10 w-10 text-[#FFC857]" />
-                                                        </div>
-                                                        <span className="text-sm text-gray-500">Logo Coming Soon</span>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Partner Info */}
-                                            <div className="text-center">
-                                                <h4 className="text-xl font-bold text-[#0A2463] mb-2 transition-colors">
-                                                    {partner.name}
-                                                </h4>
-                                                <p className="text-gray-600 text-sm">
-                                                    {partner.location}
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                            <Phone className="h-4 w-4 mr-2 text-[#0A2463] transition-colors group-hover:text-[#FFC857]" />
+                                            <span className="transition-colors group-hover:text-[#FFC857]">
+                                                {partner.contact_number}
+                                            </span>
+                                        </motion.a>
+                                    )}
                                 </div>
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -439,35 +438,34 @@ const AffiliationsPage = () => {
 
                 <div className="container mx-auto px-6 relative z-10">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="text-center"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={containerVariants}
+                        className="text-center text-white"
                     >
                         <motion.h2
+                            variants={itemVariants}
                             className="text-3xl md:text-4xl font-bold text-white mb-6"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
                         >
                             Interested in Becoming a Partner?
                         </motion.h2>
+                        <motion.div
+                            variants={itemVariants}
+                            className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+                        />
                         <motion.p
+                            variants={itemVariants}
                             className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ delay: 0.4 }}
                         >
                             Join our network of elite affiliates and reach discerning members
                         </motion.p>
                         <motion.div
+                        variants={containerVariants}
                             className="flex flex-wrap justify-center gap-6"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ delay: 0.6 }}
                         >
                             <motion.button
+                            variants={itemVariants}
                                 onClick={() => setShowForm(true)}
                                 whileHover={{
                                     scale: 1.05,
@@ -479,6 +477,7 @@ const AffiliationsPage = () => {
                                 Partnership Inquiry
                             </motion.button>
                             <motion.button
+                            variants={itemVariants}
                                 whileHover={{
                                     backgroundColor: "rgba(255, 200, 87, 0.1)",
                                     scale: 1.02,
@@ -496,7 +495,6 @@ const AffiliationsPage = () => {
             </section>
 
             {/* Partnership Form Modal */}
-            {/* Partnership Form Modal */}
             <AnimatePresence>
                 {showForm && (
                     <motion.div
@@ -511,45 +509,81 @@ const AffiliationsPage = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                         >
-                            <button
+                            <motion.button
                                 className="absolute top-4 right-4 text-gray-500 hover:text-[#0A2463]"
                                 onClick={() => {
                                     setShowForm(false);
                                     setFormSubmitted(false);
                                     setFormError('');
                                 }}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
                             >
                                 <X className="h-6 w-6" />
-                            </button>
+                            </motion.button>
 
                             {formSubmitted ? (
-                                <div className="text-center py-8">
-                                    <div className="bg-[#4CB944]/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-8"
+                                >
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="bg-[#4CB944]/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6"
+                                    >
                                         <Shield className="h-10 w-10 text-[#4CB944]" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-[#0A2463] mb-3">
+                                    </motion.div>
+                                    <motion.h3
+                                        initial={{ y: 10, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.1 }}
+                                        className="text-2xl font-bold text-[#0A2463] mb-3"
+                                    >
                                         Thank You!
-                                    </h3>
-                                    <p className="text-gray-600 mb-6">
+                                    </motion.h3>
+                                    <motion.p
+                                        initial={{ y: 10, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="text-gray-600 mb-6"
+                                    >
                                         Our partnership team will contact you shortly.
-                                    </p>
-                                    <button
+                                    </motion.p>
+                                    <motion.button
+                                        initial={{ y: 10, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ delay: 0.3 }}
+                                        whileHover={{
+                                            scale: 1.05,
+                                            boxShadow: "0 5px 15px rgba(244, 162, 97, 0.4)"
+                                        }}
+                                        whileTap={{ scale: 0.98 }}
                                         onClick={() => setShowForm(false)}
                                         className="bg-[#0A2463] hover:bg-[#0A2463]/90 text-white px-6 py-3 rounded-sm font-medium"
                                     >
                                         Close
-                                    </button>
-                                </div>
+                                    </motion.button>
+                                </motion.div>
                             ) : (
                                 <>
-                                    <h3 className="text-2xl font-bold text-[#0A2463] mb-6">
+                                    <motion.h3
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        className="text-2xl font-bold text-[#0A2463] mb-6"
+                                    >
                                         Partnership Inquiry
-                                    </h3>
-                                    
+                                    </motion.h3>
+
                                     {formError && (
-                                        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6"
+                                        >
                                             {formError}
-                                        </div>
+                                        </motion.div>
                                     )}
 
                                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -589,13 +623,26 @@ const AffiliationsPage = () => {
                                                 placeholder="+91 9876543210"
                                             />
                                         </div>
-                                        <button
+                                        <motion.button
                                             type="submit"
                                             disabled={formLoading}
+                                            whileHover={!formLoading ? { scale: 1.02 } : {}}
+                                            whileTap={!formLoading ? { scale: 0.98 } : {}}
                                             className="w-full bg-[#FFC857] hover:bg-[#FFD700] disabled:bg-gray-400 disabled:cursor-not-allowed text-[#0A2463] px-8 py-3 rounded-sm font-bold uppercase tracking-wider transition-colors"
                                         >
-                                            {formLoading ? 'Submitting...' : 'Submit Inquiry'}
-                                        </button>
+                                            {formLoading ? (
+                                                <div className="flex items-center justify-center">
+                                                    <motion.div
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                        className="rounded-full h-5 w-5 border-b-2 border-[#0A2463] mr-2"
+                                                    />
+                                                    Submitting...
+                                                </div>
+                                            ) : (
+                                                'Submit Inquiry'
+                                            )}
+                                        </motion.button>
                                     </form>
                                 </>
                             )}

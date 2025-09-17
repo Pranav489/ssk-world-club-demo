@@ -18,6 +18,81 @@ const ContactPage = () => {
   const [ref, inView] = useInView({ threshold: 0.4 });
   const contactGridRef = useRef(null);
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100
+      }
+    }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
+
+  const scaleUp = {
+    hidden: { scale: 0.95, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.43, 0.13, 0.23, 0.96]
+      }
+    }
+  };
+
+  const maskVariants = {
+    hidden: { width: 0 },
+    visible: {
+      width: "100%",
+      transition: {
+        duration: 1.2,
+        ease: [0.19, 1, 0.22, 1]
+      }
+    }
+  };
+
+  const socialLinkVariants = {
+    hidden: { scale: 0, opacity: 0 },
+    visible: (i) => ({
+      scale: 1,
+      opacity: 1,
+      transition: {
+        delay: 0.1 * i,
+        type: "spring",
+        stiffness: 200,
+        damping: 10
+      }
+    }),
+    hover: {
+      scale: 1.1,
+      y: -5,
+      transition: { duration: 0.1 }
+    }
+  };
+
   // Fetch contact information
   useEffect(() => {
     const fetchContactInfo = async () => {
@@ -47,71 +122,19 @@ const ContactPage = () => {
     }
   }, [controls, inView]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 40, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100
-      }
-    }
-  };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 1.2 }
-    }
-  };
-
-  const socialLinkVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: (i) => ({
-      scale: 1,
-      opacity: 1,
-      transition: {
-        delay: 0.1 * i,
-        type: "spring",
-        stiffness: 200,
-        damping: 10
-      }
-    }),
-    hover: {
-      scale: 1.1,
-      y: -5,
-      transition: { duration: 0.1 }
-    }
-  };
-
   const onSubmit = async (data) => {
     try {
       const response = await axiosInstance.post('/enquiries', data);
       
       if (response.data.success) {
         setFormSubmitted(true);
-        reset(); // Reset form fields
+        reset();
       } else {
         setError('Failed to submit enquiry. Please try again.');
       }
     } catch (err) {
       console.error('Error submitting enquiry:', err);
       if (err.response?.data?.errors) {
-        // Handle validation errors
         setError('Please check the form for errors');
       } else {
         setError('Failed to submit enquiry. Please try again.');
@@ -152,10 +175,24 @@ const ContactPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"></div>
-          <p className="text-[#0A2463] font-medium">Loading contact information...</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[#0A2463] font-medium"
+          >
+            Loading contact information...
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
@@ -184,15 +221,6 @@ const ContactPage = () => {
             alt="Contact SSK World Club"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0"
-        >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
         </motion.div>
 
@@ -272,9 +300,13 @@ const ContactPage = () => {
         <div className="container mx-auto px-6 relative z-10">
           {/* Error message */}
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           {/* First Row - Form and Contact Info */}
@@ -289,23 +321,49 @@ const ContactPage = () => {
             >
               <div className="p-8">
                 {formSubmitted ? (
-                  <div className="text-center py-8">
-                    <div className="bg-[#4CB944]/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-8"
+                  >
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="bg-[#4CB944]/10 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6"
+                    >
                       <Send className="h-10 w-10 text-[#4CB944]" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-[#0A2463] mb-3">
+                    </motion.div>
+                    <motion.h3
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      className="text-2xl font-bold text-[#0A2463] mb-3"
+                    >
                       Thank You for Your Enquiry!
-                    </h3>
-                    <p className="text-gray-600 mb-6">
+                    </motion.h3>
+                    <motion.p
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-gray-600 mb-6"
+                    >
                       Our team will contact you within 24 hours. For urgent matters, please call our office directly.
-                    </p>
-                    <button
+                    </motion.p>
+                    <motion.button
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      whileHover={{
+                        scale: 1.05,
+                        boxShadow: "0 5px 15px rgba(244, 162, 97, 0.4)"
+                      }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => setFormSubmitted(false)}
                       className="bg-[#0A2463] hover:bg-[#0A2463]/90 text-white px-6 py-3 rounded-sm font-medium"
                     >
                       Send Another Message
-                    </button>
-                  </div>
+                    </motion.button>
+                  </motion.div>
                 ) : (
                   <>
                     <h3 className="text-2xl font-bold text-[#0A2463] mb-6">
@@ -381,13 +439,18 @@ const ContactPage = () => {
                         ></textarea>
                         {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
                       </div>
-                      <button
+                      <motion.button
                         type="submit"
+                        whileHover={{
+                          scale: 1.02,
+                          boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+                        }}
+                        whileTap={{ scale: 0.98 }}
                         className="w-full bg-gradient-to-r from-[#FFC857] to-[#F4A261] hover:from-[#F4A261] hover:to-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                       >
                         <Send className="h-5 w-5" />
                         Send Message
-                      </button>
+                      </motion.button>
                     </form>
                   </>
                 )}
@@ -418,9 +481,12 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                    <motion.div 
+                      className="bg-[#0A2463]/10 p-3 rounded-full"
+                      whileHover={{ scale: 1.1 }}
+                    >
                       <MapPin className="h-6 w-6 text-[#FFC857]" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h3 className="text-xl font-bold text-[#0A2463] mb-2">Club Address</h3>
                       <p className="text-gray-600">
@@ -441,9 +507,12 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                    <motion.div 
+                      className="bg-[#0A2463]/10 p-3 rounded-full"
+                      whileHover={{ scale: 1.1 }}
+                    >
                       <MapPin className="h-6 w-6 text-[#FFC857]" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h3 className="text-xl font-bold text-[#0A2463] mb-2">Office Address</h3>
                       <p className="text-gray-600">
@@ -464,9 +533,12 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                    <motion.div 
+                      className="bg-[#0A2463]/10 p-3 rounded-full"
+                      whileHover={{ scale: 1.1 }}
+                    >
                       <Phone className="h-6 w-6 text-[#FFC857]" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h3 className="text-xl font-bold text-[#0A2463] mb-2">Contact</h3>
                       {contactInfo.contact.phone && (
@@ -494,9 +566,12 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                    <motion.div 
+                      className="bg-[#0A2463]/10 p-3 rounded-full"
+                      whileHover={{ scale: 1.1 }}
+                    >
                       <Clock className="h-6 w-6 text-[#FFC857]" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h3 className="text-xl font-bold text-[#0A2463] mb-2">Hours</h3>
                       {contactInfo.hours.sports_facilities && (
@@ -523,13 +598,16 @@ const ContactPage = () => {
                   className="flex items-start gap-4"
                   variants={itemVariants}
                 >
-                  <div className="bg-[#0A2463]/10 p-3 rounded-full">
+                  <motion.div 
+                    className="bg-[#0A2463]/10 p-3 rounded-full"
+                    whileHover={{ scale: 1.1 }}
+                  >
                     <div className="h-6 w-6 flex items-center justify-center text-[#FFC857]">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                       </svg>
                     </div>
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-[#0A2463] mb-3">Connect With Us</h3>
                     <motion.div
@@ -558,7 +636,6 @@ const ContactPage = () => {
                     </motion.div>
                   </div>
                 </motion.div>
-
               </motion.div>
             </motion.div>
           </div>
@@ -616,24 +693,28 @@ const ContactPage = () => {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            <motion.h2
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+            >
               Ready to Visit SSK World Club?
-            </h2>
-            <p className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
+            >
               Schedule a private tour to experience our world-class facilities firsthand
-            </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <motion.button
-                onClick={() => window.location.href = "/contact"}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
-              >
-                Book a Tour
-              </motion.button>
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-wrap justify-center gap-6"
+            >
               {contactInfo?.contact?.phone && (
                 <motion.button
                   onClick={() => window.location.href = `tel:${contactInfo.contact.phone}`}
@@ -648,7 +729,7 @@ const ContactPage = () => {
                   Call Now: {contactInfo.contact.phone}
                 </motion.button>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

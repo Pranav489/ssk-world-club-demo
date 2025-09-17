@@ -808,6 +808,94 @@ const AboutUsPage = () => {
 
       {/* Leadership Section */}
       <LeadershipSection />
+      {/* CTA Section */}
+<section className="relative py-24 bg-gradient-to-br from-[#0A2463] to-[#2E4052] overflow-hidden">
+  {/* Decorative elements */}
+  <motion.div
+    initial={{ scale: 0.8, opacity: 0 }}
+    whileInView={{ scale: 1, opacity: 0.1 }}
+    viewport={{ once: true }}
+    transition={{ duration: 1 }}
+    className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+  />
+  
+  <motion.div
+    initial={{ scale: 0.8, opacity: 0 }}
+    whileInView={{ scale: 1, opacity: 0.1 }}
+    viewport={{ once: true }}
+    transition={{ duration: 1, delay: 0.3 }}
+    className="absolute bottom-1/3 right-10 w-48 h-48 border border-white rounded-full"
+  />
+
+  <div className="container px-6 mx-auto relative z-10">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+      className="text-center"
+    >
+      <motion.h2
+        className="text-3xl md:text-4xl font-bold text-white mb-6"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        Ready to Experience <span className="text-[#FFC857]">SSK World Club</span>?
+      </motion.h2>
+      
+      <motion.p
+        className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
+        Join our community of passionate athletes and luxury enthusiasts
+      </motion.p>
+      
+      <motion.div
+        className="flex flex-wrap justify-center gap-6"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        <motion.button
+          onClick={() => navigate('/membership')}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+          }}
+          whileTap={{ scale: 0.98 }}
+          className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+        >
+          Explore Memberships
+        </motion.button>
+        
+        <motion.button
+          onClick={() => navigate('/contact')}
+          whileHover={{
+            backgroundColor: "rgba(255, 200, 87, 0.1)",
+            scale: 1.02,
+            borderColor: "#FFD700"
+          }}
+          whileTap={{ scale: 0.98 }}
+          className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+        >
+          Schedule a Tour
+        </motion.button>
+      </motion.div>
+      
+      <motion.p
+        className="text-white/80 mt-8 text-sm"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+      >
+        Experience world-class facilities with five-star hospitality
+      </motion.p>
+    </motion.div>
+  </div>
+</section>
     </div>
   );
 };
@@ -1087,6 +1175,8 @@ const LeadershipSection = () => {
         </div>
       </div>
     </section>
+    
+    
   );
 };
 
