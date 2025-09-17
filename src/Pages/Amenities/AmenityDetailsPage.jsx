@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
-import {  Activity, Brain, Disc, Dumbbell, Image as ImageIcon, Square, SquareDashedBottom, Table, Target, Waves } from "lucide-react";
-import { Flower, Briefcase, Film, Table2, Hotel, ShoppingBag, Tent, BookOpen, Trophy, Crosshair, Volleyball, Leaf, Eclipse, ArrowLeft, Calendar, Phone, MapPin, Star, ChevronRight, Clock, Users, Coffee, Utensils, } from "lucide-react";
+import {  Activity, Brain, Disc, Dumbbell, Image as ImageIcon, Info, Square, SquareDashedBottom, Table, Target, Waves } from "lucide-react";
+import { Flower, Briefcase, Film, Table2, Hotel, ShoppingBag, Tent, BookOpen, Trophy, Crosshair, Volleyball, Leaf, Eclipse, Calendar, Phone, MapPin, Star, ChevronRight, Clock, Users, Coffee, Utensils, } from "lucide-react";
 import axiosInstance from "../../services/api";
 
 const AmenityDetailsPage = () => {
@@ -355,83 +355,35 @@ const AmenityDetailsPage = () => {
     />
 
     <div className="container mx-auto px-6 relative z-10">
-      {/* Description */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="max-w-3xl mx-auto mb-16 text-center"
-      >
-        <p className="text-lg text-gray-700 leading-relaxed">
-          {amenity.description}
-        </p>
-      </motion.div>
-
-      {/* Image Gallery - Improved Layout */}
-      {allImages.length > 0 && (
+      {/* Two Column Layout - Gallery and Description */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        {/* Gallery Column */}
         <motion.div
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          className="lg:sticky lg:top-24 lg:self-start"
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
+          {/* Main Image */}
           <motion.div
-            className="flex items-center justify-center gap-3 mb-8"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
-            <ImageIcon className="h-6 w-6 text-[#FFC857]" />
-            <h2 className="text-2xl font-bold text-[#0A2463]">Gallery</h2>
-          </motion.div>
-
-          {/* Main Image - Fixed container */}
-          <motion.div
-            className="relative w-full rounded-xl overflow-hidden mb-6 bg-gray-100"
+            className="relative rounded-xl overflow-hidden mb-6 shadow-lg"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="aspect-video w-full"> {/* Changed to aspect-video for consistent ratio */}
-              <img
-                src={allImages[selectedImage]}
-                alt={`${amenity.title} ${selectedImage + 1}`}
-                className="w-full h-full object-contain" 
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
-            
-            {/* Navigation Arrows for multiple images */}
-            {allImages.length > 1 && (
-              <>
-                <motion.button
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                  onClick={() => setSelectedImage((prev) => (prev - 1 + allImages.length) % allImages.length)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </motion.button>
-                <motion.button
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                  onClick={() => setSelectedImage((prev) => (prev + 1) % allImages.length)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </motion.button>
-              </>
-            )}
+            <img
+              src={allImages[selectedImage]}
+              alt={`${amenity.title} ${selectedImage + 1}`}
+              className="w-full h-auto object-cover max-h-96 mx-auto"
+            />
           </motion.div>
 
           {/* Thumbnail Grid - Only show if multiple images */}
           {allImages.length > 1 && (
             <motion.div
-              className="grid grid-cols-3 md:grid-cols-6 gap-3 max-w-4xl mx-auto"
+              className="grid grid-cols-3 md:grid-cols-4 gap-3"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
@@ -443,7 +395,7 @@ const AmenityDetailsPage = () => {
                   variants={itemVariants}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`relative aspect-square cursor-pointer rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-[#FFC857]' : 'border-transparent'}`}
+                  className={`relative h-24 cursor-pointer rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-[#FFC857]' : 'border-transparent'}`}
                   onClick={() => setSelectedImage(index)}
                 >
                   <img
@@ -459,9 +411,29 @@ const AmenityDetailsPage = () => {
             </motion.div>
           )}
         </motion.div>
-      )}
 
-      {/* Details Sections */}
+        {/* Description Column */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex flex-col"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <Info className="h-6 w-6 text-[#FFC857]" />
+            <h2 className="text-2xl font-bold text-[#0A2463]">About</h2>
+          </div>
+
+          <div className="prose prose-lg max-w-none text-gray-700 mb-8">
+            <p className="leading-relaxed">
+              {amenity.description}
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Details Sections - Below the two columns */}
       {amenity.sections && amenity.sections.length > 0 ? (
         <motion.div
           variants={containerVariants}
@@ -475,34 +447,35 @@ const AmenityDetailsPage = () => {
               variants={itemVariants}
               className="mb-12 last:mb-0"
             >
-              <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="flex items-center gap-3 mb-6">
                 <motion.div 
                   className="bg-[#0A2463] p-2 rounded-full"
                   whileHover={{ scale: 1.1 }}
                 >
                   {getIconComponent(section.icon, { className: "h-6 w-6 text-[#FFC857]" })}
                 </motion.div>
-                <h2 className="text-2xl font-bold text-[#0A2463] text-center">
+                <h2 className="text-2xl font-bold text-[#0A2463]">
                   {section.title}
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {section.details && section.details.map((detail, detailIndex) => (
                   <motion.div
                     key={detailIndex}
-                    className="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    className="bg-gray-50 p-6 rounded-lg shadow-sm relative"
                     variants={itemVariants}
                     whileHover={{ y: -5 }}
                   >                       
                     <div className="flex items-center gap-3 mb-4">
-                      {getIconComponent(detail.icon, { className: "h-5 w-5 text-[#0A2463]" })}
+                      {getIconComponent(detail.icon)}
                       <h3 className="font-bold text-[#0A2463]">
                         {detail.title}
                       </h3>
                     </div>
                     <ul className="space-y-2">
                       {detail.content && detail.content.map((item, itemIndex) => {
+                        // Safely extract content text from objects
                         const contentText = typeof item === 'object' && item !== null
                           ? item.item || item.text || item.content || JSON.stringify(item)
                           : item;
@@ -510,7 +483,7 @@ const AmenityDetailsPage = () => {
                         return (
                           <motion.li
                             key={itemIndex}
-                            className="text-gray-600 text-sm"
+                            className="text-gray-600"
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: itemIndex * 0.1 }}
@@ -533,26 +506,25 @@ const AmenityDetailsPage = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="max-w-6xl mx-auto"
         >
           <motion.div
             variants={itemVariants}
             className="mb-12"
           >
-            <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
               <motion.div 
-                className="bg-[#0A2463] p-3 rounded-full"
+                className="bg-[#0A2463] p-3 rounded-full text-white"
                 whileHover={{ scale: 1.1 }}
               >
-                <Clock className="h-6 w-6 text-[#FFC857]" />
+                <Clock className="h-6 w-6" />
               </motion.div>
-              <h2 className="text-2xl font-bold text-[#0A2463] text-center">
+              <h2 className="text-2xl font-bold text-[#0A2463]">
                 Operating Hours
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <motion.div
-                className="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow col-span-1 md:col-span-3"
+                className="bg-gray-50 p-6 rounded-lg shadow-sm"
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
               >
@@ -562,6 +534,39 @@ const AmenityDetailsPage = () => {
                 </div>
                 <ul className="space-y-2">
                   <li className="text-gray-600">Daily: 8:00 AM - 10:00 PM</li>
+                </ul>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            variants={itemVariants}
+            className="mb-12"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <motion.div 
+                className="bg-[#0A2463] p-3 rounded-full text-white"
+                whileHover={{ scale: 1.1 }}
+              >
+                <Users className="h-6 w-6" />
+              </motion.div>
+              <h2 className="text-2xl font-bold text-[#0A2463]">
+                Access Information
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.div
+                className="bg-gray-50 p-6 rounded-lg shadow-sm"
+                variants={itemVariants}
+                whileHover={{ y: -5 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <Users className="h-5 w-5 text-[#0A2463]" />
+                  <h3 className="font-bold text-[#0A2463]">Access</h3>
+                </div>
+                <ul className="space-y-2">
+                  <li className="text-gray-600">Members only</li>
+                  <li className="text-gray-600">Guests allowed with members</li>
                 </ul>
               </motion.div>
             </div>
