@@ -165,7 +165,10 @@ const EventDetailsPage = () => {
     const formatDescription = (htmlContent) => {
         if (!htmlContent) return null;
         return (
-            <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="space-y-4" />
+            <div
+                className="prose prose-ul:list-disc prose-ul:pl-6 prose-li:marker:text-[#FFC857] prose-li:text-[#0A2463] prose-p:text-[#0A2463] max-w-none space-y-4"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
         );
     };
 
@@ -394,7 +397,7 @@ const EventDetailsPage = () => {
 
                                     {/* Featured Media */}
                                     <motion.div
-                                        className="relative h-96 rounded-xl overflow-hidden mb-6 shadow-lg"
+                                        className="relative rounded-xl overflow-hidden mb-6 shadow-lg inline-block"
                                         initial={{ opacity: 0 }}
                                         whileInView={{ opacity: 1 }}
                                         viewport={{ once: true }}
@@ -404,27 +407,29 @@ const EventDetailsPage = () => {
                                             <motion.img
                                                 src={event.gallery[activeMedia].src}
                                                 alt={event.gallery[activeMedia].caption}
-                                                className="w-full h-full object-cover"
-                                                initial={{ scale: 1.1 }}
+                                                className="max-w-full h-auto object-contain mx-auto"
+                                                initial={{ scale: 1.05 }}
                                                 animate={{ scale: 1 }}
                                                 transition={{ duration: 0.5 }}
                                             />
                                         ) : event.gallery[activeMedia].type === 'video' ? (
                                             event.gallery[activeMedia].src?.includes('youtube.com') ||
                                                 event.gallery[activeMedia].src?.includes('youtu.be') ? (
-                                                <iframe
-                                                    src={getYouTubeEmbedUrl(event.gallery[activeMedia].src)}
-                                                    className="w-full h-full"
-                                                    frameBorder="0"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                    title={event.gallery[activeMedia].caption || 'YouTube video'}
-                                                />
+                                                <div className="w-full flex justify-center">
+                                                    <iframe
+                                                        src={getYouTubeEmbedUrl(event.gallery[activeMedia].src)}
+                                                        className="max-w-full h-auto aspect-video rounded-xl"
+                                                        frameBorder="0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                        title={event.gallery[activeMedia].caption || 'YouTube video'}
+                                                    />
+                                                </div>
                                             ) : (
                                                 <video
                                                     src={event.gallery[activeMedia].src}
                                                     controls
-                                                    className="w-full h-full object-cover"
+                                                    className="max-w-full h-auto object-contain mx-auto rounded-xl"
                                                     poster={event.gallery[activeMedia].poster}
                                                 >
                                                     Your browser does not support the video tag.

@@ -77,12 +77,12 @@ const EventsPage = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await axiosInstance.get('/events');
-        
+
         if (response.data.success) {
           const allEvents = response.data.data;
-          
+
           // Categorize events into upcoming and past
           const now = new Date();
           const categorizedEvents = {
@@ -213,7 +213,7 @@ const EventsPage = () => {
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section 
+      <section
         ref={ref}
         className="relative pt-20 md:pt-0 h-96 w-full overflow-hidden bg-black"
       >
@@ -222,7 +222,7 @@ const EventsPage = () => {
           initial={{ opacity: 0 }}
           animate={controls}
           variants={{
-            visible: { 
+            visible: {
               opacity: 1,
               transition: { duration: 1.5 }
             }
@@ -238,13 +238,13 @@ const EventsPage = () => {
         </motion.div>
 
         <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1 }}
-                    className="absolute inset-0"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
-                </motion.div>
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0"
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+        </motion.div>
 
         {/* Content */}
         <motion.div
@@ -307,7 +307,7 @@ const EventsPage = () => {
           transition={{ duration: 1 }}
           className="absolute top-20 left-10 w-64 h-64 border border-[#FFC857] rounded-full z-20"
         />
-        
+
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 0.1 }}
@@ -329,11 +329,10 @@ const EventsPage = () => {
               <motion.button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-8 py-3 font-medium uppercase tracking-wider relative ${
-                  activeTab === tab
+                className={`px-8 py-3 font-medium uppercase tracking-wider relative ${activeTab === tab
                     ? 'text-[#0A2463]'
                     : 'text-gray-500 hover:text-[#0A2463]'
-                }`}
+                  }`}
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -373,7 +372,7 @@ const EventsPage = () => {
                       <motion.img
                         src={event.image_url}
                         alt={event.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.3 }}
                       />
@@ -427,7 +426,7 @@ const EventsPage = () => {
                   className="col-span-full text-center py-12"
                 >
                   <p className="text-gray-500 text-lg">
-                    {activeTab === 'upcoming' 
+                    {activeTab === 'upcoming'
                       ? 'No upcoming events at the moment. Check back soon!'
                       : 'No past events to display.'
                     }
@@ -449,7 +448,7 @@ const EventsPage = () => {
           transition={{ duration: 1 }}
           className="absolute top-20 right-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
         />
-        
+
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -321,7 +321,7 @@ const AffiliationsPage = () => {
                     whileInView={{ scale: 1, opacity: 0.3 }}
                     viewport={{ once: true }}
                     transition={{ duration: 1 }}
-                    className="absolute top-15 left-10 w-64 h-64 border border-[#FFC857] rounded-full"
+                    className="absolute top-15 left-10 w-64 h-64 border border-[#FFC857] rounded-full z-20"
                 />
 
                 <motion.div
@@ -384,7 +384,6 @@ const AffiliationsPage = () => {
                                             src={partner.logo}
                                             alt={`${partner.name} logo`}
                                             className="h-50 w-auto max-w-full object-contain"
-                                            whileHover={{ scale: 1.05 }}
                                             transition={{ duration: 0.3 }}
                                         />
                                     ) : (
@@ -402,10 +401,10 @@ const AffiliationsPage = () => {
 
                                 {/* Partner Info */}
                                 <div className="text-center">
-                                    <h4 className="text-xl font-bold text-[#0A2463] mb-2 transition-colors group-hover:text-[#FFC857]">
+                                    <h4 className="text-xl uppercase font-bold text-[#0A2463] mb-2 transition-colors group-hover:text-[#FFC857]">
                                         {partner.name}
                                     </h4>
-                                    <p className="text-gray-600 text-sm">{partner.location}</p>
+                                    <p className="text-gray-600 text-sm uppercase">{partner.location}</p>
                                     {partner.contact_number && (
                                         <motion.a
                                             href={`tel:${partner.contact_number}`}
