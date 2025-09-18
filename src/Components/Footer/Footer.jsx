@@ -195,14 +195,14 @@ const Footer = () => {
   const footerLinks = [
     {
       title: "Sports",
-      links: sports.slice(0, 8).map(sport => ({
+      links: sports.slice(0, 9).map(sport => ({
         name: sport.name,
         url: `/sports/${sport.category}/${sport.slug}`
       }))
     },
     {
       title: "Amenities",
-      links: amenities.slice(0, 8).map(amenity => ({
+      links: amenities.slice(0, 9).map(amenity => ({
         name: amenity.name,
         url: `/amenities/${amenity.slug}`
       }))
