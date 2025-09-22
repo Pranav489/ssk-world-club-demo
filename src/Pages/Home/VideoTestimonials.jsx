@@ -350,7 +350,6 @@ const VideoTestimonials = () => {
                             className="w-full h-full object-contain"
                             autoPlay
                             controls
-                            muted
                             onEnded={() => setIsPlaying(false)}
                             onCanPlay={() => setVideoReady(true)}
                           >

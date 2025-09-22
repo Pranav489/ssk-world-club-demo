@@ -160,17 +160,20 @@ const ContactPage = () => {
     { platform: 'youtube', url: "https://youtube.com/sskworldclub", color: "#FF0000" }
   ];
 
-  // Get social links from API or use defaults
+  // Replace the existing social links processing code with this:
   const socialLinks = contactInfo?.social_links
     ? Object.entries(contactInfo.social_links)
-      .filter(([_, url]) => url)
+      .filter(([_, url]) => url && url.trim() !== "") // Only include if URL exists and is not empty
       .map(([platform, url]) => ({
         platform,
         url,
         color: defaultSocialLinks.find(s => s.platform === platform)?.color || "#666",
         icon: socialIcons[platform]
       }))
-    : defaultSocialLinks;
+    : [];
+
+  // If no social links from API, use defaults (optional)
+  const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
 
   if (loading) {
     return (
@@ -624,7 +627,7 @@ const ContactPage = () => {
                       initial="hidden"
                       animate="visible"
                     >
-                      {socialLinks.map((social, index) => {
+                      {displaySocialLinks.map((social, index) => {
                         const IconComponent = social.icon;
                         return (
                           <motion.a
