@@ -154,24 +154,20 @@ const Footer = () => {
     }
   };
 
-  // Social links from API data - only show if URL is available
-  const socialLinks = contactInfo?.social_links
-    ? Object.entries(contactInfo.social_links)
-        .filter(([_, url]) => url && url.trim() !== "" && url !== "#") // Only include if URL exists and is not empty or just "#"
-        .map(([platform, url]) => ({
-          icon: platform === 'facebook' ? <FaFacebook className="h-5 w-5" /> :
-                platform === 'instagram' ? <FaInstagram className="h-5 w-5" /> :
-                platform === 'twitter' ? <FaTwitter className="h-5 w-5" /> :
-                platform === 'linkedin' ? <FaLinkedin className="h-5 w-5" /> :
-                platform === 'youtube' ? <FaYoutube className="h-5 w-5" /> : null,
-          name: platform.charAt(0).toUpperCase() + platform.slice(1),
-          url: url
-        }))
-        .filter(item => item.icon !== null) // Remove any platforms without icons
-    : [];
-
-  // Use only the links from API, no fallback
-  const displaySocialLinks = socialLinks;
+  // Social links from API data
+  const socialLinks = contactInfo ? [
+    { icon: <FaFacebook className="h-5 w-5" />, name: "Facebook", url: contactInfo.social_links?.facebook || "#" },
+    { icon: <FaInstagram className="h-5 w-5" />, name: "Instagram", url: contactInfo.social_links?.instagram || "#" },
+    { icon: <FaTwitter className="h-5 w-5" />, name: "Twitter", url: contactInfo.social_links?.twitter || "#" },
+    { icon: <FaLinkedin className="h-5 w-5" />, name: "LinkedIn", url: contactInfo.social_links?.linkedin || "#" },
+    { icon: <FaYoutube className="h-5 w-5" />, name: "YouTube", url: contactInfo.social_links?.youtube || "#" }
+  ] : [
+    { icon: <FaFacebook className="h-5 w-5" />, name: "Facebook", url: "#" },
+    { icon: <FaInstagram className="h-5 w-5" />, name: "Instagram", url: "#" },
+    { icon: <FaTwitter className="h-5 w-5" />, name: "Twitter", url: "#" },
+    { icon: <FaLinkedin className="h-5 w-5" />, name: "LinkedIn", url: "#" },
+    { icon: <FaYoutube className="h-5 w-5" />, name: "YouTube", url: "#" }
+  ];
 
   // Contact info from API data
   const contactInfoItems = contactInfo ? [
@@ -235,7 +231,7 @@ const Footer = () => {
     <footer className="bg-[#0A2463] text-white pt-16 pb-8">
        <motion.div
   initial="hidden"
-  animate={isInView ? "visible" : "hidden"}
+  whileInView={isInView ? "visible" : "hidden"}
   variants={footerVariants}
   className="container mx-auto px-6 lg:px-12"
 >
@@ -262,29 +258,26 @@ const Footer = () => {
               Where peak performance meets premium comfort.
             </motion.p>
 
-            {/* Only show social media section if we have links */}
-            {displaySocialLinks.length > 0 && (
-              <motion.div
-                className="flex space-x-4"
-                variants={footerVariants}
-              >
-                {displaySocialLinks.map((social, index) => (
-                  <motion.a
-                    key={index}
-                    href={social.url}
-                    className="text-gray-300 hover:text-[#FFC857] transition-colors"
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {social.icon}
-                    <span className="sr-only">{social.name}</span>
-                  </motion.a>
-                ))}
-              </motion.div>
-            )}
+            <motion.div
+              className="flex space-x-4"
+              variants={footerVariants}
+            >
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.url}
+                  className="text-gray-300 hover:text-[#FFC857] transition-colors"
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {social.icon}
+                  <span className="sr-only">{social.name}</span>
+                </motion.a>
+              ))}
+            </motion.div>
           </motion.div>
 
           {/* Footer Links */}
