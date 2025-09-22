@@ -43,6 +43,7 @@ const AboutUs = () => {
     }
   }, [controls, inView]);
 
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -62,14 +63,6 @@ const AboutUs = () => {
     }
   };
 
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.8 }
-    }
-  };
-
   const scaleUp = {
     hidden: { scale: 0.95, opacity: 0 },
     visible: {
@@ -84,11 +77,24 @@ const AboutUs = () => {
 
   if (loading) {
     return (
-      <section className="relative py-24 bg-white overflow-hidden" id="about">
-        <div className="container px-6 mx-auto">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
           </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
         </div>
       </section>
     );
@@ -174,14 +180,23 @@ const AboutUs = () => {
           {/* Image */}
           <motion.div
             className="relative h-96 rounded-xl overflow-hidden shadow-2xl"
-            variants={scaleUp}
+            initial={{ scale: 0.95, opacity: 0 }}
+            whileInView={{
+              scale: 1,
+              opacity: 1,
+              transition: {
+                duration: 0.8,
+                ease: [0.43, 0.13, 0.23, 0.96]
+              }
+            }}
+            viewport={{ once: true }}
           >
             {aboutData?.image && (
               <>
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0A2463]/80 to-[#2E4052]/80" />
                 <img
                   src={aboutData.image}
-                  alt="SSK World Club"
+                  alt="The SSK World Club"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </>
@@ -190,8 +205,9 @@ const AboutUs = () => {
             <motion.div
               className="absolute bottom-6 left-6 bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider"
               initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              whileInView={{ scale: 1 }}
               transition={{ delay: 0.4 }}
+              viewport={{ once: true }}
             >
               Est. 2020
             </motion.div>
@@ -199,14 +215,18 @@ const AboutUs = () => {
 
           {/* Content */}
           <motion.div
-            variants={itemVariants}
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             className="group lg:pl-12 z-10"
           >
             <motion.h3
               className="text-2xl font-bold text-[#0A2463] mb-6"
               initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
+              whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
+              viewport={{ once: true }}
             >
               Redefining the Sports Club Experience
             </motion.h3>
@@ -214,21 +234,27 @@ const AboutUs = () => {
             <motion.p
               className="text-gray-600 mb-6"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              whileInView={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
+              viewport={{ once: true }}
               dangerouslySetInnerHTML={{ __html: aboutData?.content || "" }}
             />
-              
+
             <motion.div
               className="grid grid-cols-2 gap-6 mb-8"
               initial="hidden"
-              animate="visible"
+              whileInView="visible"
               variants={containerVariants}
+              viewport={{ once: true }}
             >
               <motion.div
                 className="bg-gray-50 p-6 hover:shadow-lg transition-shadow rounded-lg"
                 variants={itemVariants}
-              // whileHover={{ y: -5 }}
+                whileHover={{
+                  y: -5,
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                  transition: { duration: 0.1 }
+                }}
               >
                 <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <Trophy className="h-6 w-6" />
@@ -242,7 +268,11 @@ const AboutUs = () => {
               <motion.div
                 className="bg-gray-50 p-6 hover:shadow-lg transition-shadow rounded-lg"
                 variants={itemVariants}
-              // whileHover={{ y: -5 }}
+                whileHover={{
+                  y: -5,
+                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                  transition: { duration: 0.1 }
+                }}
               >
                 <div className="bg-[#FFC857] text-[#0A2463] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6" />
@@ -255,17 +285,18 @@ const AboutUs = () => {
             <motion.a
               href="/about-us"
               className="inline-flex items-center text-[#0A2463] group-hover:text-[#FFC857] transition-colors font-medium group"
-              // whileHover={{ x: 5 }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              whileInView={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
+              viewport={{ once: true }}
+              whileHover={{ x: 5 }}
             >
               Discover Our Full Story
               <motion.span
                 className="ml-2 group-hover:translate-x-1 transition-transform"
-                // animate={{
-                //   x: [0, 5, 0],
-                // }}
+                animate={{
+                  x: [0, 5, 0],
+                }}
                 transition={{
                   repeat: Infinity,
                   duration: 1.5,
@@ -282,8 +313,9 @@ const AboutUs = () => {
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24"
           initial="hidden"
-          animate={controls}
+          whileInView="visible"
           variants={containerVariants}
+          viewport={{ once: true }}
         >
           {[
             {
@@ -307,8 +339,9 @@ const AboutUs = () => {
               className="bg-gray-50 p-8 rounded-xl"
               variants={itemVariants}
               whileHover={{
+                y: -5,
                 boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-                transition: { duration: 0.1 } // This makes the shadow appear instantly
+                transition: { duration: 0.1 }
               }}
             >
               <div className="mb-4">

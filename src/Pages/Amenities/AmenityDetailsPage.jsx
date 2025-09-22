@@ -197,29 +197,28 @@ const AmenityDetailsPage = () => {
   ].filter(Boolean) : [];
 
 
-  // Loading state
-  if (loading) {
+if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
-          <motion.p
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+        
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+          
+          <motion.p 
+            className="text-[#0A2463] text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
+            transition={{ delay: 0.5 }}
           >
-            Loading amenity details...
+            Loading premium content...
           </motion.p>
-        </motion.div>
-      </div>
+  
+        </div>
+      </section>
     );
   }
 
@@ -433,7 +432,7 @@ const AmenityDetailsPage = () => {
               </div>
             </motion.div>
           </div>
-          
+
           {/* Details Sections - Below the two columns */}
           {amenity.sections && amenity.sections.length > 0 ? (
             <motion.div
@@ -579,19 +578,28 @@ const AmenityDetailsPage = () => {
 
       {/* CTA Section */}
       <section className="relative py-16 bg-gradient-to-br from-[#0A2463] to-[#2E4052]">
-        <div className="container mx-auto px-6 text-center">
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="text-center text-white"
           >
-            <h2 className="text-3xl font-bold text-white mb-6">
-              Experience {amenity.title} at SSK World Club
-            </h2>
-            <div className="flex flex-wrap justify-center gap-6">
+            <motion.h2
+              variants={itemVariants} className="text-3xl font-bold text-white mb-6">
+              Experience {amenity.title} at The SSK World Club
+            </motion.h2>
+            <motion.div
+              variants={itemVariants}
+              className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+            />
+            <motion.div
+              variants={containerVariants}
+              className="flex flex-wrap justify-center gap-6"
+            >
               <motion.button
+                variants={itemVariants}
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
@@ -604,6 +612,7 @@ const AmenityDetailsPage = () => {
               </motion.button>
               {contactInfo && contactInfo.contact && contactInfo.contact.phone && (
                 <motion.a
+                  variants={itemVariants}
                   href={`tel:${contactInfo.contact.phone}`}
                   whileHover={{
                     backgroundColor: "rgba(255,255,255,0.1)",
@@ -615,7 +624,7 @@ const AmenityDetailsPage = () => {
                   Contact Manager
                 </motion.a>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

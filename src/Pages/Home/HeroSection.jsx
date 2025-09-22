@@ -116,17 +116,17 @@ const HeroSection = () => {
       const videoId = getYouTubeId(videoData.video_url);
       return (
         <div className="relative w-full h-screen overflow-hidden">
-  <iframe
-    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&fs=0&disablekb=1`}
-    className="absolute top-0 left-0 w-full h-full object-cover opacity-70"
-    frameBorder="0"
-    allow="autoplay; encrypted-media"
-    allowFullScreen={true}
-  />
-  
-  {/* Transparent overlay to hide watermark */}
-  <div className="absolute inset-0 pointer-events-none bg-black/0" />
-</div>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&fs=0&disablekb=1`}
+            className="absolute top-0 left-0 w-full h-full object-cover opacity-70"
+            frameBorder="0"
+            allow="autoplay; encrypted-media"
+            allowFullScreen={true}
+          />
+
+          {/* Transparent overlay to hide watermark */}
+          <div className="absolute inset-0 pointer-events-none bg-black/0" />
+        </div>
 
 
       );
@@ -156,9 +156,23 @@ const HeroSection = () => {
   if (loading) {
     return (
       <section className="relative h-screen w-full overflow-hidden bg-[#0A2463] flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"></div>
-          <p>Loading premium experience...</p>
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-[#0A2463]/20 rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+
+          <motion.p
+            className="text-white/80 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
         </div>
       </section>
     );

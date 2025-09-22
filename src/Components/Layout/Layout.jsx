@@ -9,7 +9,7 @@ import ScrollToTop from '../ScrollToTop/ScrollToTop'
 const Layout = () => {
   return (
     <div>
-    <ScrollToTop/>
+    {/* <ScrollToTop/> */}
     <Navbar/>
     <Outlet/> 
     <WhatsAppPopup/>

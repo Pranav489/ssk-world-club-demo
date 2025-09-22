@@ -2,7 +2,7 @@ import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Calendar, Clock, MapPin, ChevronRight, Play, Trophy, Users, Film, Waves } from "lucide-react";
-import { ssk_club } from "../../assets";
+import { ssk_club, ssk_club4 } from "../../assets";
 import { useNavigate } from "react-router";
 import axiosInstance from "../../services/api";
 
@@ -134,29 +134,29 @@ const EventsPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
-          >
-            Loading events...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
+      return (
+        <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+          
+          <div className="flex flex-col items-center justify-center relative z-10">
+            {/* Animated Spinner */}
+            <div className="relative mx-auto mb-6">
+              <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+              <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+            </div>
+            
+            <motion.p 
+              className="text-[#0A2463] text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Loading premium content...
+            </motion.p>
+    
+          </div>
+        </section>
+      );
+    }
 
   if (error) {
     return (
@@ -230,8 +230,8 @@ const EventsPage = () => {
           className="absolute inset-0 z-0"
         >
           <img
-            src={ssk_club}
-            alt="SSK World Club Events"
+            src={ssk_club4}
+            alt="The SSK World Club Events"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
@@ -265,7 +265,7 @@ const EventsPage = () => {
               className="text-lg text-white max-w-2xl mx-auto"
               variants={itemVariants}
             >
-              Tournaments, social gatherings, and special occasions at SSK World Club
+              Tournaments, social gatherings, and special occasions at The SSK World Club
             </motion.p>
           </div>
         </motion.div>
@@ -305,7 +305,7 @@ const EventsPage = () => {
           whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="absolute top-20 left-10 w-64 h-64 border border-[#FFC857] rounded-full z-20"
+          className="absolute top-20 left-10 w-64 h-64 border border-[#FFC857] rounded-full"
         />
 
         <motion.div
@@ -313,7 +313,7 @@ const EventsPage = () => {
           whileInView={{ scale: 1, opacity: 0.1 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="absolute bottom-1/3 right-8 w-48 h-48 border border-[#0A2463] rounded-full z-20"
+          className="absolute bottom-1/3 right-8 w-48 h-48 border border-[#0A2463] rounded-full"
         />
 
         <div className="container mx-auto px-6 relative z-10">
@@ -330,8 +330,8 @@ const EventsPage = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-8 py-3 font-medium uppercase tracking-wider relative ${activeTab === tab
-                    ? 'text-[#0A2463]'
-                    : 'text-gray-500 hover:text-[#0A2463]'
+                  ? 'text-[#0A2463]'
+                  : 'text-gray-500 hover:text-[#0A2463]'
                   }`}
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
@@ -451,35 +451,34 @@ const EventsPage = () => {
 
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="text-center text-white"
           >
             <motion.h2
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              variants={itemVariants}
               className="text-3xl md:text-4xl font-bold text-white mb-6"
             >
-              Host Your Next Event at SSK World Club
+              Host Your Next Event at The SSK World Club
             </motion.h2>
+            <motion.div
+              variants={itemVariants}
+              className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+            />
             <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              variants={itemVariants}
               className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
             >
               Our premium facilities are available for private tournaments, corporate events, and social gatherings
             </motion.p>
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
+              variants={containerVariants}
               className="flex flex-wrap justify-center gap-6"
             >
               <motion.button
+                variants={itemVariants}
                 onClick={() => navigate('/contact')}
                 whileHover={{
                   scale: 1.05,

@@ -41,7 +41,7 @@ const SportsPage = () => {
     const [sportsData, setSportsData] = useState({ indoor: [], outdoor: [] });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     // Animation controls
     const controls = useAnimation();
     const [ref, inView] = useInView({ threshold: 0.4 });
@@ -103,7 +103,7 @@ const SportsPage = () => {
             try {
                 setLoading(true);
                 const response = await axiosInstance.get('/contact-info');
-                
+
                 if (response.data.success) {
                     setContactInfo(response.data.data);
                 } else {
@@ -202,25 +202,28 @@ const SportsPage = () => {
         }
     }, [controls, inView, sportsFacilitiesHero]);
 
-    // Loading state
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-                    />
+            <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+                <div className="flex flex-col items-center justify-center relative z-10">
+                    {/* Animated Spinner */}
+                    <div className="relative mx-auto mb-6">
+                        <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+                        <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+                    </div>
+
                     <motion.p
+                        className="text-[#0A2463] text-sm"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-[#0A2463] font-medium"
+                        transition={{ delay: 0.5 }}
                     >
-                        Loading sports facilities...
+                        Loading premium content...
                     </motion.p>
+
                 </div>
-            </div>
+            </section>
         );
     }
 
@@ -469,7 +472,7 @@ const SportsPage = () => {
                         opacity: 0.2,
                         transition: { delay: 0.3, duration: 1 }
                     }}
-                    className="absolute top-20 -left-20 w-64 h-64 border border-[#FFC857] rounded-full z-20"
+                    className="absolute top-20 -left-20 w-64 h-64 border border-[#FFC857] rounded-full "
                 />
 
                 <motion.div
@@ -598,7 +601,7 @@ const SportsPage = () => {
                                             }}
                                         >
                                             <div className="flex items-center gap-4 mb-3">
-                                                <motion.div 
+                                                <motion.div
                                                     className="bg-[#0A2463]/10 p-2 rounded-full transition-transform duration-300 group-hover:scale-110"
                                                     whileHover={{ scale: 1.1 }}
                                                 >
@@ -672,14 +675,11 @@ const SportsPage = () => {
 
                 <div className="container mx-auto px-6 relative z-10">
                     <motion.div
-                        className="text-center"
-                        variants={{
-                            hidden: { opacity: 0 },
-                            visible: {
-                                opacity: 1,
-                                transition: { staggerChildren: 0.2, delayChildren: 0.3 }
-                            }
-                        }}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={containerVariants}
+                        className="text-center text-white"
                     >
                         <motion.div
                             className="inline-block bg-[#FFC857] text-[#0A2463] px-6 py-1 rounded-full mb-6 font-bold uppercase tracking-wider text-sm"
@@ -696,55 +696,31 @@ const SportsPage = () => {
                         </motion.div>
 
                         <motion.h2
-                            className="text-3xl md:text-4xl font-bold mb-6 text-white"
-                            variants={{
-                                hidden: { y: 30, opacity: 0 },
-                                visible: {
-                                    y: 0,
-                                    opacity: 1,
-                                    transition: { type: "spring", stiffness: 100, damping: 12 }
-                                }
-                            }}
+                            variants={itemVariants}
+                            className="text-3xl md:text-4xl font-bold text-white mb-6"
                         >
                             WHERE <span className="text-[#FFC857]">PERFORMANCE</span> MEETS <span className="text-[#FFC857]">PRESTIGE</span>
                         </motion.h2>
+                        <motion.div
+                            variants={itemVariants}
+                            className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+                        />
 
                         <motion.p
-                            className="text-lg text-[#FFC857] mb-8 max-w-2xl mx-auto"
-                            variants={{
-                                hidden: { y: 20, opacity: 0 },
-                                visible: {
-                                    y: 0,
-                                    opacity: 1,
-                                    transition: { delay: 0.2 }
-                                }
-                            }}
+                            variants={itemVariants}
+                            className="text-lg text-[#FFC857] mb-8"
                         >
-                            Discover why elite athletes and discerning members choose SSK World Club
+                            Discover why elite athletes and discerning members choose The SSK World Club
                         </motion.p>
 
                         <motion.div
+                            variants={containerVariants}
                             className="flex flex-wrap justify-center gap-6"
-                            variants={{
-                                hidden: { opacity: 0 },
-                                visible: {
-                                    opacity: 1,
-                                    transition: { staggerChildren: 0.1 }
-                                }
-                            }}
                         >
                             <motion.button
-                                variants={{
-                                    hidden: { y: 20, opacity: 0 },
-                                    visible: {
-                                        y: 0,
-                                        opacity: 1,
-                                        transition: { type: "spring", stiffness: 300 }
-                                    }
-                                }}
+                                variants={itemVariants}
                                 whileHover={{
                                     scale: 1.05,
-                                    backgroundColor: "#FFD700",
                                     boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
                                 }}
                                 whileTap={{ scale: 0.98 }}
@@ -758,14 +734,7 @@ const SportsPage = () => {
                             {contactInfo?.contact?.phone && (
                                 <motion.a
                                     href={`tel:${contactInfo?.contact?.phone}`}
-                                    variants={{
-                                        hidden: { y: 20, opacity: 0 },
-                                        visible: {
-                                            y: 0,
-                                            opacity: 1,
-                                            transition: { type: "spring", stiffness: 300, delay: 0.1 }
-                                        }
-                                    }}
+                                    variants={itemVariants}
                                     whileHover={{
                                         backgroundColor: "rgba(255, 200, 87, 0.2)",
                                         scale: 1.02,

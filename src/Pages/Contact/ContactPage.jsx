@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useInView } from "react-intersection-observer";
 import { Phone, Mail, MapPin, Clock, User, ChevronRight, Send } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
-import { basketball } from "../../assets";
+import { basketball, ssk_club5 } from "../../assets";
 import axiosInstance from "../../services/api"
 
 const ContactPage = () => {
@@ -99,7 +99,7 @@ const ContactPage = () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get('/contact-info');
-        
+
         if (response.data.success) {
           setContactInfo(response.data.data);
         } else {
@@ -125,7 +125,7 @@ const ContactPage = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axiosInstance.post('/enquiries', data);
-      
+
       if (response.data.success) {
         setFormSubmitted(true);
         reset();
@@ -161,39 +161,39 @@ const ContactPage = () => {
   ];
 
   // Get social links from API or use defaults
-  const socialLinks = contactInfo?.social_links 
+  const socialLinks = contactInfo?.social_links
     ? Object.entries(contactInfo.social_links)
-        .filter(([_, url]) => url)
-        .map(([platform, url]) => ({
-          platform,
-          url,
-          color: defaultSocialLinks.find(s => s.platform === platform)?.color || "#666",
-          icon: socialIcons[platform]
-        }))
+      .filter(([_, url]) => url)
+      .map(([platform, url]) => ({
+        platform,
+        url,
+        color: defaultSocialLinks.find(s => s.platform === platform)?.color || "#666",
+        icon: socialIcons[platform]
+      }))
     : defaultSocialLinks;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+
           <motion.p
+            className="text-[#0A2463] text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
+            transition={{ delay: 0.5 }}
           >
-            Loading contact information...
+            Loading premium content...
           </motion.p>
-        </motion.div>
-      </div>
+
+        </div>
+      </section>
     );
   }
 
@@ -209,7 +209,7 @@ const ContactPage = () => {
           initial={{ opacity: 0 }}
           animate={controls}
           variants={{
-            visible: { 
+            visible: {
               opacity: 1,
               transition: { duration: 1.5 }
             }
@@ -217,10 +217,19 @@ const ContactPage = () => {
           className="absolute inset-0 z-0"
         >
           <img
-            src={basketball}
-            alt="Contact SSK World Club"
+            src={ssk_club5}
+            alt="Contact The SSK World Club"
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0"
+        >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
         </motion.div>
 
@@ -236,7 +245,7 @@ const ContactPage = () => {
               className="text-4xl md:text-5xl font-bold mb-4"
               variants={itemVariants}
             >
-              CONTACT <span className="text-[#FFC857]">SSK WORLD CLUB</span>
+              CONTACT <span className="text-[#FFC857]">The SSK World Club</span>
             </motion.h1>
 
             <motion.p
@@ -388,8 +397,8 @@ const ContactPage = () => {
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                           <input
-                            {...register("email", { 
-                              required: "Email is required", 
+                            {...register("email", {
+                              required: "Email is required",
                               pattern: {
                                 value: /^\S+@\S+$/i,
                                 message: "Invalid email address"
@@ -481,7 +490,7 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <motion.div 
+                    <motion.div
                       className="bg-[#0A2463]/10 p-3 rounded-full"
                       whileHover={{ scale: 1.1 }}
                     >
@@ -507,7 +516,7 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <motion.div 
+                    <motion.div
                       className="bg-[#0A2463]/10 p-3 rounded-full"
                       whileHover={{ scale: 1.1 }}
                     >
@@ -533,7 +542,7 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <motion.div 
+                    <motion.div
                       className="bg-[#0A2463]/10 p-3 rounded-full"
                       whileHover={{ scale: 1.1 }}
                     >
@@ -566,7 +575,7 @@ const ContactPage = () => {
                     className="flex items-start gap-4"
                     variants={itemVariants}
                   >
-                    <motion.div 
+                    <motion.div
                       className="bg-[#0A2463]/10 p-3 rounded-full"
                       whileHover={{ scale: 1.1 }}
                     >
@@ -598,7 +607,7 @@ const ContactPage = () => {
                   className="flex items-start gap-4"
                   variants={itemVariants}
                 >
-                  <motion.div 
+                  <motion.div
                     className="bg-[#0A2463]/10 p-3 rounded-full"
                     whileHover={{ scale: 1.1 }}
                   >
@@ -668,7 +677,7 @@ const ContactPage = () => {
               style={{ border: 0 }}
               allowFullScreen=""
               loading="lazy"
-              title="SSK World Club Location"
+              title="The SSK World Club Location"
             ></iframe>
           </motion.div>
         </div>
@@ -687,36 +696,35 @@ const ContactPage = () => {
 
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="text-center text-white"
           >
             <motion.h2
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              variants={itemVariants}
               className="text-3xl md:text-4xl font-bold text-white mb-6"
             >
-              Ready to Visit SSK World Club?
+              Ready to Visit The SSK World Club?
             </motion.h2>
+            <motion.div
+              variants={itemVariants}
+              className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+            />
             <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+              variants={itemVariants}
               className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
             >
               Schedule a private tour to experience our world-class facilities firsthand
             </motion.p>
             <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
+              variants={containerVariants}
               className="flex flex-wrap justify-center gap-6"
             >
               {contactInfo?.contact?.phone && (
                 <motion.button
+                  variants={itemVariants}
                   onClick={() => window.location.href = `tel:${contactInfo.contact.phone}`}
                   whileHover={{
                     backgroundColor: "rgba(255, 200, 87, 0.1)",

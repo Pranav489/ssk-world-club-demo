@@ -1,4 +1,4 @@
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Calendar, Clock, MapPin, ChevronRight, ChevronLeft, Signature, Sparkles } from "lucide-react";
@@ -6,9 +6,8 @@ import { Calendar, Clock, MapPin, ChevronRight, ChevronLeft, Signature, Sparkles
 import axiosInstance from "../../services/api";
 
 const SignatureEvents = () => {
-  const controls = useAnimation();
   const [ref, inView] = useInView({
-    triggerOnce: true,  // Only trigger once
+    triggerOnce: true,
     threshold: 0.2
   });
   const [events, setEvents] = useState({
@@ -21,27 +20,24 @@ const SignatureEvents = () => {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        
-        // Fetch upcoming events
-        const upcomingResponse = await axiosInstance.get('/events/homepage/4');
-        const upcomingEvents = upcomingResponse.data.success ? upcomingResponse.data.data : [];
-        
-        // Fetch past events
-        const pastResponse = await axiosInstance.get('/events', {
-          params: {
-            status: 'past',
-            per_page: 4
-          }
+
+        // Fetch featured upcoming events
+        const upcomingResponse = await axiosInstance.get('/events/homepage/4', {
+          params: { status: 'upcoming' }
         });
-        const pastEvents = pastResponse.data.success ? pastResponse.data.data : [];
-        
+
+        // Fetch featured past events
+        const pastResponse = await axiosInstance.get('/events/homepage/4', {
+          params: { status: 'past' }
+        });
+
         setEvents({
-          upcoming: upcomingEvents,
-          past: pastEvents
+          upcoming: upcomingResponse.data.success ? upcomingResponse.data.data : [],
+          past: pastResponse.data.success ? pastResponse.data.data : []
         });
       } catch (err) {
         console.error('Error fetching events:', err);
@@ -52,62 +48,9 @@ useEffect(() => {
     };
 
     fetchEvents();
-  }, []); // Empty dependency array to run only on mount
+  }, []);
 
-  
-  useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    }
-  }, [controls, inView]);
-
-  // Animation variants (same as before)
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100
-      }
-    }
-  };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.8 }
-    }
-  };
-
-  const slideHorizontal = {
-    hidden: { x: -50, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 20
-      }
-    }
-  };
-
-  // Navigation functions (same as before)
+  // Navigation functions
   const nextEvent = () => {
     setCurrentEventIndex(prev =>
       (prev + 1) % events[activeTab].length
@@ -122,11 +65,24 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <section className="relative py-24 bg-white overflow-hidden" id="events">
-        <div className="container px-6 mx-auto">
-          <div className="flex justify-center items-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
           </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
         </div>
       </section>
     );
@@ -150,51 +106,53 @@ useEffect(() => {
       className="relative py-24 bg-white overflow-hidden"
       id="events"
     >
-      {/* Decorative elements - only animate once */}
+      {/* Decorative elements */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={inView ? {
-          scale: 1,
-          opacity: 0.1,
-          transition: { delay: 0.5, duration: 1 }
-        } : {}}
+        whileInView={{ scale: 1, opacity: 0.1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute top-20 -right-20 w-64 h-64 border-2 border-[#FFC857] rounded-full"
       />
 
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={inView ? {
-          scale: 1,
-          opacity: 0.1,
-          transition: { delay: 0.7, duration: 1 }
-        } : {}}
+        whileInView={{ scale: 1, opacity: 0.1 }}
+        transition={{ delay: 0.7, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute bottom-1/8 -left-20 w-48 h-48 border border-[#0A2463] rounded-full z-20"
       />
 
       <div className="container px-6 mx-auto">
         {/* Section Header */}
         <motion.div
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <motion.div variants={itemVariants}>
-            <motion.h2
-              className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
-            >
-              EXCLUSIVE CLUB EVENTS
-            </motion.h2>
-            <motion.div
-              className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-            />
-          </motion.div>
+          <motion.h2
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
+          >
+            EXCLUSIVE CLUB EVENTS
+          </motion.h2>
+          <motion.div
+            className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          />
           <motion.p
-            variants={itemVariants}
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
             className="text-lg text-gray-600 max-w-3xl mx-auto"
           >
             From championship tournaments to elegant social gatherings, experience the pinnacle of club life
@@ -203,15 +161,13 @@ useEffect(() => {
 
         {/* Event Tabs */}
         <motion.div
-          initial="hidden"
-          animate={controls}
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="flex justify-center mb-12"
         >
-          <motion.div
-            className="flex border-b border-gray-200"
-            variants={itemVariants}
-          >
+          <div className="flex border-b border-gray-200">
             {["upcoming", "past"].map((tab) => (
               <motion.button
                 key={tab}
@@ -225,6 +181,10 @@ useEffect(() => {
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: tab === "upcoming" ? 0.4 : 0.5 }}
+                viewport={{ once: true }}
               >
                 {tab === "upcoming" ? "Upcoming Events" : "Past Events"}
                 {activeTab === tab && (
@@ -236,143 +196,163 @@ useEffect(() => {
                 )}
               </motion.button>
             ))}
-          </motion.div>
+          </div>
         </motion.div>
 
         {/* Event Carousel */}
         <div className="relative">
           {events[activeTab].length > 0 ? (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${activeTab}-${currentEventIndex}`}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-            >
-              {/* Event Image */}
+            <AnimatePresence mode="popLayout">
               <motion.div
-                className="relative h-96 rounded-xl overflow-hidden shadow-2xl"
-                variants={fadeInVariants}
+                key={`${activeTab}-${currentEventIndex}`}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5 }}
+                className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0A2463] to-[#2E4052] opacity-70" />
-                <motion.img
-                      src={events[activeTab][currentEventIndex].image_url}
-                      alt={events[activeTab][currentEventIndex].title}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                    />
+                {/* Event Image */}
                 <motion.div
-                  className="absolute top-6 right-6 bg-[#FFC857] text-[#0A2463] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.4 }}
+                  className="relative h-96 rounded-xl overflow-hidden shadow-2xl"
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.8 }}
+                  viewport={{ once: true }}
                 >
-                  {events[activeTab][currentEventIndex].type_label || events[activeTab][currentEventIndex].type}
-                </motion.div>
-              </motion.div>
-
-              {/* Event Content */}
-              <motion.div
-                variants={slideHorizontal}
-                className="lg:pl-8"
-              >
-                <motion.h3
-                  className="text-3xl font-bold text-[#0A2463] mb-4"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  {events[activeTab][currentEventIndex].title}
-                </motion.h3>
-
-                <motion.div
-                  className="flex flex-wrap gap-4 mb-6"
-                  initial="hidden"
-                  animate="visible"
-                  variants={containerVariants}
-                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0A2463] to-[#2E4052] opacity-70" />
+                  <motion.img
+                    src={events[activeTab][currentEventIndex].image_url}
+                    alt={events[activeTab][currentEventIndex].title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  />
                   <motion.div
-                    className="flex items-center text-gray-700"
-                    variants={itemVariants}
+                    className="absolute top-6 right-6 bg-[#FFC857] text-[#0A2463] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                    viewport={{ once: true }}
                   >
-                    <Calendar className="h-5 w-5 mr-2 text-[#FFC857]" />
-                    {new Date(events[activeTab][currentEventIndex].date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </motion.div>
-                  <motion.div
-                    className="flex items-center text-gray-700"
-                    variants={itemVariants}
-                  >
-                    <Clock className="h-5 w-5 mr-2 text-[#FFC857]" />
-                    {events[activeTab][currentEventIndex].time}
-                  </motion.div>
-                  <motion.div
-                    className="flex items-center text-gray-700"
-                    variants={itemVariants}
-                  >
-                    <MapPin className="h-5 w-5 mr-2 text-[#FFC857]" />
-                    {events[activeTab][currentEventIndex].location}
+                    {events[activeTab][currentEventIndex].type_label || events[activeTab][currentEventIndex].type}
                   </motion.div>
                 </motion.div>
 
-                <motion.p
-                  className="text-gray-600 mb-8"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {events[activeTab][currentEventIndex].description}
-                </motion.p>
-
+                {/* Event Content */}
                 <motion.div
-                  className="flex flex-wrap gap-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+                  initial={{ x: -50, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 20,
+                    delay: 0.2
+                  }}
+                  viewport={{ once: true }}
+                  className="lg:pl-8"
                 >
-                  {activeTab === "upcoming" ? (
-                        <motion.button
-                          onClick={() => window.location.href = "/membership"}
-                          whileHover={{
-                            scale: 1.05,
-                            boxShadow: "0 5px 15px rgba(255, 200, 87, 0.4)"
-                          }}
-                          whileTap={{ scale: 0.95 }}
-                          className="bg-[#FFC857] text-[#0A2463] px-8 py-3 rounded-sm font-bold"
-                        >
-                          Register Now
-                        </motion.button>
-                      ) : null}
-                  <motion.button
-                        onClick={() => window.location.href = `/events/${events[activeTab][currentEventIndex].slug}`}
+                  <motion.h3
+                    className="text-3xl font-bold text-[#0A2463] mb-4"
+                    initial={{ y: 20, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    viewport={{ once: true }}
+                  >
+                    {events[activeTab][currentEventIndex].title}
+                  </motion.h3>
+
+                  <motion.div
+                    className="flex flex-wrap gap-4 mb-6"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    viewport={{ once: true }}
+                  >
+                    <motion.div
+                      className="flex items-center text-gray-700"
+                      initial={{ y: 20, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      viewport={{ once: true }}
+                    >
+                      <Calendar className="h-5 w-5 mr-2 text-[#FFC857]" />
+                      {(events[activeTab][currentEventIndex].date)}
+                    </motion.div>
+                    <motion.div
+                      className="flex items-center text-gray-700"
+                      initial={{ y: 20, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      viewport={{ once: true }}
+                    >
+                      <Clock className="h-5 w-5 mr-2 text-[#FFC857]" />
+                      {events[activeTab][currentEventIndex].time}
+                    </motion.div>
+                    <motion.div
+                      className="flex items-center text-gray-700"
+                      initial={{ y: 20, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      viewport={{ once: true }}
+                    >
+                      <MapPin className="h-5 w-5 mr-2 text-[#FFC857]" />
+                      {events[activeTab][currentEventIndex].location}
+                    </motion.div>
+                  </motion.div>
+
+                  <motion.p
+                    className="text-gray-600 mb-8"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    viewport={{ once: true }}
+                  >
+                    {events[activeTab][currentEventIndex].description}
+                  </motion.p>
+
+                  <motion.div
+                    className="flex flex-wrap gap-4"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    viewport={{ once: true }}
+                  >
+                    {activeTab === "upcoming" ? (
+                      <motion.button
+                        onClick={() => window.location.href = "/membership"}
                         whileHover={{
-                          backgroundColor: "rgba(10, 36, 99, 0.05)",
-                          scale: 1.02
+                          scale: 1.05,
+                          boxShadow: "0 5px 15px rgba(255, 200, 87, 0.4)"
                         }}
-                        whileTap={{ scale: 0.98 }}
-                        className="border border-[#0A2463] text-[#0A2463] px-8 py-3 rounded-sm font-bold"
+                        whileTap={{ scale: 0.95 }}
+                        className="bg-[#FFC857] text-[#0A2463] px-8 py-3 rounded-sm font-bold"
                       >
-                        Learn More
+                        Register Now
                       </motion.button>
+                    ) : null}
+                    <motion.button
+                      onClick={() => window.location.href = `/events/${events[activeTab][currentEventIndex].slug}`}
+                      whileHover={{
+                        backgroundColor: "rgba(10, 36, 99, 0.05)",
+                        scale: 1.02
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className="border border-[#0A2463] text-[#0A2463] px-8 py-3 rounded-sm font-bold"
+                    >
+                      Learn More
+                    </motion.button>
+                  </motion.div>
                 </motion.div>
               </motion.div>
-            </motion.div>
-          </AnimatePresence>
+            </AnimatePresence>
           ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500">
-                  No {activeTab} events available at the moment.
-                </p>
-              </div>
-            )}
+            <div className="text-center py-12">
+              <p className="text-gray-500">
+                No {activeTab} events available at the moment.
+              </p>
+            </div>
+          )}
 
           {/* Navigation Arrows - Desktop */}
           {events[activeTab].length > 1 && (
@@ -383,8 +363,9 @@ useEffect(() => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                whileInView={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
+                viewport={{ once: true }}
                 style={{ left: '-40px' }}
               >
                 <ChevronLeft className="h-6 w-6 text-[#0A2463] drop-shadow-lg" />
@@ -395,8 +376,9 @@ useEffect(() => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                whileInView={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
+                viewport={{ once: true }}
                 style={{ right: '-40px' }}
               >
                 <ChevronRight className="h-6 w-6 text-[#0A2463] drop-shadow-lg" />
@@ -426,13 +408,15 @@ useEffect(() => {
             </div>
           )}
         </div>
+
         {/* Mobile Indicators */}
         {events[activeTab].length > 1 && (
           <motion.div
             className="flex justify-center mt-12 space-x-2"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            whileInView={{ opacity: 1 }}
             transition={{ delay: 1 }}
+            viewport={{ once: true }}
           >
             {events[activeTab].map((_, index) => (
               <button
@@ -449,25 +433,26 @@ useEffect(() => {
         <motion.div
           className="group text-center mt-16"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
+          viewport={{ once: true }}
         >
           <motion.a
             href="/events"
             className="inline-flex items-center text-[#0A2463] group-hover:text-[#FFC857] transition-colors font-bold uppercase tracking-wider group"
-          // whileHover={{ x: 5 }}
+            whileHover={{ x: 5 }}
           >
             View All Club Events
             <motion.span
               className="ml-2 group-hover:translate-x-1 transition-transform"
-            // animate={{
-            //   x: [0, 5, 0],
-            // }}
-            // transition={{
-            //   repeat: Infinity,
-            //   duration: 1.5,
-            //   ease: "easeInOut"
-            // }}
+              animate={{
+                x: [0, 5, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "easeInOut"
+              }}
             >
               <ChevronRight className="h-5 w-5" />
             </motion.span>

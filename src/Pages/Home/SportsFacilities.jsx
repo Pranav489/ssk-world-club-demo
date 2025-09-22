@@ -31,7 +31,9 @@ import {
   Contact,
   Phone,
   ChevronDown,
-  X
+  X,
+  Briefcase,
+  SquareDashedBottom
 } from 'lucide-react';
 // import { basketball, fitness, squash, swimming, table_tennis, tennis_league, yoga } from "../../assets";
 import { useNavigate } from "react-router";
@@ -94,6 +96,7 @@ const SportsFacilities = () => {
     }
   }, [controls, inView]);
 
+  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -119,17 +122,19 @@ const SportsFacilities = () => {
     }
   };
 
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.8 }
-    }
-  };
-
   // Icon mapping function
   const getSportIcon = (iconName, props = { className: "h-8 w-8 text-[#FFC857]" }) => {
     const iconMap = {
+      briefcase: Briefcase,
+      brain: Brain,
+      activity: Activity,
+      chevronright: ChevronRight,
+      dumbbell: Dumbbell,
+      square: Square,
+      target: Target,
+      table: Table,
+      disc: Disc,
+      waves: Waves,
       trophy: Trophy,
       crosshair: Crosshair,
       volleyball: Volleyball,
@@ -145,20 +150,19 @@ const SportsFacilities = () => {
       mapPin: MapPin,
       clock: Clock,
       star: Star,
-      // Add other icon mappings as needed
+      squaredashedbottom: SquareDashedBottom
     };
 
     const IconComponent = iconMap[iconName?.toLowerCase()] || Trophy;
     return <IconComponent {...props} />;
   };
 
-
   // Statistics data from API with fallbacks
   const statsData = [
     {
       value: statistics?.sports_offered || 25,
       label: "Sports Offered",
-      showPlus: true // Add this property
+      showPlus: true
     },
     {
       value: statistics?.professional_coaches || 50,
@@ -179,11 +183,24 @@ const SportsFacilities = () => {
 
   if (sportsLoading && statsLoading) {
     return (
-      <section className="relative py-24 bg-white overflow-hidden" id="sports-facilities">
-        <div className="container px-6 mx-auto">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
           </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
         </div>
       </section>
     );
@@ -237,14 +254,18 @@ const SportsFacilities = () => {
       {/* Section Header */}
       <div className="container px-6 mx-auto mb-20">
         <motion.div
-          initial="hidden"
-          animate={controls}
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-center"
         >
           <motion.h2
             className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
-            variants={itemVariants}
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
           >
             WORLD-CLASS SPORTS FACILITIES
           </motion.h2>
@@ -257,7 +278,10 @@ const SportsFacilities = () => {
           />
           <motion.p
             className="text-lg text-gray-600 max-w-3xl mx-auto"
-            variants={itemVariants}
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
           >
             Where champions train and enthusiasts discover their potential
           </motion.p>
@@ -270,17 +294,26 @@ const SportsFacilities = () => {
           <motion.div
             key={sport.id}
             className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-            initial="hidden"
-            animate={controls}
-            variants={containerVariants}
-            custom={index}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: index * 0.1 }}
+            viewport={{ once: true, margin: "-100px" }}
           >
             {/* Image Column - Alternates sides */}
             <motion.div
               className={`relative h-96 rounded-xl overflow-hidden shadow-2xl ${index % 2 === 0 ? "lg:order-1" : "lg:order-2"
                 }`}
-              variants={fadeInVariants}
-              whileHover={{ scale: 1.02 }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              whileInView={{
+                scale: 1,
+                opacity: 1,
+                transition: { duration: 0.8 }
+              }}
+              whileHover={{
+                scale: 1.02,
+                transition: { duration: 0.2 }
+              }}
+              viewport={{ once: true }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#0A2463]/80 to-[#2E4052]/80" />
               <img
@@ -291,8 +324,9 @@ const SportsFacilities = () => {
               <motion.div
                 className="absolute top-6 left-6 bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider"
                 initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                whileInView={{ scale: 1 }}
                 transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
               >
                 Facility #{index + 1}
               </motion.div>
@@ -302,34 +336,47 @@ const SportsFacilities = () => {
             <motion.div
               className={`group flex flex-col justify-center ${index % 2 === 0 ? "lg:order-2 lg:pl-12" : "lg:order-1 lg:pr-12"
                 }`}
-              variants={itemVariants}
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 + index * 0.1 }}
+              viewport={{ once: true }}
             >
               <motion.div
                 className="mb-6"
                 initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                whileInView={{ scale: 1 }}
                 transition={{ delay: 0.2 }}
+                viewport={{ once: true }}
               >
                 {getSportIcon(sport.icon)}
               </motion.div>
 
               <motion.h3
                 className="text-2xl md:text-3xl font-bold text-[#0A2463] mb-4"
-                variants={itemVariants}
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                viewport={{ once: true }}
               >
                 {sport.name}
               </motion.h3>
 
               <motion.p
                 className="text-gray-600 mb-6"
-                variants={itemVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
               >
                 {sport.description}
               </motion.p>
 
               <motion.ul
                 className="space-y-3 mb-8"
+                initial="hidden"
+                whileInView="visible"
                 variants={containerVariants}
+                viewport={{ once: true }}
               >
                 {sport.features && sport.features.slice(0, 4).map((feature, i) => {
                   // Extract feature text safely regardless of format
@@ -361,7 +408,11 @@ const SportsFacilities = () => {
               <motion.a
                 href={`/sports/${sport.category}/${sport.slug}`}
                 className="flex items-center text-[#0A2463] group-hover:text-[#FFC857] transition-colors font-medium group w-fit"
-                variants={itemVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                viewport={{ once: true }}
+                whileHover={{ x: 5 }}
               >
                 Explore Facility
                 <motion.span
@@ -385,24 +436,26 @@ const SportsFacilities = () => {
         <motion.div
           className="text-center pt-8"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          whileInView={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
+          viewport={{ once: true }}
         >
           <motion.a
             href="/sports"
             className="inline-flex items-center text-[#0A2463] hover:text-[#FFC857] transition-colors font-medium group text-lg"
+            whileHover={{ x: 5 }}
           >
             Explore All Sports Facilities
             <motion.span
               className="ml-2 group-hover:translate-x-1 transition-transform"
-            // animate={{
-            //   x: [0, 5, 0],
-            // }}
-            // transition={{
-            //   repeat: Infinity,
-            //   duration: 1.5,
-            //   ease: "easeInOut"
-            // }}
+              animate={{
+                x: [0, 5, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: "easeInOut"
+              }}
             >
               <ChevronRight className="h-5 w-5" />
             </motion.span>
@@ -413,30 +466,19 @@ const SportsFacilities = () => {
       {/* Enhanced Decorative Elements */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: {
-            scale: 1,
-            opacity: 0.1,
-            transition: { delay: 0.5, duration: 1 }
-          }
-        }}
+        whileInView={{ scale: 1, opacity: 0.1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute top-20 -right-20 w-64 h-64 border-2 border-[#FFC857] rounded-full"
       />
 
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: {
-            scale: 1,
-            opacity: 0.1,
-            transition: { delay: 0.7, duration: 1 }
-          }
-        }}
+        whileInView={{ scale: 1, opacity: 0.1 }}
+        transition={{ delay: 0.7, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute bottom-1/4 -left-20 w-48 h-48 border border-[#0A2463] rounded-full"
       />
-
 
       {/* New elements that repeat throughout the section */}
       {[...Array(Math.ceil(sports.length / 2))].map((_, i) => (
@@ -444,17 +486,9 @@ const SportsFacilities = () => {
           {/* Right side elements */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={controls}
-            variants={{
-              visible: {
-                scale: 1,
-                opacity: 0.05,
-                transition: {
-                  delay: 0.3 + i * 0.3,
-                  duration: 1
-                }
-              }
-            }}
+            whileInView={{ scale: 1, opacity: 0.05 }}
+            transition={{ delay: 0.3 + i * 0.3, duration: 1 }}
+            viewport={{ once: true }}
             className="absolute"
             style={{
               top: `${30 + i * 30}%`,
@@ -469,17 +503,9 @@ const SportsFacilities = () => {
           {/* Left side elements */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={controls}
-            variants={{
-              visible: {
-                scale: 1,
-                opacity: 0.05,
-                transition: {
-                  delay: 0.4 + i * 0.3,
-                  duration: 1
-                }
-              }
-            }}
+            whileInView={{ scale: 1, opacity: 0.05 }}
+            transition={{ delay: 0.4 + i * 0.3, duration: 1 }}
+            viewport={{ once: true }}
             className="absolute"
             style={{
               top: `${35 + i * 30}%`,
@@ -492,27 +518,30 @@ const SportsFacilities = () => {
           />
         </React.Fragment>
       ))}
+
       {/* Stats Footer */}
       <motion.div
         className="bg-[#0A2463] text-white py-16 mt-28"
         initial={{ opacity: 0, y: 50 }}
-        animate={controls}
-        variants={{
-          visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-              delay: 0.5,
-              type: "spring",
-              stiffness: 100,
-              damping: 10
-            }
-          }
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.5,
+          type: "spring",
+          stiffness: 100,
+          damping: 10
         }}
+        viewport={{ once: true }}
       >
         <div className="container px-6 mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {statsData.map((stat, index) => (
-            <motion.div key={stat.label} className="text-center">
+            <motion.div
+              key={stat.label}
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.1 }}
+              viewport={{ once: true }}
+            >
               <p className="text-4xl font-bold text-[#FFC857] mb-2">
                 <AnimatedCounter
                   value={stat.value}

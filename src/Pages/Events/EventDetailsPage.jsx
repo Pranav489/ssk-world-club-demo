@@ -34,60 +34,60 @@ const EventDetailsPage = () => {
     const [activeMedia, setActiveMedia] = useState(0);
 
     // Animation variants
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.3
-            }
-        }
-    };
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
 
-    const itemVariants = {
-        hidden: { y: 30, opacity: 0 },
-        visible: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                type: "spring",
-                damping: 12,
-                stiffness: 100
-            }
-        }
-    };
+  const itemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100
+      }
+    }
+  };
 
-    const fadeIn = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { duration: 0.8 }
-        }
-    };
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
 
-    const scaleUp = {
-        hidden: { scale: 0.95, opacity: 0 },
-        visible: {
-            scale: 1,
-            opacity: 1,
-            transition: {
-                duration: 0.8,
-                ease: [0.43, 0.13, 0.23, 0.96]
-            }
-        }
-    };
+  const scaleUp = {
+    hidden: { scale: 0.95, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.43, 0.13, 0.23, 0.96]
+      }
+    }
+  };
 
-    const maskVariants = {
-        hidden: { width: 0 },
-        visible: {
-            width: "100%",
-            transition: {
-                duration: 1.2,
-                ease: [0.19, 1, 0.22, 1]
-            }
-        }
-    };
+  const maskVariants = {
+    hidden: { width: 0 },
+    visible: {
+      width: "100%",
+      transition: {
+        duration: 1.2,
+        ease: [0.19, 1, 0.22, 1]
+      }
+    }
+  };
 
     const galleryItemVariants = {
         hidden: { scale: 0.9, opacity: 0 },
@@ -199,28 +199,28 @@ const EventDetailsPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center"
-                >
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-                    />
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-[#0A2463] font-medium"
-                    >
-                        Loading event details...
-                    </motion.p>
-                </motion.div>
+          <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+            
+            <div className="flex flex-col items-center justify-center relative z-10">
+              {/* Animated Spinner */}
+              <div className="relative mx-auto mb-6">
+                <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+                <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+              </div>
+              
+              <motion.p 
+                className="text-[#0A2463] text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                Loading premium content...
+              </motion.p>
+      
             </div>
+          </section>
         );
-    }
+      }
 
     if (error || !event) {
         return (
@@ -551,7 +551,7 @@ const EventDetailsPage = () => {
                                     className="bg-gradient-to-br from-[#0A2463] to-[#2E4052] rounded-xl p-6 text-white"
                                 >
                                     <h3 className="text-xl font-bold mb-4">Join This Event</h3>
-                                    <p className="mb-6">Reserve your spot for this exclusive SSK World Club experience</p>
+                                    <p className="mb-6">Reserve your spot for this exclusive The SSK World Club experience</p>
                                     <motion.button
                                         whileHover={{
                                             scale: 1.03,

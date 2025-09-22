@@ -1,4 +1,4 @@
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import {
@@ -29,7 +29,8 @@ import {
   Play,
   Contact,
   Phone,
-  Briefcase
+  Briefcase,
+  SquareDashedBottom
 } from 'lucide-react';
 import axiosInstance from "../../services/api";
 
@@ -37,9 +38,8 @@ const LuxuryAmenities = () => {
   const [amenities, setAmenities] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const controls = useAnimation();
   const [ref, inView] = useInView({
-    triggerOnce: true, // Changed to true for one-time trigger
+    triggerOnce: true,
     threshold: 0.2
   });
 
@@ -67,116 +67,62 @@ const LuxuryAmenities = () => {
     fetchAmenityData();
   }, []);
 
-  useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    }
-  }, [controls, inView]);
-
-
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 10,
-        stiffness: 80
-      }
-    }
-  };
-
-  const getAmenityIcon = (iconName, props = { className:"h-8 w-8"}) => {
-        const iconMap = {
-            trophy: Trophy,
-            crosshair: Crosshair,
-            volleyball: Volleyball,
-            leaf: Leaf,
-            eclipse: Eclipse,
-            utensils: Utensils,
-            hotel: Hotel,
-            bookopen: BookOpen,
-            film: Film,
-            calendar: Calendar,
-            users: Users,
-            phone: Phone,
-            mapPin: MapPin,
-            clock: Clock,
-            star: Star,
-            briefcase: Briefcase
-            // Add other icon mappings as needed
-        };
-
-        const IconComponent = iconMap[iconName?.toLowerCase()] || Trophy;
-        return <IconComponent {...props} />;
+  const getAmenityIcon = (iconName, props = { className: "h-8 w-8" }) => {
+    const iconMap = {
+      briefcase: Briefcase,
+      brain: Brain,
+      activity: Activity,
+      chevronright: ChevronRight,
+      dumbbell: Dumbbell,
+      square: Square,
+      target: Target,
+      table: Table,
+      disc: Disc,
+      waves: Waves,
+      trophy: Trophy,
+      crosshair: Crosshair,
+      volleyball: Volleyball,
+      leaf: Leaf,
+      eclipse: Eclipse,
+      utensils: Utensils,
+      hotel: Hotel,
+      bookopen: BookOpen,
+      film: Film,
+      calendar: Calendar,
+      users: Users,
+      phone: Phone,
+      mapPin: MapPin,
+      clock: Clock,
+      star: Star,
+      squaredashedbottom: SquareDashedBottom
     };
 
-  // const amenities = [
-  //   {
-  //     title: "Billiards & Snooker Lounge",
-  //     icon: <Table2 className="h-8 w-8" />,
-  //     description: "Professional-grade snooker and billiards tables in an elegant lounge",
-  //     highlight: "International standard tables & cue equipment",
-  //     color: "bg-[#FFC857]"
-  //   },
-  //   {
-  //     title: "Kids Adventure Play Area",
-  //     icon: <Users className="h-8 w-8" />,
-  //     description: "Safe, supervised play zones with engaging activities for children",
-  //     highlight: "Indoor & outdoor interactive play zones",
-  //     color: "bg-[#0A2463]"
-  //   },
-  //   {
-  //     title: "Private Mini Theatre",
-  //     icon: <Film className="h-8 w-8" />,
-  //     description: "Exclusive cinema with luxury seating and immersive sound",
-  //     highlight: "4K projection & Dolby Atmos audio",
-  //     color: "bg-[#FFC857]"
-  //   },
-  //   {
-  //     title: "Luxury Spa & Wellness",
-  //     icon: <Flower className="h-8 w-8" />,
-  //     description: "Relaxing therapies blending modern wellness & traditional techniques",
-  //     highlight: "Full-body massages & aromatherapy treatments",
-  //     color: "bg-[#0A2463]"
-  //   },
-  //   {
-  //     title: "Sports Pro Shop",
-  //     icon: <ShoppingBag className="h-8 w-8" />,
-  //     description: "Premium sporting goods and accessories for all activities",
-  //     highlight: "Top global brands & professional-grade gear",
-  //     color: "bg-[#FFC857]"
-  //   },
-  //   {
-  //     title: "Wi-Fi Reading Lounge",
-  //     icon: <BookOpen className="h-8 w-8" />,
-  //     description: "Quiet reading spaces with high-speed internet",
-  //     highlight: "Extensive library & digital access",
-  //     color: "bg-[#0A2463]"
-  //   }
-  // ];
+    const IconComponent = iconMap[iconName?.toLowerCase()] || Trophy;
+    return <IconComponent {...props} />;
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"></div>
-          <p className="text-[#0A2463] font-medium">Loading amenities...</p>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -209,13 +155,17 @@ const LuxuryAmenities = () => {
     >
       {/* Section Header */}
       <motion.div
-        initial="hidden"
-        animate={controls}
-        variants={containerVariants}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
         className="container px-6 mx-auto mb-16 text-center"
       >
         <motion.h2
-          variants={cardVariants}
+          initial={{ y: 30, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
         >
           LUXURY AMENITIES
@@ -228,7 +178,10 @@ const LuxuryAmenities = () => {
           viewport={{ once: true }}
         />
         <motion.p
-          variants={cardVariants}
+          initial={{ y: 30, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          viewport={{ once: true }}
           className="text-lg text-gray-600 max-w-3xl mx-auto"
         >
           Premium experiences beyond athletics
@@ -237,48 +190,47 @@ const LuxuryAmenities = () => {
 
       {/* Amenities Grid */}
       <motion.div
-        initial="hidden"
-        animate={controls}
-        variants={containerVariants}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
         className="container px-6 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {amenities.map((amenity, index) => (
           <motion.div
             key={index}
-            variants={cardVariants}
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{
+              duration: 0.8,
+              delay: index * 0.1,
+              type: "spring",
+              damping: 10,
+              stiffness: 80
+            }}
+            viewport={{ once: true, margin: "-50px" }}
             className="relative bg-white rounded-xl overflow-hidden border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
+            whileHover={{
+              y: -5,
+              transition: { duration: 0.2 }
+            }}
           >
             {/* Color Accent */}
             <motion.div
               className={`absolute top-0 left-0 w-full h-1 ${index % 2 === 0 ? 'bg-[#FFC857]' : 'bg-[#0A2463]'}`}
               initial={{ scaleX: 0 }}
-              animate={controls}
-              variants={{
-                hidden: { scaleX: 0 },
-                visible: {
-                  scaleX: 1,
-                  transition: {
-                    duration: 0.8,
-                    delay: 0.3 + index * 0.1
-                  }
-                }
-              }}
+              whileInView={{ scaleX: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 + index * 0.1 }}
+              viewport={{ once: true }}
             />
 
             {/* Content */}
             <div className="p-8">
               <motion.div
                 initial={{ scale: 0.8 }}
-                animate={controls}
-                variants={{
-                  hidden: { scale: 0.8 },
-                  visible: {
-                    scale: 1,
-                    transition: {
-                      delay: 0.4 + index * 0.1
-                    }
-                  }
-                }}
+                whileInView={{ scale: 1 }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                viewport={{ once: true }}
                 className={`w-16 h-16 ${index % 2 === 0 ? 'bg-[#FFC857]' : 'bg-[#0A2463]'} rounded-full flex items-center justify-center mb-6`}
               >
                 {getAmenityIcon(amenity.icon)}
@@ -294,20 +246,16 @@ const LuxuryAmenities = () => {
       {/* Decorative Elements */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: { opacity: 1, transition: { delay: 0.8 } },
-          hidden: { opacity: 0 }
-        }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-[#FFC857]/10 blur-xl"
       />
       <motion.div
         initial={{ opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: { opacity: 1, transition: { delay: 1 } },
-          hidden: { opacity: 0 }
-        }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-[#0A2463]/10 blur-lg"
       />
     </section>

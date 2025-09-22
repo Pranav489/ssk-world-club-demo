@@ -4,7 +4,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useForm } from "react-hook-form";
 import { ChevronRight, User, Phone, Mail, Home, Users, Heart, Shield, ArrowDown, Award, Star, Clock, CheckCircle } from "lucide-react";
-import { ssk_club } from "../../assets";
+import { ssk_club, ssk_club2 } from "../../assets";
 import axiosInstance from "../../services/api";
 import { useNavigate } from "react-router";
 
@@ -208,29 +208,29 @@ const MembershipPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
-          >
-            Loading membership information...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
+      return (
+        <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+          
+          <div className="flex flex-col items-center justify-center relative z-10">
+            {/* Animated Spinner */}
+            <div className="relative mx-auto mb-6">
+              <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+              <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+            </div>
+            
+            <motion.p 
+              className="text-[#0A2463] text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Loading premium content...
+            </motion.p>
+    
+          </div>
+        </section>
+      );
+    }
 
   if (error) {
     return (
@@ -302,8 +302,8 @@ const MembershipPage = () => {
           className="absolute inset-0 z-0"
         >
           <img
-            src={ssk_club}
-            alt="SSK World Club Membership"
+            src={ssk_club2}
+            alt="The SSK World Club Membership"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
@@ -335,7 +335,7 @@ const MembershipPage = () => {
               variants={itemVariants}
               className="text-xl text-[#FFC857] max-w-2xl mx-auto"
             >
-              Experience premium sports and luxury amenities with SSK World Club membership
+              Experience premium sports and luxury amenities with The SSK World Club membership
             </motion.p>
           </motion.div>
         </div>
@@ -551,7 +551,7 @@ const MembershipPage = () => {
                     transition={{ delay: 0.1 }}
                     className="text-gray-600 mb-8"
                   >
-                    Complete the form below to begin your SSK World Club journey
+                    Complete the form below to begin your The SSK World Club journey
                   </motion.p>
 
                   {formError && (

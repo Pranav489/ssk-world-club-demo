@@ -4,35 +4,35 @@ import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/api";
 import {
-    Dumbbell,
-    Waves,
-    Crosshair,
-    Volleyball,
-    Trophy,
-    Brain,
-    Activity,
-    Square,
-    Target,
-    Table,
-    Leaf,
-    Eclipse,
-    Utensils,
-    Hotel,
-    BookOpen,
-    Film,
-    Calendar,
-    Users,
-    MapPin,
-    Clock,
-    Star,
-    Disc,
-    ChevronRight,
-    ChevronLeft,
-    Play,
-    Contact,
-    Phone,
-    Briefcase,
-    SquareDashedBottom
+  Dumbbell,
+  Waves,
+  Crosshair,
+  Volleyball,
+  Trophy,
+  Brain,
+  Activity,
+  Square,
+  Target,
+  Table,
+  Leaf,
+  Eclipse,
+  Utensils,
+  Hotel,
+  BookOpen,
+  Film,
+  Calendar,
+  Users,
+  MapPin,
+  Clock,
+  Star,
+  Disc,
+  ChevronRight,
+  ChevronLeft,
+  Play,
+  Contact,
+  Phone,
+  Briefcase,
+  SquareDashedBottom
 } from 'lucide-react';
 
 const AmenitiesPage = () => {
@@ -180,29 +180,29 @@ const AmenitiesPage = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
-          >
-            Loading amenities...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
+      return (
+        <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+          
+          <div className="flex flex-col items-center justify-center relative z-10">
+            {/* Animated Spinner */}
+            <div className="relative mx-auto mb-6">
+              <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+              <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+            </div>
+            
+            <motion.p 
+              className="text-[#0A2463] text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Loading premium content...
+            </motion.p>
+    
+          </div>
+        </section>
+      );
+    }
 
   if (error) {
     return (
@@ -504,12 +504,13 @@ const AmenitiesPage = () => {
               </div>
             </motion.div>
           ) : (
-            /* Amenities Grid */
+            /* Amenities Grid - FIXED: Remove the conditional animation */
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               variants={containerVariants}
               initial="hidden"
-              animate={amenitiesInView ? "visible" : "hidden"}
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
             >
               {amenities.map((amenity, index) => (
                 <motion.div
@@ -556,7 +557,7 @@ const AmenitiesPage = () => {
                     }}
                   >
                     <div className="flex items-center gap-4 mb-3">
-                      <motion.div 
+                      <motion.div
                         className="bg-[#0A2463]/10 p-3 rounded-full text-xl"
                         whileHover={{ scale: 1.1 }}
                       >
@@ -569,7 +570,7 @@ const AmenitiesPage = () => {
                     <p className="text-gray-600 mb-6 line-clamp-2">
                       {amenity.short_description}
                     </p>
-                    
+
                     <motion.div
                       className="flex items-center text-[#0A2463] font-medium group-hover:text-[#FFC857] transition-colors"
                       initial={{ opacity: 0 }}
@@ -625,22 +626,36 @@ const AmenitiesPage = () => {
           className="absolute bottom-1/3 left-8 w-48 h-48 border border-[#FFC857] rounded-full"
         />
 
-        <div className="container mx-auto px-6 text-center">
+        <div className="container mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="text-center text-white"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Experience <span className="text-[#FFC857]">SSK World Club</span>?
-            </h2>
-            <p className="text-lg text-[#FFC857] mb-8">
+            <motion.h2
+              variants={itemVariants}
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+            >
+              Ready to Experience <span className="text-[#FFC857]">The SSK World Club</span>?
+            </motion.h2>
+            <motion.div
+              variants={itemVariants}
+              className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+            />
+            <motion.p
+              variants={itemVariants}
+              className="text-lg text-[#FFC857] mb-8"
+            >
               Become a member today and unlock access to all these premium amenities
-            </p>
-            <div className="flex flex-wrap justify-center gap-6">
+            </motion.p>
+            <motion.div
+              variants={containerVariants}
+              className="flex flex-wrap justify-center gap-6"
+            >
               <motion.button
+                variants={itemVariants}
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
@@ -652,6 +667,7 @@ const AmenitiesPage = () => {
                 Join Now
               </motion.button>
               <motion.button
+                variants={itemVariants}
                 whileHover={{
                   backgroundColor: "rgba(255, 200, 87, 0.1)",
                   scale: 1.02,
@@ -663,7 +679,7 @@ const AmenitiesPage = () => {
               >
                 Schedule a Tour
               </motion.button>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

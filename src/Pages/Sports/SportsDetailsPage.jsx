@@ -234,29 +234,28 @@ const SportsDetailPage = () => {
     setGalleryIndex(newIndex);
   };
 
-  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
-          <motion.p
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+        
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+          
+          <motion.p 
+            className="text-[#0A2463] text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
+            transition={{ delay: 0.5 }}
           >
-            Loading sport details...
+            Loading premium content...
           </motion.p>
-        </motion.div>
-      </div>
+  
+        </div>
+      </section>
     );
   }
 

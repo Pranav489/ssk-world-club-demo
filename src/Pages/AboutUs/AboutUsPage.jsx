@@ -1,10 +1,11 @@
 import React from "react";
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAnimation } from "framer-motion";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Play, ChevronRight, Target, Globe, Sparkles, MapPin, Shield, Clock, Award, HeartPulse, Utensils, Trophy, Activity, Medal, Waves, Briefcase, Users, X } from "lucide-react";
-import { founder, leader2, leader3, ssk_club } from "../../assets";
+import { leadership_team, shailesh, ssk_club, suraj, swapnil } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const convertToEmbedUrl = (url) => {
@@ -27,9 +28,9 @@ const convertToEmbedUrl = (url) => {
 
   if (url.includes('youtu.be/')) {
     const videoId = url.split('youtu.be/')[1];
-    const ampersandPosition = videoId.indexOf('?');
-    if (ampersandPosition !== -1) {
-      return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
+    const questionMarkPosition = videoId.indexOf('?');
+    if (questionMarkPosition !== -1) {
+      return `https://www.youtube.com/embed/${videoId.substring(0, questionMarkPosition)}`;
     }
     return `https://www.youtube.com/embed/${videoId}`;
   }
@@ -45,14 +46,86 @@ const isYouTubeUrl = (url) => {
 const AboutUsPage = () => {
   const [aboutData, setAboutData] = useState(null);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
   const heroControls = useAnimation();
-  const storyControls = useAnimation();
-  const clubControls = useAnimation();
+  const [videoReady, setVideoReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const [heroRef, heroInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.4
+  });
+
+  const [storyRef, storyInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.2
+  });
+
+  const [clubRef, clubInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.2
+  });
+
+  useEffect(() => {
+    if (heroInView) heroControls.start("visible");
+  }, [heroControls, heroInView, storyInView, clubInView]);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100
+      }
+    }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.8 }
+    }
+  };
+
+  const scaleUp = {
+    hidden: { scale: 0.95, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.43, 0.13, 0.23, 0.96]
+      }
+    }
+  };
+
+  const maskVariants = {
+    hidden: { width: 0 },
+    visible: {
+      width: "100%",
+      transition: {
+        duration: 1.2,
+        ease: [0.19, 1, 0.22, 1]
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchAboutUs = async () => {
@@ -76,42 +149,6 @@ const AboutUsPage = () => {
     fetchAboutUs();
   }, []);
 
-  // YouTube URL conversion functions
-  const convertToEmbedUrl = (url) => {
-    if (!url) return null;
-
-    // If it's already an embed URL, return as is
-    if (url.includes('youtube.com/embed/')) {
-      return url;
-    }
-
-    // Convert share links to embed URLs
-    if (url.includes('youtube.com/watch?v=')) {
-      const videoId = url.split('v=')[1];
-      const ampersandPosition = videoId.indexOf('&');
-      if (ampersandPosition !== -1) {
-        return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
-      }
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1];
-      const questionMarkPosition = videoId.indexOf('?');
-      if (questionMarkPosition !== -1) {
-        return `https://www.youtube.com/embed/${videoId.substring(0, questionMarkPosition)}`;
-      }
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    // For non-YouTube videos, return original URL
-    return url;
-  };
-
-  const isYouTubeUrl = (url) => {
-    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
-  };
-
   const openVideoModal = () => {
     setIsVideoOpen(true);
     setVideoReady(false);
@@ -123,85 +160,6 @@ const AboutUsPage = () => {
     document.body.style.overflow = 'auto';
   };
 
-  const [heroRef, heroInView] = useInView({
-    triggerOnce: true,
-    threshold: 0.4
-  });
-
-  const [storyRef, storyInView] = useInView({
-    triggerOnce: true,
-    threshold: 0.2
-  });
-
-  const [clubRef, clubInView] = useInView({
-    triggerOnce: true,
-    threshold: 0.2
-  });
-
-  useEffect(() => {
-    if (heroInView) heroControls.start("visible");
-    if (storyInView) storyControls.start("visible");
-    if (clubInView) clubControls.start("visible");
-  }, [heroControls, storyControls, clubControls, heroInView, storyInView, clubInView]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.4
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 40, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100
-      }
-    }
-  };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 1.2 }
-    }
-  };
-
-  const slideInFromLeft = {
-    hidden: { x: -50, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
-
-  const slideInFromRight = {
-    hidden: { x: 50, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
-
   // Get video URL and type
   const videoUrl = aboutData?.hero?.video_url;
   const embedUrl = videoUrl ? convertToEmbedUrl(videoUrl) : null;
@@ -209,9 +167,26 @@ const AboutUsPage = () => {
 
   if (loading) {
     return (
-      <div className="relative h-screen w-full bg-[#0A2463] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
-      </div>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
+        </div>
+      </section>
     );
   }
 
@@ -220,12 +195,14 @@ const AboutUsPage = () => {
       <div className="relative h-screen w-full bg-[#0A2463] flex items-center justify-center">
         <div className="text-white text-center">
           <p className="text-red-300 mb-4">Error loading content</p>
-          <button
+          <motion.button
             onClick={() => window.location.reload()}
             className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Retry
-          </button>
+          </motion.button>
         </div>
       </div>
     );
@@ -233,7 +210,6 @@ const AboutUsPage = () => {
 
   return (
     <div className="relative">
-      {/* Hero Section */}
       <section
         ref={heroRef}
         className="relative h-screen w-full overflow-hidden"
@@ -253,7 +229,7 @@ const AboutUsPage = () => {
           {aboutData?.hero?.image ? (
             <img
               src={aboutData.hero.image}
-              alt="SSK World Club"
+              alt="The SSK World Club"
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.target.src = ssk_club;
@@ -262,7 +238,7 @@ const AboutUsPage = () => {
           ) : (
             <img
               src={ssk_club}
-              alt="SSK World Club"
+              alt="The SSK World Club"
               className="w-full h-full object-cover"
             />
           )}
@@ -404,13 +380,15 @@ const AboutUsPage = () => {
             onClick={closeVideoModal}
           >
             {/* Close Button */}
-            <button
+            <motion.button
               onClick={closeVideoModal}
               className="absolute top-6 right-6 z-60 text-white hover:text-[#FFC857] transition-colors bg-black/50 rounded-full p-2"
               aria-label="Close video"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               <X className="h-8 w-8" />
-            </button>
+            </motion.button>
 
             {/* Video Container */}
             <motion.div
@@ -460,12 +438,14 @@ const AboutUsPage = () => {
                 <div className="flex items-center justify-center h-full text-white">
                   <div className="text-center">
                     <p className="text-2xl mb-4">No tour video available</p>
-                    <button
+                    <motion.button
                       onClick={closeVideoModal}
                       className="bg-[#FFC857] text-[#0A2463] px-6 py-2 rounded-sm font-bold"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       Close
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
               )}
@@ -482,52 +462,49 @@ const AboutUsPage = () => {
         {/* Decorative elements */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={storyControls}
-          variants={{
-            visible: {
-              scale: 1,
-              opacity: 0.2,
-              transition: { delay: 0.5, duration: 1 }
-            }
-          }}
+          whileInView={{ scale: 1, opacity: 0.2 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          viewport={{ once: true }}
           className="absolute top-20 left-10 w-64 h-64 border border-[#FFC857] rounded-full z-20"
         />
 
         <div className="container px-6 mx-auto">
           <motion.div
-            initial="hidden"
-            animate={storyControls}
-            variants={containerVariants}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             className="flex flex-col lg:flex-row gap-16 items-center"
           >
-            {/* Founder Image */}
+            {/* Founder Image - Modified for mobile visibility */}
             <motion.div
-              className="relative lg:w-1/2 h-96 rounded-xl overflow-hidden shadow-2xl"
-              variants={fadeInVariants}
+              className="relative w-full lg:w-1/2 h-80 sm:h-96 rounded-xl overflow-hidden shadow-2xl"
+              initial={{ scale: 0.95, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#0A2463]/80 to-[#2E4052]/80" />
+              {/* Image with proper error handling */}
               {aboutData?.about_content?.image ? (
                 <img
                   src={aboutData.about_content.image}
                   alt="Founder"
                   className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    // Fallback to local image if API image fails
-                    e.target.src = leader3;
-                  }}
                 />
               ) : (
                 <img
-                  src={leader3}
+                  src={leadership_team}
                   alt="Founder"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               )}
+
               <motion.div
-                className="absolute bottom-6 left-6 bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider"
+                className="absolute bottom-6 left-6 bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider z-20"
                 initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                whileInView={{ scale: 1 }}
                 transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
               >
                 {aboutData?.about_content?.badge_text || "Founder & CEO"}
               </motion.div>
@@ -535,25 +512,35 @@ const AboutUsPage = () => {
 
             {/* Content */}
             <motion.div
-              className="lg:w-1/2"
-              variants={itemVariants}
+              className="w-full lg:w-1/2"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
             >
               <motion.h2
                 className="text-3xl font-bold text-[#0A2463] mb-6"
-                variants={itemVariants}
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                viewport={{ once: true }}
               >
                 Our Vision for the Future
               </motion.h2>
 
               <motion.div
                 className="relative mb-8"
-                variants={fadeInVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                viewport={{ once: true }}
               >
                 <motion.blockquote
                   className="text-2xl italic text-gray-700 relative z-10 pl-8 border-l-4 border-[#FFC857]"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
+                  viewport={{ once: true }}
                 >
                   "{aboutData?.about_content?.quote || "To create a new standard where world-class athletic training and contemporary luxury coexist seamlessly for the modern enthusiast."}"
                 </motion.blockquote>
@@ -561,14 +548,20 @@ const AboutUsPage = () => {
 
               <motion.p
                 className="text-gray-600 mb-8"
-                variants={itemVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
               >
-                {aboutData?.about_content?.content || "Founded in 2020, SSK World Club was born from a vision to disrupt traditional sports clubs by combining cutting-edge facilities with boutique hospitality. We're pioneering a movement where performance and lifestyle elevate each other."}
+                {aboutData?.about_content?.content || "Founded in 2020, The SSK World Club was born from a vision to disrupt traditional sports clubs by combining cutting-edge facilities with boutique hospitality. We're pioneering a movement where performance and lifestyle elevate each other."}
               </motion.p>
 
               <motion.div
                 className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10"
-                variants={containerVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                viewport={{ once: true }}
               >
                 {[
                   {
@@ -590,7 +583,11 @@ const AboutUsPage = () => {
                   <motion.div
                     key={item.title}
                     className="bg-gray-50 p-6 rounded-lg transition-shadow duration-300 hover:shadow-md"
-                    variants={itemVariants}
+                    initial={{ y: 20, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 + index * 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -5 }}
                   >
                     <div className="flex items-center gap-4 mb-3">
                       <div className="bg-[#0A2463] p-2 rounded-full">
@@ -615,28 +612,27 @@ const AboutUsPage = () => {
         {/* Decorative elements */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={clubControls}
-          variants={{
-            visible: {
-              scale: 1,
-              opacity: 0.1,
-              transition: { delay: 0.5, duration: 1 }
-            }
-          }}
+          whileInView={{ scale: 1, opacity: 0.1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          viewport={{ once: true }}
           className="absolute bottom-20 right-10 w-64 h-64 border border-[#0A2463] rounded-full z-20"
         />
 
         <div className="container px-6 mx-auto relative z-10">
           {/* Inauguration Highlight */}
           <motion.div
-            initial="hidden"
-            animate={clubControls}
-            variants={containerVariants}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             className="text-center mb-20"
           >
             <motion.div
               className="flex items-center justify-center gap-4 mb-6"
-              variants={itemVariants}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              viewport={{ once: true }}
             >
               <Award className="h-8 w-8 text-[#FFC857]" />
               <h2 className="text-3xl md:text-4xl font-bold text-[#0A2463]">
@@ -646,7 +642,10 @@ const AboutUsPage = () => {
 
             <motion.p
               className="text-lg text-gray-600 max-w-4xl mx-auto"
-              variants={itemVariants}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              viewport={{ once: true }}
             >
               Inaugurated by the hands of honourable Deputy CM of Maharashtra, <span className="font-semibold text-[#0A2463]">Mr. Ajit (Dada) Pawar</span> on <span className="font-semibold">31st Jan 2020</span>, The SSK World Club opened its gates to Nashik City.
             </motion.p>
@@ -654,20 +653,29 @@ const AboutUsPage = () => {
 
           {/* Main Content Grid */}
           <motion.div
-            initial="hidden"
-            animate={clubControls}
-            variants={containerVariants}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10"
           >
             {/* Left Column - Image */}
             <motion.div
               className="relative h-96 rounded-xl overflow-hidden shadow-2xl z-10"
-              variants={slideInFromLeft}
+              initial={{ x: -50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 10,
+                delay: 0.2
+              }}
+              viewport={{ once: true }}
             >
               {aboutData?.club_info?.image ? (
                 <img
                   src={aboutData.club_info.image}
-                  alt="SSK World Club aerial view"
+                  alt="The SSK World Club aerial view"
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => {
                     e.target.src = ssk_club;
@@ -676,7 +684,7 @@ const AboutUsPage = () => {
               ) : (
                 <img
                   src={ssk_club}
-                  alt="SSK World Club aerial view"
+                  alt="The SSK World Club aerial view"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               )}
@@ -684,8 +692,9 @@ const AboutUsPage = () => {
               <motion.div
                 className="absolute bottom-6 left-6 text-white z-10"
                 initial={{ x: -20 }}
-                animate={{ x: 0 }}
+                whileInView={{ x: 0 }}
                 transition={{ delay: 0.6 }}
+                viewport={{ once: true }}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="h-5 w-5" />
@@ -698,28 +707,48 @@ const AboutUsPage = () => {
             {/* Right Column - Content */}
             <motion.div
               className="flex flex-col justify-center relative z-10"
-              variants={slideInFromRight}
+              initial={{ x: 50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 10,
+                delay: 0.3
+              }}
+              viewport={{ once: true }}
             >
               {/* Club Description */}
               <motion.div
                 className="mb-8"
-                variants={containerVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                viewport={{ once: true }}
               >
                 <motion.h3
                   className="text-2xl font-bold text-[#0A2463] mb-4"
-                  variants={itemVariants}
+                  initial={{ y: 20, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  viewport={{ once: true }}
                 >
                   Maharashtra's Premier Sports Destination
                 </motion.h3>
                 <motion.p
                   className="text-gray-600 mb-4"
-                  variants={itemVariants}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  viewport={{ once: true }}
                 >
                   {aboutData?.club_info?.description || "Nestled in the peaceful tranquility of lush green Pathardi, overlooking the historical Pandav Leni, our 10-acre property offers:"}
                 </motion.p>
                 <motion.ul
                   className="space-y-3 mb-6"
-                  variants={containerVariants}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  viewport={{ once: true }}
                 >
                   {(aboutData?.club_info?.features && aboutData.club_info.features.length > 0
                     ? aboutData.club_info.features
@@ -733,8 +762,10 @@ const AboutUsPage = () => {
                     <motion.li
                       key={index}
                       className="flex items-start"
-                      variants={itemVariants}
-                      custom={index}
+                      initial={{ y: 20, opacity: 0 }}
+                      whileInView={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.8 + index * 0.1 }}
+                      viewport={{ once: true }}
                     >
                       <div className="bg-[#FFC857] rounded-full p-1 mr-3 mt-1">
                         <ChevronRight className="h-3 w-3 text-[#0A2463]" />
@@ -748,11 +779,18 @@ const AboutUsPage = () => {
               {/* Safety & Features - Cards with shadow hover */}
               <motion.div
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                variants={containerVariants}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+                viewport={{ once: true }}
               >
                 <motion.div
                   className="bg-white p-6 rounded-xl shadow-sm relative z-20 transition-all duration-300 hover:shadow-lg"
-                  variants={itemVariants}
+                  initial={{ y: 20, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 1.0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <Shield className="h-6 w-6 text-[#FFC857]" />
@@ -765,7 +803,11 @@ const AboutUsPage = () => {
 
                 <motion.div
                   className="bg-white p-6 rounded-xl shadow-sm relative z-20 transition-all duration-300 hover:shadow-lg"
-                  variants={itemVariants}
+                  initial={{ y: 20, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 1.1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <Clock className="h-6 w-6 text-[#FFC857]" />
@@ -783,14 +825,9 @@ const AboutUsPage = () => {
           {/* Club Rules CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={clubControls}
-            variants={{
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { delay: 0.6 }
-              }
-            }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+            viewport={{ once: true }}
             className="text-center mt-16 relative z-10"
           >
             <motion.button
@@ -808,94 +845,92 @@ const AboutUsPage = () => {
 
       {/* Leadership Section */}
       <LeadershipSection />
-      {/* CTA Section */}
-<section className="relative py-24 bg-gradient-to-br from-[#0A2463] to-[#2E4052] overflow-hidden">
-  {/* Decorative elements */}
-  <motion.div
-    initial={{ scale: 0.8, opacity: 0 }}
-    whileInView={{ scale: 1, opacity: 0.1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 1 }}
-    className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
-  />
-  
-  <motion.div
-    initial={{ scale: 0.8, opacity: 0 }}
-    whileInView={{ scale: 1, opacity: 0.1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 1, delay: 0.3 }}
-    className="absolute bottom-1/3 right-10 w-48 h-48 border border-white rounded-full"
-  />
 
-  <div className="container px-6 mx-auto relative z-10">
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-      className="text-center"
-    >
-      <motion.h2
-        className="text-3xl md:text-4xl font-bold text-white mb-6"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        Ready to Experience <span className="text-[#FFC857]">SSK World Club</span>?
-      </motion.h2>
-      
-      <motion.p
-        className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
-        Join our community of passionate athletes and luxury enthusiasts
-      </motion.p>
-      
-      <motion.div
-        className="flex flex-wrap justify-center gap-6"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        <motion.button
-          onClick={() => navigate('/membership')}
-          whileHover={{
-            scale: 1.05,
-            boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
-          }}
-          whileTap={{ scale: 0.98 }}
-          className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
-        >
-          Explore Memberships
-        </motion.button>
-        
-        <motion.button
-          onClick={() => navigate('/contact')}
-          whileHover={{
-            backgroundColor: "rgba(255, 200, 87, 0.1)",
-            scale: 1.02,
-            borderColor: "#FFD700"
-          }}
-          whileTap={{ scale: 0.98 }}
-          className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
-        >
-          Schedule a Tour
-        </motion.button>
-      </motion.div>
-      
-      <motion.p
-        className="text-white/80 mt-8 text-sm"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        Experience world-class facilities with five-star hospitality
-      </motion.p>
-    </motion.div>
-  </div>
-</section>
+      {/* CTA Section */}
+      <section className="relative py-24 bg-gradient-to-br from-[#0A2463] to-[#2E4052] overflow-hidden">
+        {/* Decorative elements */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 0.1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full"
+        />
+
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 0.1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="absolute bottom-1/3 right-10 w-48 h-48 border border-white rounded-full"
+        />
+
+        <div className="container px-6 mx-auto relative z-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="text-center text-white"
+          >
+            <motion.h2
+              variants={itemVariants}
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+            >
+              Ready to Experience <span className="text-[#FFC857]">The SSK World Club</span>?
+            </motion.h2>
+            <motion.div
+              variants={itemVariants}
+              className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+            />
+            <motion.p
+              variants={itemVariants}
+              className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
+            >
+              Join our community of passionate athletes and luxury enthusiasts
+            </motion.p>
+
+            <motion.div
+              variants={containerVariants}
+              className="flex flex-wrap justify-center gap-6"
+            >
+              <motion.button
+                variants={itemVariants}
+                onClick={() => navigate('/membership')}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
+                }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-[#FFC857] text-[#0A2463] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+              >
+                Explore Memberships
+              </motion.button>
+
+              <motion.button
+                variants={itemVariants}
+                onClick={() => navigate('/contact')}
+                whileHover={{
+                  backgroundColor: "rgba(255, 200, 87, 0.1)",
+                  scale: 1.02,
+                  borderColor: "#FFD700"
+                }}
+                whileTap={{ scale: 0.98 }}
+                className="border-2 border-[#FFC857] text-[#FFC857] px-8 py-4 rounded-sm font-bold uppercase tracking-wider"
+              >
+                Schedule a Tour
+              </motion.button>
+            </motion.div>
+
+            <motion.p
+              className="text-white/80 mt-8 text-sm"
+              variants={itemVariants}
+            >
+              Experience world-class facilities with five-star hospitality
+            </motion.p>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 };
@@ -905,7 +940,6 @@ const LeadershipSection = () => {
   const [leadershipData, setLeadershipData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const controls = useAnimation();
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.2
@@ -917,7 +951,6 @@ const LeadershipSection = () => {
         setLoading(true);
         setError(null);
         const response = await axiosInstance.get('/about-us-settings');
-        
         if (response.data.success) {
           setLeadershipData(response.data.data.leadership_team || []);
         } else {
@@ -932,49 +965,6 @@ const LeadershipSection = () => {
 
     fetchLeadershipData();
   }, []);
-
-  useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    }
-  }, [controls, inView]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100
-      }
-    }
-  };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.8 }
-    }
-  };
-
-
-
-  // Use API data if available, otherwise fallback
-  // const teamData = leadershipData.length > 0 ? leadershipData : fallbackLeadershipTeam;
 
   // Icon mapping
   const iconComponents = {
@@ -991,11 +981,24 @@ const LeadershipSection = () => {
 
   if (loading) {
     return (
-      <section className="relative py-24 bg-white overflow-hidden" id="leadership">
-        <div className="container px-6 mx-auto">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
           </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
         </div>
       </section>
     );
@@ -1014,36 +1017,30 @@ const LeadershipSection = () => {
   }
 
   return (
-    <section
-      ref={ref}
-      className="relative py-24 bg-white overflow-hidden"
-      id="leadership"
-    >
+    <section ref={ref} className="relative py-24 bg-white overflow-hidden" id="leadership" >
       {/* Decorative elements */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: {
-            scale: 1,
-            opacity: 0.2,
-            transition: { delay: 0.5, duration: 1 }
-          }
-        }}
+        whileInView={{ scale: 1, opacity: 0.2 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute top-20 right-10 w-64 h-64 border border-[#FFC857] rounded-full z-10"
       />
-
       <div className="container px-6 mx-auto">
         {/* Section Header */}
         <motion.div
-          initial="hidden"
-          animate={controls}
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-center mb-16"
         >
           <motion.h2
             className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
-            variants={itemVariants}
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
           >
             OUR LEADERSHIP
           </motion.h2>
@@ -1056,7 +1053,10 @@ const LeadershipSection = () => {
           />
           <motion.p
             className="text-lg text-gray-600 max-w-3xl mx-auto"
-            variants={itemVariants}
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
           >
             Visionary leaders combining sports excellence and community development
           </motion.p>
@@ -1064,120 +1064,116 @@ const LeadershipSection = () => {
 
         {/* Leadership Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {leadershipData.map((leader, index) => {
-            
-            return (
-              <motion.div
-                key={leader.name}
-                className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
-                initial="hidden"
-                animate={controls}
-                variants={itemVariants}
-                custom={index}
-              >
-                {/* Leader Photo */}
-                <div className="relative h-64 w-full">
-                  {leader.image ? (
-                    <img
-                      src={leader.image}
-                      alt={leader.name}
-                      className="absolute inset-0 w-full h-full object-contain"
-                      onError={(e) => {
-                        // Fallback to local images based on title
-                        if (leader.title?.includes("Managing")) {
-                          e.target.src = leader3;
-                        } else if (leader.title?.includes("Operational")) {
-                          e.target.src = leader2;
-                        } else {
-                          e.target.src = founder;
-                        }
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={
-                        leader.title?.includes("Managing") ? leader3 :
-                        leader.title?.includes("Operational") ? leader2 :
-                        founder
+          {leadershipData.map((leader, index) => (
+            <motion.div
+              key={leader.name}
+              className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -5 }}
+            >
+              {/* Leader Photo */}
+              <div className="relative h-64 w-full">
+                {leader.image ? (
+                  <img
+                    src={leader.image}
+                    alt={leader.name}
+                    className="absolute inset-0 w-full h-full object-contain"
+                    onError={(e) => {
+                      if (leader.title?.includes("Managing")) {
+                        e.target.src = shailesh;
+                      } else if (leader.title?.includes("Operational")) {
+                        e.target.src = suraj;
+                      } else {
+                        e.target.src = swapnil;
                       }
-                      alt={leader.name}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/40 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider inline-block">
-                      {leader.title}
-                    </div>
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={
+                      leader.title?.includes("Managing") ? shailesh :
+                        leader.title?.includes("Operational") ? suraj :
+                          founder
+                    }
+                    alt={leader.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A2463]/40 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider inline-block">
+                    {leader.title}
                   </div>
                 </div>
+              </div>
 
-                {/* Leader Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-[#0A2463] mb-2">
-                    {leader.name}
-                  </h3>
+              {/* Leader Content */}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-[#0A2463] mb-2">
+                  {leader.name}
+                </h3>
 
-                  <p className="text-gray-600 mb-4 text-sm">
-                    {leader.bio}
-                  </p>
+                <p className="text-gray-600 mb-4 text-sm">
+                  {leader.bio}
+                </p>
 
-                  {/* Professional Roles */}
-                  {leader.roles && leader.roles.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
-                        <Briefcase className="h-4 w-4 text-[#FFC857]" />
-                        Key Positions:
-                      </h4>
-                      <ul className="space-y-2">
-                        {leader.roles.map((role, i) => (
-                          <li key={i} className="flex items-start">
+                {/* Professional Roles */}
+                {leader.roles && leader.roles.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
+                      <Briefcase className="h-4 w-4 text-[#FFC857]" />
+                      Key Positions:
+                    </h4>
+                    <ul className="space-y-2">
+                      {leader.roles.map((role, i) => (
+                        <li key={i} className="flex items-start">
+                          <div className="flex-shrink-0 mr-2 mt-0.5">
+                            <div className="bg-[#0A2463] rounded-full p-1">
+                              <Award className="h-3 w-3 text-[#FFC857]" />
+                            </div>
+                          </div>
+                          <span className="text-gray-700 text-xs">{typeof role === 'object' ? role.role : role}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Personal Insights */}
+                {leader.personal && leader.personal.length > 0 && (
+                  <div>
+                    <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
+                      <Users className="h-4 w-4 text-[#FFC857]" />
+                      Personal:
+                    </h4>
+                    <div className="space-y-2">
+                      {leader.personal.map((item, i) => {
+                        const PersonalIcon = iconComponents[item.icon] || Users;
+                        return (
+                          <div key={i} className="flex items-start">
                             <div className="flex-shrink-0 mr-2 mt-0.5">
-                              <div className="bg-[#0A2463] rounded-full p-1">
-                                <Award className="h-3 w-3 text-[#FFC857]" />
+                              <div className="bg-[#0A2463] text-[#FFC857] p-1 rounded-full">
+                                <PersonalIcon className="h-3 w-3" />
                               </div>
                             </div>
-                            <span className="text-gray-700 text-xs">{typeof role === 'object' ? role.role : role}</span>
-                          </li>
-                        ))}
-                      </ul>
+                            <span className="text-gray-700 text-xs">{item.text}</span>
+                          </div>
+                        );
+                      })}
                     </div>
-                  )}
-
-                  {/* Personal Insights */}
-                  {leader.personal && leader.personal.length > 0 && (
-                    <div>
-                      <h4 className="flex items-center gap-2 text-[#0A2463] font-medium mb-2 text-sm">
-                        <Users className="h-4 w-4 text-[#FFC857]" />
-                        Personal:
-                      </h4>
-                      <div className="space-y-2">
-                        {leader.personal.map((item, i) => {
-                          const PersonalIcon = iconComponents[item.icon] || Users;
-                          return (
-                            <div key={i} className="flex items-start">
-                              <div className="flex-shrink-0 mr-2 mt-0.5">
-                                <div className="bg-[#0A2463] text-[#FFC857] p-1 rounded-full">
-                                  <PersonalIcon className="h-3 w-3" />
-                                </div>
-                              </div>
-                              <span className="text-gray-700 text-xs">{item.text}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
-    
-    
   );
 };
 
 export default AboutUsPage;
+

@@ -1,8 +1,7 @@
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Play, Pause, ChevronRight, ChevronLeft, Quote } from "lucide-react";
-// import { hero_video_1, member1, member2, testimonial1, testimonial2 } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const VideoTestimonials = () => {
@@ -10,7 +9,6 @@ const VideoTestimonials = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
-  const controls = useAnimation();
   const [ref, inView] = useInView({
     triggerOnce: false,
     threshold: 0.2
@@ -41,21 +39,17 @@ const VideoTestimonials = () => {
   }, []);
 
   useEffect(() => {
-    if (inView) {
-      controls.start("visible");
+    // Auto-advance carousel when in view (only if we have testimonials)
+    if (inView && testimonials.length > 0) {
+      const interval = setInterval(() => {
+        if (!isPlaying) {
+          setActiveIndex(prev => (prev + 1) % testimonials.length);
+        }
+      }, 10000);
 
-      // Auto-advance carousel when in view (only if we have testimonials)
-      if (testimonials.length > 0) {
-        const interval = setInterval(() => {
-          if (!isPlaying) {
-            setActiveIndex(prev => (prev + 1) % testimonials.length);
-          }
-        }, 10000);
-
-        return () => clearInterval(interval);
-      }
+      return () => clearInterval(interval);
     }
-  }, [controls, inView, isPlaying, testimonials.length]);
+  }, [inView, isPlaying, testimonials.length]);
 
   // Function to convert YouTube share links to embed URLs
   const convertToEmbedUrl = (url) => {
@@ -119,51 +113,6 @@ const VideoTestimonials = () => {
     return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100
-      }
-    }
-  };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.8 }
-    }
-  };
-
-  const slideHorizontal = {
-    hidden: { x: 100, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 20
-      }
-    }
-  };
-
   const nextTestimonial = () => {
     if (testimonials.length > 0) {
       setActiveIndex(prev => (prev + 1) % testimonials.length);
@@ -195,9 +144,26 @@ const VideoTestimonials = () => {
 
   if (loading) {
     return (
-      <div className="relative py-20 bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFC857]"></div>
-      </div>
+      <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+        <div className="flex flex-col items-center justify-center relative z-10">
+          {/* Animated Spinner */}
+          <div className="relative mx-auto mb-6">
+            <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+          </div>
+
+          <motion.p
+            className="text-[#0A2463] text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Loading premium content...
+          </motion.p>
+
+        </div>
+      </section>
     );
   }
 
@@ -230,54 +196,50 @@ const VideoTestimonials = () => {
       {/* Decorative elements */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: {
-            scale: 1,
-            opacity: 0.1,
-            transition: { delay: 0.5, duration: 1 }
-          }
-        }}
+        whileInView={{ scale: 1, opacity: 0.1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute top-20 left-10 w-64 h-64 border-2 border-[#FFC857] rounded-full z-20"
       />
 
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
-        animate={controls}
-        variants={{
-          visible: {
-            scale: 1,
-            opacity: 0.1,
-            transition: { delay: 0.7, duration: 1 }
-          }
-        }}
+        whileInView={{ scale: 1, opacity: 0.1 }}
+        transition={{ delay: 0.7, duration: 1 }}
+        viewport={{ once: true }}
         className="absolute bottom-1/4 right-10 w-48 h-48 border border-[#0A2463] rounded-full"
       />
 
       <div className="container px-6 mx-auto">
         {/* Section Header */}
         <motion.div
-          initial="hidden"
-          animate={controls}
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <motion.div variants={itemVariants}>
-            <motion.h2
-              className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
-            >
-              MEMBER EXPERIENCES
-            </motion.h2>
-            <motion.div
-              className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-            />
-          </motion.div>
+          <motion.h2
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold mb-4 text-[#0A2463]"
+          >
+            MEMBER EXPERIENCES
+          </motion.h2>
+          <motion.div
+            className="w-20 h-1 bg-[#FFC857] mx-auto mb-6"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          />
           <motion.p
-            variants={itemVariants}
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            viewport={{ once: true }}
             className="text-lg text-gray-600 max-w-3xl mx-auto"
           >
             Hear from our members about their transformative experiences at the club
@@ -286,19 +248,22 @@ const VideoTestimonials = () => {
 
         {/* Video Testimonial Carousel */}
         <div className="relative">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             <motion.div
-              key={currentTestimonial.id}
+              key={activeIndex}
               initial={{ opacity: 0, x: 100 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 0.5 }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
             >
               {/* Video Player */}
               <motion.div
                 className="relative h-96 rounded-xl overflow-hidden shadow-2xl bg-gray-900"
-                variants={fadeInVariants}
+                initial={{ scale: 0.95, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
                 whileHover={{ scale: 1.02 }}
               >
                 {/* Thumbnail or Video */}
@@ -382,7 +347,7 @@ const VideoTestimonials = () => {
                           />
                         ) : (
                           <video
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             autoPlay
                             controls
                             muted
@@ -421,8 +386,9 @@ const VideoTestimonials = () => {
                 <motion.div
                   className="absolute bottom-6 left-6 bg-[#FFC857] text-[#0A2463] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider z-10"
                   initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
+                  whileInView={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
+                  viewport={{ once: true }}
                 >
                   {currentTestimonial.role}
                 </motion.div>
@@ -430,14 +396,23 @@ const VideoTestimonials = () => {
 
               {/* Testimonial Content */}
               <motion.div
-                variants={slideHorizontal}
+                initial={{ x: 100, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 20,
+                  delay: 0.2
+                }}
+                viewport={{ once: true }}
                 className="lg:pl-8"
               >
                 <motion.div
                   className="mb-8 text-[#FFC857]"
                   initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
+                  whileInView={{ scale: 1 }}
                   transition={{ delay: 0.2 }}
+                  viewport={{ once: true }}
                 >
                   {[...Array(currentTestimonial.rating || 5)].map((_, i) => (
                     <span key={i} className="text-2xl">★</span>
@@ -447,8 +422,9 @@ const VideoTestimonials = () => {
                 <motion.div
                   className="relative mb-8"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
+                  viewport={{ once: true }}
                 >
                   <Quote className="absolute -top-6 -left-6 text-[#FFC857]/20 w-16 h-16 rotate-180" />
                   <p className="text-2xl italic text-gray-700 relative z-10">
@@ -459,8 +435,9 @@ const VideoTestimonials = () => {
 
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
+                  whileInView={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.5 }}
+                  viewport={{ once: true }}
                 >
                   <h4 className="text-xl font-bold text-[#0A2463]">
                     {currentTestimonial.name}
@@ -478,8 +455,9 @@ const VideoTestimonials = () => {
             <motion.div
               className="flex justify-center mt-8 space-x-2"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              whileInView={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
+              viewport={{ once: true }}
             >
               {testimonials.map((_, index) => (
                 <button
@@ -496,34 +474,15 @@ const VideoTestimonials = () => {
               ))}
             </motion.div>
           )}
-
-          {/* Navigation Arrows
-          {testimonials.length > 1 && (
-            <div className="absolute top-1/2 left-4 right-4 transform -translate-y-1/2 flex justify-between z-20">
-              <button
-                onClick={prevTestimonial}
-                className="bg-white/80 hover:bg-white text-[#0A2463] p-3 rounded-full shadow-lg transition-all"
-                aria-label="Previous testimonial"
-              >
-                ←
-              </button>
-              <button
-                onClick={nextTestimonial}
-                className="bg-white/80 hover:bg-white text-[#0A2463] p-3 rounded-full shadow-lg transition-all"
-                aria-label="Next testimonial"
-              >
-                →
-              </button>
-            </div>
-          )} */}
         </div>
 
         {/* CTA */}
         <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
+          viewport={{ once: true }}
         >
           <motion.a
             href="/membership"
@@ -537,14 +496,6 @@ const VideoTestimonials = () => {
             Become A Member
             <motion.span
               className="ml-2 group-hover:translate-x-1 transition-transform"
-            // animate={{
-            //   x: [0, 5, 0],
-            // }}
-            // transition={{
-            //   repeat: Infinity,
-            //   duration: 1.5,
-            //   ease: "easeInOut"
-            // }}
             >
               <ChevronRight className="h-5 w-5" />
             </motion.span>

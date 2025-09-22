@@ -30,6 +30,24 @@ const Footer = () => {
     amenities: null, 
     contact: null 
   });
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+  const handleScroll = () => {
+    const footer = document.querySelector('footer');
+    if (footer) {
+      const rect = footer.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom >= 0) {
+        setIsInView(true);
+      }
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  handleScroll(); // Check on initial load
+
+  return () => window.removeEventListener('scroll', handleScroll);
+}, []);
 
   useEffect(() => {
     const fetchFooterData = async () => {
@@ -211,24 +229,22 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#0A2463] text-white pt-16 pb-8">
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, margin: "-100px" }}
-        variants={footerVariants}
-        className="container mx-auto px-6 lg:px-12"
-      >
+       <motion.div
+  initial="hidden"
+  animate={isInView ? "visible" : "hidden"}
+  variants={footerVariants}
+  className="container mx-auto px-6 lg:px-12"
+>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {/* Club Logo Column */}
           <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-1">
             <motion.a
               href="/"
               className="block mb-4"
-              // whileHover={{ scale: 1.03 }}
             >
               <motion.img
                 src={LogoWhite}
-                alt="SSK World Club Logo"
+                alt="The SSK World Club Logo"
                 className="h-35 w-auto"
                 whileHover={{ scale: 1.05 }}
                 transition={{ stiffness: 400 }}
@@ -237,7 +253,6 @@ const Footer = () => {
 
             <motion.p
               className="text-gray-300 mb-6 leading-relaxed pr-4"
-              // whileHover={{ scale: 1.01 }}
             >
               Experience unparalleled athletic luxury at our award-winning sports club.
               Where peak performance meets premium comfort.
@@ -271,11 +286,9 @@ const Footer = () => {
               key={index}
               variants={itemVariants}
               className="lg:col-span-1"
-              viewport={{ once: false }}
             >
               <motion.h3
                 className="text-lg font-semibold mb-4 text-[#FFC857] uppercase tracking-wider"
-                // whileHover={{ x: 3 }}
               >
                 {section.title}
               </motion.h3>
@@ -319,11 +332,9 @@ const Footer = () => {
           <motion.div
             variants={itemVariants}
             className="lg:col-span-1"
-            viewport={{ once: false }}
           >
             <motion.h3
               className="text-lg font-semibold mb-4 text-[#FFC857] uppercase tracking-wider"
-              // whileHover={{ x: 3 }}
             >
               Contact Us
             </motion.h3>
@@ -349,7 +360,6 @@ const Footer = () => {
                     key={index}
                     className="flex items-start"
                     variants={itemVariants}
-                    // whileHover={{ x: 3 }}
                   >
                     <span className="mt-0.5">{info.icon}</span>
                     {info.link ? (
@@ -375,19 +385,16 @@ const Footer = () => {
             >
               <motion.h4
                 className="text-sm font-semibold mb-2 text-[#FFC857] uppercase tracking-wider"
-                // whileHover={{ x: 3 }}
               >
                 Newsletter
               </motion.h4>
               <motion.p
                 className="text-gray-300 text-sm mb-2"
-                // whileHover={{ scale: 1.01 }}
               >
                 Subscribe for exclusive offers and club updates
               </motion.p>
               <motion.form
                 className="flex"
-                // whileHover={{ scale: 1.01 }}
               >
                 <motion.input
                   type="email"
@@ -419,7 +426,7 @@ const Footer = () => {
           className="border-t border-[#1E3A8A] my-8"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
-          viewport={{ once: false }}
+          viewport={{ once: true }} 
           transition={{ duration: 0.5 }}
         />
 
@@ -427,7 +434,6 @@ const Footer = () => {
         <motion.div
           className="flex flex-col md:flex-row justify-between items-center"
           variants={footerVariants}
-          viewport={{ once: false }}
         >
           <motion.p
             className="text-gray-400 text-sm mb-3 md:mb-0 text-center"

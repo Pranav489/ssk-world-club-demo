@@ -1,10 +1,7 @@
 import React from 'react'
 import HeroSection from './HeroSection';
 import SportsFacilities from './SportsFacilities';
-import RoomsPreview from './RoomPreview';
-import DiningExperience from './DiningExperience';
 import LuxuryAmenities from './LuxuryAmenities';
-import MembershipTiers from './MembershipTiers';
 import PartnershipsSection from './PartnershipsSection';
 import SignatureEvents from './SignatureEvents';
 import VideoTestimonials from './VideoTestimonials';
@@ -20,13 +17,10 @@ const Home = () => {
       <AboutUsSection/>
       <SportsFacilities/>
       <LuxuryAmenities/>
-      {/* <MembershipTiers/> */}
       <SignatureEvents/>
       <VideoTestimonials/>
       <PartnershipsSection/>
       <ImmersiveCTA/>
-      <RoomsPreview/>
-      <DiningExperience/>
     </div>
   )
 }

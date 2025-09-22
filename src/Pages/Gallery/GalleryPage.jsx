@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { ChevronRight, Image as ImageIcon, ArrowRight, ArrowLeft, Phone, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { ssk_club } from "../../assets";
+import { ssk_club, ssk_club1 } from "../../assets";
 import axiosInstance from "../../services/api";
 
 const GalleryPage = () => {
@@ -96,7 +96,7 @@ const GalleryPage = () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get('/contact-info');
-        
+
         if (response.data.success) {
           setContactInfo(response.data.data);
         } else {
@@ -124,14 +124,20 @@ const GalleryPage = () => {
       try {
         const response = await axiosInstance.get('/gallery');
         if (response.data.success) {
-          const images = response.data.data.images.map(img => ({
+          // Check if response has the new structure (array) or old structure (object with images property)
+          const imagesData = Array.isArray(response.data.data)
+            ? response.data.data  // New structure without pagination
+            : response.data.data.images; // Old structure with pagination
+
+          const images = imagesData.map(img => ({
             id: img.id,
             src: img.image_url,
-            alt: img.alt_text,
+            alt: img.alt_text || img.title || 'Gallery image',
             category: img.category,
             title: img.title,
             description: img.description
           }));
+
           setGalleryImages(images);
           setFilteredImages(images);
         }
@@ -145,7 +151,6 @@ const GalleryPage = () => {
 
     fetchGalleryData();
   }, []);
-
   // Open lightbox with clicked image
   const openLightbox = (index) => {
     setCurrentImageIndex(index);
@@ -200,29 +205,29 @@ const GalleryPage = () => {
   }, [selectedCategory, galleryImages]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-[#0A2463] font-medium"
-          >
-            Loading gallery...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
+      return (
+        <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+          
+          <div className="flex flex-col items-center justify-center relative z-10">
+            {/* Animated Spinner */}
+            <div className="relative mx-auto mb-6">
+              <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+              <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+            </div>
+            
+            <motion.p 
+              className="text-[#0A2463] text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Loading premium content...
+            </motion.p>
+    
+          </div>
+        </section>
+      );
+    }
 
   if (error) {
     return (
@@ -291,70 +296,73 @@ const GalleryPage = () => {
             {/* Close Button */}
             <motion.button
               onClick={closeLightbox}
-              className="absolute top-6 right-6 text-white hover:text-[#FFC857] transition-colors z-10"
+              className="absolute top-4 right-4 md:top-6 md:right-6 text-white hover:text-[#FFC857] transition-colors z-10 bg-black/50 rounded-full p-2"
               aria-label="Close lightbox"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
-              <X className="h-8 w-8" />
+              <X className="h-6 w-6 md:h-8 md:w-8" />
             </motion.button>
 
             {/* Navigation Arrows */}
             <motion.button
               onClick={goToPrevious}
-              className="absolute left-6 md:left-12 text-white hover:text-[#FFC857] transition-colors z-10"
+              className="absolute left-2 md:left-6 text-white hover:text-[#FFC857] transition-colors z-10 bg-black/50 rounded-full p-2 md:p-3"
               aria-label="Previous image"
               whileHover={{ scale: 1.1, backgroundColor: "#FFC857", color: "#0A2463" }}
               whileTap={{ scale: 0.9 }}
             >
-              <ArrowLeft className="h-8 w-8" />
+              <ArrowLeft className="h-5 w-5 md:h-8 md:w-8" />
             </motion.button>
 
             <motion.button
               onClick={goToNext}
-              className="absolute right-6 md:right-12 text-white hover:text-[#FFC857] transition-colors z-10"
+              className="absolute right-2 md:right-6 text-white hover:text-[#FFC857] transition-colors z-10 bg-black/50 rounded-full p-2 md:p-3"
               aria-label="Next image"
               whileHover={{ scale: 1.1, backgroundColor: "#FFC857", color: "#0A2463" }}
               whileTap={{ scale: 0.9 }}
             >
-              <ArrowRight className="h-8 w-8" />
+              <ArrowRight className="h-5 w-5 md:h-8 md:w-8" />
             </motion.button>
 
-            {/* Current Image */}
+            {/* Current Image Container */}
             <motion.div
               key={currentImageIndex}
-              className="relative max-w-4xl w-full max-h-[90vh]"
+              className="relative w-full h-full flex items-center justify-center p-4 md:p-8"
               variants={imageVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <img
-                src={filteredImages[currentImageIndex]?.src}
-                alt={filteredImages[currentImageIndex]?.alt}
-                className="w-full h-full object-contain"
-              />
+              <div className="relative max-w-full max-h-full flex flex-col items-center">
+                {/* Image */}
+                <img
+                  src={filteredImages[currentImageIndex]?.src}
+                  alt={filteredImages[currentImageIndex]?.alt}
+                  className="max-w-full max-h-[70vh] md:max-h-[80vh] object-contain rounded-lg"
+                />
 
-              {/* Caption Below Image */}
-              <motion.div
-                className="mt-4 text-center text-white"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <p className="text-lg font-medium">
-                  {filteredImages[currentImageIndex]?.title || filteredImages[currentImageIndex]?.alt}
-                </p>
-                {filteredImages[currentImageIndex]?.description && (
-                  <p className="text-sm mt-2 text-gray-300">
-                    {filteredImages[currentImageIndex]?.description}
+                {/* Caption Below Image */}
+                <motion.div
+                  className="mt-4 text-center text-white max-w-2xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <p className="text-base md:text-lg font-medium">
+                    {filteredImages[currentImageIndex]?.title}
                   </p>
-                )}
-                <p className="text-sm mt-2 text-[#FFC857]">
-                  {currentImageIndex + 1} of {filteredImages.length}
-                </p>
-              </motion.div>
+                  {filteredImages[currentImageIndex]?.description && (
+                    <p className="text-sm mt-2 text-gray-300">
+                      {filteredImages[currentImageIndex]?.description}
+                    </p>
+                  )}
+                  <p className="text-sm mt-2 text-[#FFC857]">
+                    {currentImageIndex + 1} of {filteredImages.length}
+                  </p>
+                </motion.div>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -377,8 +385,8 @@ const GalleryPage = () => {
           className="absolute inset-0 z-0"
         >
           <img
-            src={ssk_club}
-            alt="SSK World Club Membership"
+            src={ssk_club1}
+            alt="The SSK World Club Membership"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
@@ -411,7 +419,7 @@ const GalleryPage = () => {
               variants={itemVariants}
               className="text-xl text-[#FFC857] max-w-2xl mx-auto"
             >
-              A visual journey through SSK World Club's premium facilities
+              A visual journey through The SSK World Club's premium facilities
             </motion.p>
           </motion.div>
         </div>
@@ -451,14 +459,14 @@ const GalleryPage = () => {
           whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="absolute top-20 -left-20 w-64 h-64 border border-[#0A2463] rounded-full z-20"
+          className="absolute top-20 -left-20 w-64 h-64 border border-[#0A2463] rounded-full"
         />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 0.2 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="absolute bottom-20 -right-16 w-48 h-48 border border-[#FFC857] rounded-full z-20"
+          className="absolute bottom-2 -right-16 w-48 h-48 border border-[#FFC857] rounded-full"
         />
 
         <div className="container mx-auto px-6 relative z-10">
@@ -496,33 +504,33 @@ const GalleryPage = () => {
 
           {/* Image Grid */}
           {filteredImages.length > 0 ? (
-          <motion.div
-            key={selectedCategory}
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {filteredImages.map((image, index) => (
-              <motion.div
-                key={image.id}
-                variants={itemVariants}
-                className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                onClick={() => openLightbox(index)}
-              >
-                <motion.img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-64 object-cover cursor-pointer"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.div>
-            ))}
-          </motion.div>
+            <motion.div
+              key={selectedCategory}
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {filteredImages.map((image, index) => (
+                <motion.div
+                  key={image.id}
+                  variants={itemVariants}
+                  className="relative group overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  onClick={() => openLightbox(index)}
+                >
+                  <motion.img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-64 object-cover cursor-pointer"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.div>
+              ))}
+            </motion.div>
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -555,21 +563,35 @@ const GalleryPage = () => {
 
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto text-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={containerVariants}
+            className="text-center text-white"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Experience <span className="text-[#FFC857]">SSK World Club</span> in Person?
-            </h2>
-            <p className="text-xl text-[#FFC857] mb-8">
+            <motion.h2
+              variants={itemVariants}
+              className="text-3xl md:text-4xl font-bold text-white mb-6"
+            >
+              Ready to Experience <span className="text-[#FFC857]">The SSK World Club</span> in Person?
+            </motion.h2>
+            <motion.div
+              variants={itemVariants}
+              className="w-20 h-1 bg-[#FFC857] mx-auto mb-8"
+            />
+            <motion.p
+              variants={itemVariants}
+              className="text-xl text-[#FFC857] mb-8 max-w-2xl mx-auto"
+            >
               Our gallery showcases just a glimpse of what awaits you. Schedule a visit to see our world-class facilities firsthand.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-wrap justify-center gap-6">
+            <motion.div
+              variants={containerVariants}
+              className="flex flex-wrap justify-center gap-6"
+            >
               <motion.button
+                variants={itemVariants}
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 8px 25px rgba(255, 200, 87, 0.4)"
@@ -585,6 +607,7 @@ const GalleryPage = () => {
               {contactInfo && contactInfo.contact && contactInfo.contact.phone && (
                 <a href={`tel:${contactInfo.contact.phone}`}>
                   <motion.button
+                    variants={itemVariants}
                     whileHover={{
                       backgroundColor: "rgba(255, 200, 87, 0.1)",
                       scale: 1.02,
@@ -598,7 +621,7 @@ const GalleryPage = () => {
                   </motion.button>
                 </a>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

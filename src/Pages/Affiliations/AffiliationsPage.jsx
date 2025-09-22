@@ -3,7 +3,8 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Trophy, Globe, Shield, ChevronRight, X, Phone } from "lucide-react";
 import { useNavigate } from "react-router";
-import { hero_home } from "../../assets";
+import { hero_home, ssk_club3 } from "../../assets";
+import DownloadPDFButton from "../../Components/DownloadPDFButton/DownloadPDFButton";
 import axiosInstance from "../../services/api";
 
 const AffiliationsPage = () => {
@@ -82,6 +83,7 @@ const AffiliationsPage = () => {
         }
     };
 
+
     // Fetch affiliations data
     useEffect(() => {
         const fetchAffiliations = async () => {
@@ -142,26 +144,26 @@ const AffiliationsPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center"
-                >
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="rounded-full h-12 w-12 border-b-2 border-[#FFC857] mx-auto mb-4"
-                    />
+            <section className="relative h-screen w-full overflow-hidden bg-white flex items-center justify-center">
+
+                <div className="flex flex-col items-center justify-center relative z-10">
+                    {/* Animated Spinner */}
+                    <div className="relative mx-auto mb-6">
+                        <div className="w-16 h-16 border-4 border-white rounded-full"></div>
+                        <div className="w-16 h-16 border-4 border-[#FFC857] border-t-transparent rounded-full absolute top-0 left-0 animate-spin"></div>
+                    </div>
+
                     <motion.p
+                        className="text-[#0A2463] text-sm"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-[#0A2463] font-medium"
+                        transition={{ delay: 0.5 }}
                     >
-                        Loading affiliations...
+                        Loading premium content...
                     </motion.p>
-                </motion.div>
-            </div>
+
+                </div>
+            </section>
         );
     }
 
@@ -237,8 +239,8 @@ const AffiliationsPage = () => {
                     className="absolute inset-0 z-0"
                 >
                     <img
-                        src={hero_home}
-                        alt="SSK World Club Affiliations"
+                        src={ssk_club3}
+                        alt="The SSK World Club Affiliations"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
@@ -284,6 +286,7 @@ const AffiliationsPage = () => {
                         >
                             Partnered with elite sports associations and luxury brands worldwide
                         </motion.p>
+
                     </div>
                 </motion.div>
 
@@ -359,9 +362,17 @@ const AffiliationsPage = () => {
                             variants={itemVariants}
                             className="text-lg text-gray-600 max-w-3xl mx-auto"
                         >
-                            SSK World Club collaborates with prestigious organizations to deliver exceptional experiences
+                            The SSK World Club collaborates with prestigious organizations to deliver exceptional experiences
                         </motion.p>
+
+                        {/* Add the PDF download button here instead */}
+                        <motion.div
+                            variants={itemVariants}
+                        >
+                            <DownloadPDFButton />
+                        </motion.div>
                     </motion.div>
+
 
                     <motion.div
                         className="grid grid-cols-1 md:grid-cols-3 gap-8"
@@ -460,11 +471,11 @@ const AffiliationsPage = () => {
                             Join our network of elite affiliates and reach discerning members
                         </motion.p>
                         <motion.div
-                        variants={containerVariants}
+                            variants={containerVariants}
                             className="flex flex-wrap justify-center gap-6"
                         >
                             <motion.button
-                            variants={itemVariants}
+                                variants={itemVariants}
                                 onClick={() => setShowForm(true)}
                                 whileHover={{
                                     scale: 1.05,
@@ -476,7 +487,7 @@ const AffiliationsPage = () => {
                                 Partnership Inquiry
                             </motion.button>
                             <motion.button
-                            variants={itemVariants}
+                                variants={itemVariants}
                                 whileHover={{
                                     backgroundColor: "rgba(255, 200, 87, 0.1)",
                                     scale: 1.02,
