@@ -360,19 +360,19 @@ const AffiliationsPage = () => {
                         </motion.div>
                         <motion.p
                             variants={itemVariants}
-                            className="text-lg text-gray-600 max-w-3xl mx-auto"
+                            className="text-lg text-gray-600 max-w-3xl mx-auto mb-6 md:mb-4"
                         >
                             The SSK World Club collaborates with prestigious organizations to deliver exceptional experiences
                         </motion.p>
 
-                        {/* Add the PDF download button here instead */}
+                        {/* Fixed spacing for Download button */}
                         <motion.div
                             variants={itemVariants}
+                            className="mt-6 md:mt-4"
                         >
                             <DownloadPDFButton />
                         </motion.div>
                     </motion.div>
-
 
                     <motion.div
                         className="grid grid-cols-1 md:grid-cols-3 gap-8"

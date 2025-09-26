@@ -20,34 +20,34 @@ const Footer = () => {
   const [sports, setSports] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [contactInfo, setContactInfo] = useState(null);
-  const [loading, setLoading] = useState({ 
-    sports: true, 
-    amenities: true, 
-    contact: true 
+  const [loading, setLoading] = useState({
+    sports: true,
+    amenities: true,
+    contact: true
   });
-  const [error, setError] = useState({ 
-    sports: null, 
-    amenities: null, 
-    contact: null 
+  const [error, setError] = useState({
+    sports: null,
+    amenities: null,
+    contact: null
   });
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-  const handleScroll = () => {
-    const footer = document.querySelector('footer');
-    if (footer) {
-      const rect = footer.getBoundingClientRect();
-      if (rect.top < window.innerHeight && rect.bottom >= 0) {
-        setIsInView(true);
+    const handleScroll = () => {
+      const footer = document.querySelector('footer');
+      if (footer) {
+        const rect = footer.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom >= 0) {
+          setIsInView(true);
+        }
       }
-    }
-  };
+    };
 
-  window.addEventListener('scroll', handleScroll);
-  handleScroll(); // Check on initial load
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check on initial load
 
-  return () => window.removeEventListener('scroll', handleScroll);
-}, []);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchFooterData = async () => {
@@ -154,20 +154,24 @@ const Footer = () => {
     }
   };
 
-  // Social links from API data
-  const socialLinks = contactInfo ? [
-    { icon: <FaFacebook className="h-5 w-5" />, name: "Facebook", url: contactInfo.social_links?.facebook || "#" },
-    { icon: <FaInstagram className="h-5 w-5" />, name: "Instagram", url: contactInfo.social_links?.instagram || "#" },
-    { icon: <FaTwitter className="h-5 w-5" />, name: "Twitter", url: contactInfo.social_links?.twitter || "#" },
-    { icon: <FaLinkedin className="h-5 w-5" />, name: "LinkedIn", url: contactInfo.social_links?.linkedin || "#" },
-    { icon: <FaYoutube className="h-5 w-5" />, name: "YouTube", url: contactInfo.social_links?.youtube || "#" }
-  ] : [
-    { icon: <FaFacebook className="h-5 w-5" />, name: "Facebook", url: "#" },
-    { icon: <FaInstagram className="h-5 w-5" />, name: "Instagram", url: "#" },
-    { icon: <FaTwitter className="h-5 w-5" />, name: "Twitter", url: "#" },
-    { icon: <FaLinkedin className="h-5 w-5" />, name: "LinkedIn", url: "#" },
-    { icon: <FaYoutube className="h-5 w-5" />, name: "YouTube", url: "#" }
-  ];
+  // Social links from API data - only show if URL is available
+  const socialLinks = contactInfo?.social_links
+    ? Object.entries(contactInfo.social_links)
+      .filter(([_, url]) => url && url.trim() !== "" && url !== "#") // Only include if URL exists and is not empty or just "#"
+      .map(([platform, url]) => ({
+        icon: platform === 'facebook' ? <FaFacebook className="h-5 w-5" /> :
+          platform === 'instagram' ? <FaInstagram className="h-5 w-5" /> :
+            platform === 'twitter' ? <FaTwitter className="h-5 w-5" /> :
+              platform === 'linkedin' ? <FaLinkedin className="h-5 w-5" /> :
+                platform === 'youtube' ? <FaYoutube className="h-5 w-5" /> : null,
+        name: platform.charAt(0).toUpperCase() + platform.slice(1),
+        url: url
+      }))
+      .filter(item => item.icon !== null) // Remove any platforms without icons
+    : [];
+
+  // Use only the links from API, no fallback
+  const displaySocialLinks = socialLinks;
 
   // Contact info from API data
   const contactInfoItems = contactInfo ? [
@@ -229,12 +233,12 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#0A2463] text-white pt-16 pb-8">
-       <motion.div
-  initial="hidden"
-  whileInView={isInView ? "visible" : "hidden"}
-  variants={footerVariants}
-  className="container mx-auto px-6 lg:px-12"
->
+      <motion.div
+        initial="hidden"
+        whileInView={isInView ? "visible" : "hidden"}
+        variants={footerVariants}
+        className="container mx-auto px-6 lg:px-12"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {/* Club Logo Column */}
           <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-1">
@@ -258,26 +262,29 @@ const Footer = () => {
               Where peak performance meets premium comfort.
             </motion.p>
 
-            <motion.div
-              className="flex space-x-4"
-              variants={footerVariants}
-            >
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.url}
-                  className="text-gray-300 hover:text-[#FFC857] transition-colors"
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {social.icon}
-                  <span className="sr-only">{social.name}</span>
-                </motion.a>
-              ))}
-            </motion.div>
+            {/* Only show social media section if we have links */}
+            {displaySocialLinks.length > 0 && (
+              <motion.div
+                className="flex space-x-4"
+                variants={footerVariants}
+              >
+                {displaySocialLinks.map((social, index) => (
+                  <motion.a
+                    key={index}
+                    href={social.url}
+                    className="text-gray-300 hover:text-[#FFC857] transition-colors"
+                    variants={itemVariants}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {social.icon}
+                    <span className="sr-only">{social.name}</span>
+                  </motion.a>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Footer Links */}
@@ -338,7 +345,7 @@ const Footer = () => {
             >
               Contact Us
             </motion.h3>
-            
+
             {loading.contact ? (
               <div className="space-y-3">
                 {[...Array(4)].map((_, i) => (
@@ -426,7 +433,7 @@ const Footer = () => {
           className="border-t border-[#1E3A8A] my-8"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }} 
+          viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         />
 
